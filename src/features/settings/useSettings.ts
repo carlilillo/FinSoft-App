@@ -45,3 +45,14 @@ export function useDeleteAccount() {
         },
     });
 }
+
+export function useSignOut() {
+    const { actions } = useSignedInUser();
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async () => {
+            queryClient.clear();
+            await actions.signOut();
+        },
+    });
+}

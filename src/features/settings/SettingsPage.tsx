@@ -4,6 +4,7 @@ import { DeleteAccountDialog } from "./DeleteAccountDialog";
 import { GmailSection } from "./GmailSection";
 import { ProfileSection } from "./ProfileSection";
 import { SessionsSection } from "./SessionsSection";
+import { SignOutSection } from "./SignOutSection";
 import styles from "./SettingsPage.module.css";
 
 export function SettingsPage() {
@@ -15,6 +16,7 @@ export function SettingsPage() {
                 <ProfileSection />
                 <GmailSection />
                 <SessionsSection />
+                <SignOutSection />
                 <section
                     aria-labelledby="danger-title"
                     className={styles.section}
