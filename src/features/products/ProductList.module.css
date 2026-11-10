@@ -1,0 +1,92 @@
+.list {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2px var(--space-5);
+    padding: var(--space-3) var(--space-2);
+    border-bottom: 1px solid var(--color-line);
+    color: inherit;
+    text-decoration: none;
+    transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.item:hover {
+    background: var(--color-surface-2);
+}
+
+.name {
+    width: fit-content;
+    font-weight: 600;
+}
+
+.meta {
+    color: var(--color-ink-3);
+    font-size: var(--text-sm);
+}
+
+.price {
+    text-align: right;
+    font-weight: 600;
+}
+
+.meta:last-child {
+    text-align: right;
+}
+
+.unit {
+    color: var(--color-ink-3);
+    font-weight: 400;
+}
+
+/* Apricot and Tangerine show products as soft tiles. */
+:global([data-design="apricot"]) .list,
+:global([data-design="tangerine"]) .list {
+    grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+    gap: var(--space-3);
+}
+
+:global([data-design="apricot"]) .item,
+:global([data-design="tangerine"]) .item {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+    padding: var(--space-5);
+    border: 0;
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-2);
+}
+
+:global([data-design="apricot"]) .price,
+:global([data-design="apricot"]) .meta:last-child,
+:global([data-design="tangerine"]) .price,
+:global([data-design="tangerine"]) .meta:last-child {
+    text-align: left;
+}
+
+:global([data-design="tangerine"]) .item {
+    transition:
+        transform 280ms var(--ease-spring),
+        background-color var(--duration-fast) var(--ease-out);
+}
+
+:global([data-design="tangerine"]) .item:hover {
+    transform: translateY(-4px) rotate(-0.6deg);
+    background: var(--color-accent-soft);
+}
+
+:global([data-design="flow"]) .item:hover {
+    background: transparent;
+}
+
+:global([data-design="grid"]) .item {
+    border-bottom: 1px solid var(--color-ink);
+}
+
+:global([data-design="grid"]) .item:hover {
+    background: var(--color-accent);
+}

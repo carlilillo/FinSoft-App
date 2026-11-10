@@ -1,0 +1,80 @@
+.start {
+    display: grid;
+    gap: var(--space-6);
+    margin-bottom: var(--space-8);
+}
+
+.steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: var(--space-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+}
+
+.steps li {
+    display: grid;
+    align-content: start;
+    gap: var(--space-1);
+    counter-increment: step;
+}
+
+.steps li::before {
+    content: counter(step);
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    margin-bottom: var(--space-2);
+    border-radius: 50%;
+    background: var(--color-accent-soft);
+    color: var(--color-accent-text);
+    font-weight: 700;
+    font-size: var(--text-sm);
+}
+
+.steps span {
+    color: var(--color-ink-2);
+    font-size: var(--text-sm);
+}
+
+.action {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.connection {
+    color: var(--color-ink-3);
+    font-size: var(--text-sm);
+}
+
+.error {
+    color: var(--color-danger);
+}
+
+.sectionTitle {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-3);
+}
+
+:global([data-design="grid"]) .steps li::before {
+    border-radius: 0;
+    background: var(--color-ink);
+    color: var(--color-bg);
+}
+
+:global([data-design="grid"]) .steps li {
+    padding-top: var(--space-3);
+    border-top: 2px solid var(--color-ink);
+}
+
+:global([data-design="apricot"]) .start,
+:global([data-design="tangerine"]) .start {
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-2);
+}

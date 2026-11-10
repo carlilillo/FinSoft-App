@@ -1,0 +1,171 @@
+/* Reset, base typography and the tokens every design shares. Design-specific tokens live in
+   features/design-lab/designs.css until a design is chosen. */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+:where(:root) {
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-7: 3rem;
+    --space-8: 4.5rem;
+
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-md: 1rem;
+    --text-lg: 1.25rem;
+    --text-xl: 1.625rem;
+    --text-2xl: 2.25rem;
+    --text-hero: clamp(2.75rem, 6vw, 4.5rem);
+
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --duration-fast: 140ms;
+    --duration-base: 240ms;
+
+    --content-width: 72rem;
+    --color-danger: #b42318;
+    --color-danger-soft: #fef3f2;
+    --color-success: #067647;
+    --color-success-soft: #ecfdf3;
+    --chart-2: #2f6bdb;
+    --chart-grid: var(--color-line);
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+    color-scheme: light;
+}
+
+body {
+    margin: 0;
+    min-height: 100dvh;
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: var(--text-md);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: var(--weight-display);
+    letter-spacing: var(--tracking-display);
+    line-height: 1.15;
+    text-wrap: balance;
+}
+
+p {
+    margin: 0;
+    text-wrap: pretty;
+}
+
+a {
+    color: inherit;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+    color: inherit;
+}
+
+img,
+svg {
+    display: block;
+    max-width: 100%;
+}
+
+:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+::selection {
+    background: var(--color-accent-soft);
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.numeric {
+    font-family: var(--font-numeric);
+    font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Shared-element morphs between list rows and detail pages (used by designs with fluid motion). */
+::view-transition-group(*) {
+    animation-duration: 420ms;
+    animation-timing-function: var(--ease-out);
+}
+
+/* Flow: pages slide along a horizontal track; direction comes from navigation (see shell/navigation.ts). */
+@keyframes page-out-left {
+    to {
+        opacity: 0;
+        transform: translateX(-12%);
+    }
+}
+@keyframes page-in-right {
+    from {
+        opacity: 0;
+        transform: translateX(12%);
+    }
+}
+@keyframes page-out-right {
+    to {
+        opacity: 0;
+        transform: translateX(12%);
+    }
+}
+@keyframes page-in-left {
+    from {
+        opacity: 0;
+        transform: translateX(-12%);
+    }
+}
+
+[data-design="flow"]::view-transition-old(page) {
+    animation: page-out-left 380ms var(--ease-out) both;
+}
+[data-design="flow"]::view-transition-new(page) {
+    animation: page-in-right 420ms var(--ease-out) both;
+}
+[data-design="flow"][data-nav-direction="back"]::view-transition-old(page) {
+    animation-name: page-out-right;
+}
+[data-design="flow"][data-nav-direction="back"]::view-transition-new(page) {
+    animation-name: page-in-left;
+}

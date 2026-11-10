@@ -1,0 +1,120 @@
+.button {
+    --mx: 0;
+    --my: 0;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: 2.5rem;
+    padding: 0 var(--space-4);
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+        transform var(--duration-fast) var(--ease-out),
+        background-color var(--duration-fast) var(--ease-out),
+        border-color var(--duration-fast) var(--ease-out),
+        box-shadow var(--duration-base) var(--ease-out);
+}
+
+.button:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+.button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.button[aria-busy="true"] {
+    cursor: progress;
+}
+
+.label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.primary {
+    background: var(--color-accent-fill);
+    color: var(--color-accent-ink);
+}
+
+.primary:hover:not(:disabled) {
+    box-shadow: 0 6px 18px -8px var(--color-accent);
+}
+
+.secondary {
+    background: var(--color-surface);
+    border-color: var(--color-line);
+    color: var(--color-ink);
+}
+
+.secondary:hover:not(:disabled) {
+    border-color: var(--color-ink-3);
+}
+
+.ghost {
+    background: transparent;
+    color: var(--color-ink-2);
+}
+
+.ghost:hover:not(:disabled) {
+    background: var(--color-surface-2);
+    color: var(--color-ink);
+}
+
+.danger {
+    background: var(--color-danger);
+    color: #ffffff;
+}
+
+/* Designs with rounder, softer personalities use pill buttons. */
+:global([data-design="apricot"]) .button,
+:global([data-design="flow"]) .button,
+:global([data-design="tangerine"]) .button {
+    border-radius: 999px;
+    padding: 0 var(--space-5);
+}
+
+:global([data-design="grid"]) .button {
+    text-transform: none;
+    letter-spacing: 0;
+    border-width: 2px;
+}
+
+:global([data-design="grid"]) .secondary {
+    border-color: var(--color-ink);
+}
+
+/* Tangerine: buttons lean toward the pointer, the label leans a little further. */
+:global([data-design="tangerine"]) .button {
+    transform: translate(calc(var(--mx) * 6px), calc(var(--my) * 6px));
+    transition:
+        transform 260ms var(--ease-spring),
+        background-color var(--duration-fast) var(--ease-out),
+        box-shadow var(--duration-base) var(--ease-out);
+}
+
+:global([data-design="tangerine"]) .label {
+    transform: translate(calc(var(--mx) * 4px), calc(var(--my) * 4px));
+    transition: transform 260ms var(--ease-spring);
+}
+
+:global([data-design="tangerine"]) .button:active:not(:disabled) {
+    transform: translate(calc(var(--mx) * 6px), calc(var(--my) * 6px))
+        scale(0.94);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :global([data-design="tangerine"]) .button,
+    :global([data-design="tangerine"]) .label {
+        transform: none;
+    }
+}

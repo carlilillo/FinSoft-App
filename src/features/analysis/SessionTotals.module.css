@@ -1,0 +1,40 @@
+.totals {
+    display: grid;
+    gap: var(--space-3);
+}
+
+.title {
+    font-size: var(--text-lg);
+}
+
+.meta {
+    color: var(--color-ink-3);
+    font-size: var(--text-sm);
+}
+
+.currency {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--space-6);
+    margin: var(--space-2) 0 0;
+}
+
+.currency dt {
+    color: var(--color-ink-3);
+    font-size: var(--text-sm);
+}
+
+.currency dd {
+    margin: 0;
+    font-family: var(--font-numeric);
+    font-size: var(--text-lg);
+    font-weight: 600;
+}
+
+.gross dd {
+    font-size: var(--text-hero);
+    font-weight: var(--weight-display);
+    letter-spacing: var(--tracking-display);
+    line-height: 1;
+}

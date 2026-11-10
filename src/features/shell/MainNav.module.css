@@ -1,0 +1,119 @@
+.list {
+    display: flex;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-md);
+    color: var(--nav-ink-2);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-out);
+}
+
+.link:hover {
+    color: var(--nav-ink);
+}
+
+.link[aria-current="page"] {
+    color: var(--nav-active-ink);
+}
+
+.activeBackground {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--nav-active-bg);
+}
+
+.icon,
+.label {
+    position: relative;
+}
+
+.pending {
+    position: relative;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-left: auto;
+    border-radius: 50%;
+    background: var(--color-accent);
+    box-shadow: 0 0 0 0 var(--color-accent);
+    animation: pulse 1.6s var(--ease-out) infinite;
+}
+
+@keyframes pulse {
+    70% {
+        box-shadow: 0 0 0 8px transparent;
+    }
+    100% {
+        box-shadow: 0 0 0 0 transparent;
+    }
+}
+
+/* Sidebar designs: vertical list. */
+:global([data-nav="sidebar"]) .list {
+    flex-direction: column;
+}
+
+:global([data-design="ledger"]) .link[aria-current="page"] {
+    font-weight: 600;
+}
+
+:global([data-design="signal"]) .link {
+    font-weight: 600;
+    padding: 0.65rem 0.85rem;
+}
+
+/* Paper Trail & Grid: underline the current section instead of filling it. */
+:global([data-design="paper"]) .activeBackground {
+    inset: auto 0.75rem -0.65rem;
+    height: 2px;
+    border-radius: 0;
+    background: var(--color-accent);
+}
+
+:global([data-design="grid"]) .link {
+    border-radius: 0;
+    font-weight: 700;
+    font-size: var(--text-md);
+}
+
+/* Pill designs: rounded chips inside a floating bar. */
+:global([data-nav="pill"]) .link {
+    border-radius: 999px;
+    padding: 0.5rem 1rem;
+}
+
+:global([data-design="flow"]) .link[aria-current="page"] {
+    font-weight: 600;
+}
+
+@media (max-width: 48rem) {
+    .label {
+        display: none;
+    }
+
+    :global([data-nav="sidebar"]) .list {
+        flex-direction: row;
+    }
+}
+
+/* Flow's compact pill (while scrolling): icons only until hovered or focused. */
+:global([data-compact="true"]) .label {
+    display: none;
+}
+
+:global([data-compact="true"]:hover) .label,
+:global([data-compact="true"]:focus-within) .label {
+    display: inline;
+}

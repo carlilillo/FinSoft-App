@@ -1,0 +1,221 @@
+/* TEMPORARY design lab. Each block is one candidate direction; once one is chosen, its tokens
+   move into app/global.css and this file is deleted. */
+
+/* 1 · Ledger — quiet accounting tool; orange marks state only. */
+[data-design="ledger"] {
+    --font-body: "Instrument Sans", system-ui, sans-serif;
+    --font-display: "Instrument Sans", system-ui, sans-serif;
+    --font-numeric: "Instrument Sans", system-ui, sans-serif;
+    --weight-display: 600;
+    --tracking-display: -0.015em;
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-surface-2: #f7f7f5;
+    --color-ink: #1c1b19;
+    --color-ink-2: #57534e;
+    --color-ink-3: #78736d;
+    --color-line: #e7e5e1;
+    --color-accent: #e8590c;
+    --color-accent-text: #b84309;
+    --color-accent-fill: #c2410c;
+    --color-accent-ink: #ffffff;
+    --color-accent-soft: #fff1e8;
+    --nav-bg: #ffffff;
+    --nav-ink: #1c1b19;
+    --nav-ink-2: #57534e;
+    --nav-active-bg: #fff1e8;
+    --nav-active-ink: #b84309;
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 10px;
+    --shadow-raised: 0 1px 0 #e7e5e1;
+    --chart-1: #e8590c;
+}
+
+/* 2 · Signal — confident operations console with a solid orange nav column. */
+[data-design="signal"] {
+    --font-body: "Inter", system-ui, sans-serif;
+    --font-display: "Manrope", system-ui, sans-serif;
+    --font-numeric: "Manrope", system-ui, sans-serif;
+    --weight-display: 800;
+    --tracking-display: -0.03em;
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-surface-2: #f6f6f7;
+    --color-ink: #16130f;
+    --color-ink-2: #4f4a45;
+    --color-ink-3: #75706a;
+    --color-line: #ebe9e6;
+    --color-accent: #ff6a13;
+    --color-accent-text: #b8470a;
+    --color-accent-fill: #ff6a13;
+    --color-accent-ink: #1a0d04;
+    --color-accent-soft: #fff0e6;
+    --nav-bg: #ff6a13;
+    --nav-ink: #1a0d04;
+    --nav-ink-2: #4a1f04;
+    --nav-active-bg: #1a0d04;
+    --nav-active-ink: #ffffff;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --shadow-raised: 0 1px 2px rgb(22 19 15 / 6%), 0 0 0 1px #ebe9e6;
+    --chart-1: #dd5500;
+}
+
+/* 3 · Paper Trail — the invoice as an object; amounts set in a serif. */
+[data-design="paper"] {
+    --font-body: "IBM Plex Sans", system-ui, sans-serif;
+    --font-display: "IBM Plex Sans", system-ui, sans-serif;
+    --font-numeric: "IBM Plex Serif", Georgia, serif;
+    --weight-display: 600;
+    --tracking-display: -0.01em;
+    --color-bg: #f5f5f3;
+    --color-surface: #ffffff;
+    --color-surface-2: #f9f9f8;
+    --color-ink: #1d1d1b;
+    --color-ink-2: #555550;
+    --color-ink-3: #75756f;
+    --color-line: #e3e3df;
+    --color-accent: #f26b1d;
+    --color-accent-text: #b5470b;
+    --color-accent-fill: #c43e0b;
+    --color-accent-ink: #ffffff;
+    --color-accent-soft: #fdeee4;
+    --nav-bg: #ffffff;
+    --nav-ink: #1d1d1b;
+    --nav-ink-2: #555550;
+    --nav-active-bg: transparent;
+    --nav-active-ink: #b5470b;
+    --radius-sm: 3px;
+    --radius-md: 4px;
+    --radius-lg: 6px;
+    --shadow-raised:
+        0 1px 2px rgb(29 29 27 / 6%), 0 8px 24px -12px rgb(29 29 27 / 18%);
+    --chart-1: #d9480f;
+}
+
+/* 4 · Apricot — soft, friendly, generous spacing, floating pill navigation. */
+[data-design="apricot"] {
+    --font-body: "Plus Jakarta Sans", system-ui, sans-serif;
+    --font-display: "Plus Jakarta Sans", system-ui, sans-serif;
+    --font-numeric: "Plus Jakarta Sans", system-ui, sans-serif;
+    --weight-display: 700;
+    --tracking-display: -0.02em;
+    --color-bg: #ffffff;
+    --color-surface: #fff6ef;
+    --color-surface-2: #fffaf6;
+    --color-ink: #2b1d14;
+    --color-ink-2: #6b5446;
+    --color-ink-3: #8c7466;
+    --color-line: #f6e4d6;
+    --color-accent: #ff8a3d;
+    --color-accent-text: #b4510f;
+    --color-accent-fill: #ff8a3d;
+    --color-accent-ink: #2b1607;
+    --color-accent-soft: #ffe8d7;
+    --nav-bg: #2b1d14;
+    --nav-ink: #ffffff;
+    --nav-ink-2: #e9d6c8;
+    --nav-active-bg: #ff8a3d;
+    --nav-active-ink: #2b1607;
+    --radius-sm: 10px;
+    --radius-md: 20px;
+    --radius-lg: 28px;
+    --shadow-raised: none;
+    --chart-1: #e65c00;
+}
+
+/* 5 · Grid — Swiss rigor; type does the work, orange blocks only mark selection. */
+[data-design="grid"] {
+    --font-body: "Schibsted Grotesk", system-ui, sans-serif;
+    --font-display: "Schibsted Grotesk", system-ui, sans-serif;
+    --font-numeric: "Schibsted Grotesk", system-ui, sans-serif;
+    --weight-display: 900;
+    --tracking-display: -0.035em;
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-surface-2: #f4f4f4;
+    --color-ink: #000000;
+    --color-ink-2: #4a4a4a;
+    --color-ink-3: #6e6e6e;
+    --color-line: #000000;
+    --color-accent: #ff4f00;
+    --color-accent-text: #c23c00;
+    --color-accent-fill: #ff4f00;
+    --color-accent-ink: #000000;
+    --color-accent-soft: #ffe7dc;
+    --nav-bg: #ffffff;
+    --nav-ink: #000000;
+    --nav-ink-2: #4a4a4a;
+    --nav-active-bg: #ff4f00;
+    --nav-active-ink: #000000;
+    --radius-sm: 0;
+    --radius-md: 2px;
+    --radius-lg: 2px;
+    --shadow-raised: none;
+    --chart-1: #dd5500;
+    --chart-grid: #dcdcdc;
+}
+
+/* 6 · Flow — one continuous surface: morphing nav, sliding pages, shared-element transitions. */
+[data-design="flow"] {
+    --font-body: "General Sans", system-ui, sans-serif;
+    --font-display: "General Sans", system-ui, sans-serif;
+    --font-numeric: "General Sans", system-ui, sans-serif;
+    --weight-display: 600;
+    --tracking-display: -0.025em;
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-surface-2: #fff8f2;
+    --color-ink: #20140b;
+    --color-ink-2: #5e4b3e;
+    --color-ink-3: #85715f;
+    --color-line: #f1e6dc;
+    --color-accent: #ff7a1a;
+    --color-accent-text: #b04d05;
+    --color-accent-fill: linear-gradient(120deg, #ff7a1a, #ffb347);
+    --color-accent-ink: #2a1200;
+    --color-accent-soft: #fff0e2;
+    --nav-bg: rgb(255 255 255 / 78%);
+    --nav-ink: #20140b;
+    --nav-ink-2: #5e4b3e;
+    --nav-active-bg: linear-gradient(120deg, #ff7a1a, #ffb347);
+    --nav-active-ink: #2a1200;
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --shadow-raised: 0 12px 40px -18px rgb(255 122 26 / 35%);
+    --chart-1: #e65c00;
+}
+
+/* 7 · Tangerine — expressive and tactile: dock, magnetic buttons, odometers, liquid shapes. */
+[data-design="tangerine"] {
+    --font-body: "DM Sans", system-ui, sans-serif;
+    --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+    --font-numeric: "Bricolage Grotesque", system-ui, sans-serif;
+    --weight-display: 700;
+    --tracking-display: -0.03em;
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-surface-2: #fff4ea;
+    --color-ink: #1f1209;
+    --color-ink-2: #5a4636;
+    --color-ink-3: #846c59;
+    --color-line: #f5e2d2;
+    --color-accent: #ff6b00;
+    --color-accent-text: #b04a00;
+    --color-accent-fill: #ff6b00;
+    --color-accent-ink: #1f0d00;
+    --color-accent-soft: #ffe3cc;
+    --nav-bg: #1f1209;
+    --nav-ink: #ffffff;
+    --nav-ink-2: #e7d3c4;
+    --nav-active-bg: #ff6b00;
+    --nav-active-ink: #1f0d00;
+    --radius-sm: 12px;
+    --radius-md: 22px;
+    --radius-lg: 32px;
+    --shadow-raised: 0 18px 40px -24px rgb(31 18 9 / 35%);
+    --chart-1: #dd5500;
+}

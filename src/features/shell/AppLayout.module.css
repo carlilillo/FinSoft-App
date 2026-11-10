@@ -1,0 +1,209 @@
+.layout {
+    min-height: 100dvh;
+}
+
+.navArea {
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    background: var(--nav-bg);
+    color: var(--nav-ink);
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: inherit;
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-weight: var(--weight-display);
+    font-size: var(--text-lg);
+    letter-spacing: var(--tracking-display);
+}
+
+.mark {
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: var(--radius-sm);
+    background: var(--color-accent-fill);
+    color: var(--color-accent-ink);
+    font-size: var(--text-sm);
+}
+
+.account {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-left: auto;
+    min-width: 0;
+}
+
+.paletteButton {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.35rem 0.5rem 0.35rem 0.75rem;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    background: var(--color-surface);
+    color: var(--color-ink-2);
+    font-size: var(--text-sm);
+    cursor: pointer;
+}
+
+.paletteButton kbd {
+    padding: 0.05rem 0.4rem;
+    border-radius: 999px;
+    background: var(--color-surface-2);
+    font: inherit;
+    font-size: var(--text-xs);
+}
+
+.main {
+    width: min(100% - 2 * var(--space-5), var(--content-width));
+    margin-inline: auto;
+    padding-block: var(--space-7) var(--space-8);
+}
+
+/* ── Sidebar (Ledger, Signal) ─────────────────────────── */
+.layout[data-nav="sidebar"] {
+    display: grid;
+    grid-template-columns: 15.5rem minmax(0, 1fr);
+}
+
+.layout[data-nav="sidebar"] .navArea {
+    position: sticky;
+    top: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-6);
+    height: 100dvh;
+    padding: var(--space-5) var(--space-4);
+    border-right: 1px solid var(--color-line);
+}
+
+.layout[data-nav="sidebar"] .account {
+    margin-top: auto;
+    margin-left: 0;
+}
+
+.layout[data-nav="sidebar"] .main {
+    width: min(100% - 2 * var(--space-6), var(--content-width));
+}
+
+:global([data-design="signal"]) .layout[data-nav="sidebar"] .navArea {
+    border-right: 0;
+}
+
+:global([data-design="signal"]) .mark {
+    background: var(--nav-ink);
+    color: var(--nav-bg);
+}
+
+/* ── Top bar (Paper Trail, Grid) ──────────────────────── */
+.layout[data-nav="topbar"] .navArea {
+    position: sticky;
+    top: 0;
+    padding: var(--space-3) clamp(var(--space-4), 4vw, var(--space-7));
+    border-bottom: 1px solid var(--color-line);
+}
+
+:global([data-design="grid"]) .layout[data-nav="topbar"] .navArea {
+    border-bottom: 2px solid var(--color-ink);
+    padding-block: var(--space-4);
+}
+
+:global([data-design="grid"]) .brand {
+    font-size: var(--text-xl);
+}
+
+:global([data-design="grid"]) .mark {
+    border-radius: 0;
+}
+
+/* ── Floating pill (Apricot, Flow) ────────────────────── */
+.layout[data-nav="pill"] .navArea {
+    position: sticky;
+    top: var(--space-4);
+    width: fit-content;
+    max-width: calc(100% - 2 * var(--space-4));
+    margin: var(--space-4) auto 0;
+    padding: 0.4rem 0.5rem 0.4rem 1rem;
+    border-radius: 999px;
+    box-shadow: 0 10px 40px -18px rgb(43 29 20 / 45%);
+}
+
+.layout[data-nav="pill"] .account {
+    margin-left: var(--space-2);
+}
+
+:global([data-design="apricot"]) .mark {
+    border-radius: 999px;
+}
+
+:global([data-design="flow"]) .layout[data-nav="pill"] .navArea {
+    border: 1px solid var(--color-line);
+    backdrop-filter: blur(18px) saturate(1.4);
+}
+
+:global([data-design="flow"]) .mark {
+    border-radius: 10px;
+}
+
+/* Flow: the pill shrinks to icons while scrolling and opens up again under the pointer. */
+.navArea[data-compact="true"] .wordmark {
+    display: none;
+}
+
+.navArea[data-compact="true"]:hover .wordmark,
+.navArea[data-compact="true"]:focus-within .wordmark {
+    display: inline;
+}
+
+:global([data-design="flow"]) .main {
+    view-transition-name: page;
+}
+
+/* ── Dock (Tangerine) ─────────────────────────────────── */
+.layout[data-nav="dock"] .navArea {
+    --nav-ink: var(--color-ink);
+    --nav-ink-2: var(--color-ink-2);
+    padding: var(--space-4) clamp(var(--space-4), 4vw, var(--space-7));
+    background: transparent;
+    color: var(--color-ink);
+}
+
+.layout[data-nav="dock"] .main {
+    padding-bottom: calc(var(--space-8) + 3rem);
+}
+
+:global([data-design="tangerine"]) .mark {
+    border-radius: 12px;
+    rotate: -6deg;
+}
+
+@media (max-width: 48rem) {
+    .layout[data-nav="sidebar"] {
+        grid-template-columns: 1fr;
+    }
+
+    .layout[data-nav="sidebar"] .navArea {
+        position: sticky;
+        flex-direction: row;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--color-line);
+    }
+
+    .layout[data-nav="sidebar"] .account {
+        margin: 0 0 0 auto;
+    }
+
+    .wordmark {
+        display: none;
+    }
+}

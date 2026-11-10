@@ -1,0 +1,46 @@
+.menu {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-width: 0;
+}
+
+.identity {
+    display: grid;
+    min-width: 0;
+    line-height: 1.3;
+}
+
+.name {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.email {
+    font-size: var(--text-xs);
+    color: var(--nav-ink-2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.signOut {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    margin-left: auto;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--nav-ink-2);
+    cursor: pointer;
+}
+
+.signOut:hover {
+    color: var(--nav-ink);
+    background: color-mix(in srgb, var(--nav-ink) 8%, transparent);
+}

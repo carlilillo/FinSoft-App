@@ -1,0 +1,64 @@
+.pending {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-4);
+    max-width: 40rem;
+}
+
+.title {
+    font-size: var(--text-xl);
+}
+
+.detail {
+    color: var(--color-ink-2);
+}
+
+.track {
+    position: relative;
+    width: 100%;
+    height: 0.5rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--color-surface-2);
+}
+
+.bar {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: inherit;
+    background: var(--color-accent-fill);
+}
+
+/* A slow sheen tells the person the work is alive between updates. */
+.bar::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgb(255 255 255 / 45%),
+        transparent
+    );
+    animation: sheen 1.8s linear infinite;
+}
+
+@keyframes sheen {
+    from {
+        translate: -100% 0;
+    }
+    to {
+        translate: 100% 0;
+    }
+}
+
+.leave {
+    color: var(--color-ink-3);
+    font-size: var(--text-sm);
+}
+
+:global([data-design="grid"]) .track {
+    height: 1rem;
+    border-radius: 0;
+    border: 2px solid var(--color-ink);
+}

@@ -1,0 +1,72 @@
+.header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-6);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--color-line);
+}
+
+.identity {
+    display: grid;
+    gap: var(--space-2);
+}
+
+.vendor {
+    width: fit-content;
+    color: var(--color-accent-text);
+    font-weight: 600;
+}
+
+.title {
+    font-size: var(--text-xl);
+}
+
+.fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
+    margin: var(--space-2) 0 0;
+    font-size: var(--text-sm);
+}
+
+.fields dt {
+    color: var(--color-ink-3);
+}
+
+.fields dd {
+    margin: 0;
+    font-weight: 500;
+}
+
+.total {
+    display: grid;
+    align-content: end;
+    justify-items: end;
+    font-family: var(--font-numeric);
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-display);
+}
+
+.totalLabel {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-ink-3);
+}
+
+/* Paper Trail: the total is stamped. */
+:global([data-design="paper"]) .total .numeric {
+    padding: 0.1em 0.4em;
+    border: 2px solid var(--color-accent);
+    color: var(--color-accent-text);
+    rotate: -3deg;
+}
+
+:global([data-design="grid"]) .header {
+    border-bottom: 2px solid var(--color-ink);
+}
+
+:global([data-design="grid"]) .total {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+}

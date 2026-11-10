@@ -1,0 +1,68 @@
+.sheet {
+    display: grid;
+    gap: var(--space-7);
+}
+
+.columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 18rem;
+    gap: var(--space-7);
+    align-items: start;
+}
+
+.lines {
+    display: grid;
+    gap: var(--space-4);
+}
+
+.side {
+    display: grid;
+    gap: var(--space-6);
+}
+
+.sectionTitle {
+    font-size: var(--text-md);
+    margin-bottom: var(--space-3);
+}
+
+.notes {
+    color: var(--color-ink-2);
+}
+
+/* Paper Trail: the invoice is a sheet of paper on the desk, with a perforated top edge. */
+:global([data-design="paper"]) .sheet {
+    position: relative;
+    padding: var(--space-7);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-raised);
+}
+
+:global([data-design="paper"]) .sheet::before {
+    content: "";
+    position: absolute;
+    inset: -6px 0 auto;
+    height: 12px;
+    background: radial-gradient(
+            circle at 8px 0,
+            transparent 6px,
+            var(--color-surface) 6.5px
+        )
+        0 0 / 16px 12px repeat-x;
+}
+
+:global([data-design="apricot"]) .sheet,
+:global([data-design="tangerine"]) .sheet {
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+}
+
+:global([data-design="tangerine"]) .sheet {
+    box-shadow: var(--shadow-raised);
+}
+
+@media (max-width: 60rem) {
+    .columns {
+        grid-template-columns: 1fr;
+    }
+}

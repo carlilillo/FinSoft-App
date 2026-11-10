@@ -1,0 +1,16 @@
+.session {
+    display: grid;
+    gap: var(--space-8);
+}
+
+.sectionTitle {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-4);
+}
+
+.failed {
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    background: #fffaeb;
+    color: #93370d;
+}

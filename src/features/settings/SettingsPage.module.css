@@ -1,0 +1,126 @@
+.sections {
+    display: grid;
+    gap: var(--space-7);
+    max-width: 44rem;
+}
+
+.section {
+    display: grid;
+    gap: var(--space-4);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-line);
+}
+
+.sectionTitle {
+    font-size: var(--text-lg);
+}
+
+.photoRow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+}
+
+.photoActions,
+.formActions,
+.inline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.inline {
+    justify-content: space-between;
+}
+
+.inline p {
+    color: var(--color-ink-2);
+    max-width: 40ch;
+}
+
+.form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+}
+
+.formActions {
+    grid-column: 1 / -1;
+}
+
+.field {
+    display: grid;
+    gap: var(--space-1);
+    font-size: var(--text-sm);
+    font-weight: 500;
+}
+
+.field input {
+    min-height: 2.6rem;
+    padding: 0 var(--space-3);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+}
+
+.field input:focus {
+    border-color: var(--color-accent);
+    outline: none;
+}
+
+.saved {
+    color: var(--color-success);
+    font-size: var(--text-sm);
+}
+
+.error {
+    color: var(--color-danger);
+    font-size: var(--text-sm);
+}
+
+.sessions {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.session {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--color-line);
+}
+
+.device {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 500;
+}
+
+.muted {
+    color: var(--color-ink-3);
+    font-size: var(--text-sm);
+}
+
+:global([data-design="grid"]) .section {
+    border-top: 2px solid var(--color-ink);
+}
+
+:global([data-design="apricot"]) .section,
+:global([data-design="tangerine"]) .section {
+    padding: var(--space-5);
+    border: 0;
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-2);
+}
+
+@media (max-width: 36rem) {
+    .form {
+        grid-template-columns: 1fr;
+    }
+}

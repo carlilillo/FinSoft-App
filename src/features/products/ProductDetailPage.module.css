@@ -1,0 +1,58 @@
+.stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-6);
+    margin: 0 0 var(--space-7);
+}
+
+.stats dt {
+    color: var(--color-ink-3);
+    font-size: var(--text-sm);
+}
+
+.stats dd {
+    margin: 0;
+    font-family: var(--font-numeric);
+    font-size: var(--text-xl);
+    font-weight: var(--weight-display);
+}
+
+.chart {
+    display: grid;
+    gap: var(--space-4);
+    margin-bottom: var(--space-7);
+}
+
+.chartHeader {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.sectionTitle {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-3);
+}
+
+.chartHeader .sectionTitle {
+    margin: 0;
+}
+
+.muted {
+    color: var(--color-ink-3);
+}
+
+:global([data-design="paper"]) .chart,
+:global([data-design="apricot"]) .chart,
+:global([data-design="tangerine"]) .chart {
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-raised);
+}
+
+:global([data-design="apricot"]) .chart {
+    box-shadow: none;
+}

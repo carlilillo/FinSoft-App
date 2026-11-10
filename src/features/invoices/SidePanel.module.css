@@ -1,0 +1,76 @@
+.panel {
+    display: grid;
+    gap: var(--space-3);
+}
+
+.title {
+    font-size: var(--text-md);
+}
+
+.fields {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+    font-size: var(--text-sm);
+}
+
+.fields dt {
+    color: var(--color-ink-3);
+}
+
+.fields dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.muted {
+    color: var(--color-ink-3);
+    font-size: var(--text-sm);
+}
+
+.documents {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.document {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+}
+
+.fileName {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.iconButton {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-ink-2);
+    cursor: pointer;
+}
+
+.iconButton:hover {
+    background: var(--color-accent-soft);
+    color: var(--color-accent-text);
+}
+
+.error {
+    color: var(--color-danger);
+    font-size: var(--text-sm);
+}

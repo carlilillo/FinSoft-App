@@ -1,0 +1,21 @@
+.backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.blob {
+    position: absolute;
+    width: 46vmax;
+    height: 46vmax;
+    background: radial-gradient(circle at 30% 30%, #ffb070, #ff6b00 70%);
+    opacity: 0.16;
+    filter: blur(40px);
+}
+
+.peach {
+    background: radial-gradient(circle at 60% 40%, #ffe3cc, #ffc79a 70%);
+    opacity: 0.5;
+}

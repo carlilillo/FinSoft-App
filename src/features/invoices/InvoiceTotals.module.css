@@ -1,0 +1,30 @@
+.totals {
+    display: grid;
+    gap: var(--space-2);
+    width: min(100%, 20rem);
+    margin: 0 0 0 auto;
+    font-size: var(--text-sm);
+}
+
+.row,
+.grand {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+}
+
+.row dt {
+    color: var(--color-ink-2);
+}
+
+.row dd,
+.grand dd {
+    margin: 0;
+}
+
+.grand {
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--color-ink);
+    font-size: var(--text-md);
+    font-weight: 700;
+}
