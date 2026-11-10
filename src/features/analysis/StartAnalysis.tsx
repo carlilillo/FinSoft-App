@@ -1,7 +1,14 @@
 import { useSearchParams } from "react-router";
 import { Button, ErrorState, Skeleton } from "@/shared/ui";
-import { connectionErrorMessage } from "./analysis.model";
-import { useGmailConnection, useStartAnalysis } from "./useAnalysis";
+import {
+    connectionErrorMessage,
+    gmailStartBlockedReason,
+} from "./analysis.model";
+import {
+    useGmailConnection,
+    useRunCapacity,
+    useStartAnalysis,
+} from "./useAnalysis";
 import type { StartButtonProps } from "./types";
 import styles from "./AnalyzePage.module.css";
 
@@ -24,6 +31,7 @@ export function StartAnalysis() {
     const [searchParams] = useSearchParams();
     const connection = useGmailConnection();
     const start = useStartAnalysis();
+    const capacity = useRunCapacity();
     const errorMessage = connectionErrorMessage(searchParams.get("error"));
 
     return (
@@ -46,6 +54,7 @@ export function StartAnalysis() {
                     isConnected={connection.data?.connected ?? false}
                     googleEmail={connection.data?.googleEmail ?? null}
                     isBusy={start.isPending}
+                    blockedReason={gmailStartBlockedReason(capacity)}
                     onStart={(isConnected) => start.mutate(isConnected)}
                 />
             )}
@@ -63,19 +72,26 @@ function StartButton({
     isConnected,
     googleEmail,
     isBusy,
+    blockedReason,
     onStart,
 }: StartButtonProps) {
+    const connectionText = isConnected
+        ? `Connected as ${googleEmail ?? "your Google account"}`
+        : "Gmail is not connected yet";
     return (
         <div className={styles.action}>
-            <Button isBusy={isBusy} onClick={() => onStart(isConnected)}>
+            <Button
+                isBusy={isBusy}
+                disabled={blockedReason !== null}
+                aria-describedby="start-note"
+                onClick={() => onStart(isConnected)}
+            >
                 {isConnected
                     ? "Analyze last week's emails"
                     : "Connect Gmail and analyze"}
             </Button>
-            <p className={styles.connection}>
-                {isConnected
-                    ? `Connected as ${googleEmail ?? "your Google account"}`
-                    : "Gmail is not connected yet"}
+            <p id="start-note" className={styles.connection}>
+                {blockedReason ?? connectionText}
             </p>
         </div>
     );

@@ -1,15 +1,5 @@
-import {
-    keepPreviousData,
-    useMutation,
-    useQuery,
-    useQueryClient,
-} from "@tanstack/react-query";
-import {
-    downloadDocument,
-    fetchInvoice,
-    fetchInvoices,
-    uploadDocument,
-} from "./invoices.api";
+import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
+import { downloadDocument, fetchInvoice, fetchInvoices } from "./invoices.api";
 import type { InvoiceFilters } from "./types";
 
 export function useInvoices(filters: InvoiceFilters) {
@@ -29,13 +19,4 @@ export function useInvoice(id: string) {
 
 export function useDocumentDownload() {
     return useMutation({ mutationFn: downloadDocument });
-}
-
-export function useDocumentUpload(invoiceId: string) {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: (file: File) => uploadDocument(invoiceId, file),
-        onSuccess: () =>
-            queryClient.invalidateQueries({ queryKey: ["invoice", invoiceId] }),
-    });
 }

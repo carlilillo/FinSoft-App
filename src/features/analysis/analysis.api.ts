@@ -1,4 +1,4 @@
-import { apiDelete, apiGet, apiPost } from "@/shared/lib/http";
+import { apiDelete, apiGet, apiPost, apiPostForm } from "@/shared/lib/http";
 import type {
     ContinueRequest,
     GmailConnection,
@@ -21,6 +21,13 @@ export async function requestGmailConsentUrl(): Promise<string> {
 
 export function startAnalysis(): Promise<{ runId: string }> {
     return apiPost<{ runId: string }>("/analyses");
+}
+
+/** Starts an extraction session from PDFs the person picked, instead of their inbox. */
+export function importInvoices(files: File[]): Promise<{ runId: string }> {
+    const form = new FormData();
+    for (const file of files) form.append("files", file, file.name);
+    return apiPostForm<{ runId: string }>("/analyses/imports", form);
 }
 
 export function continueAnalysis(

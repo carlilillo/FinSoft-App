@@ -37,14 +37,29 @@ export function RunPage() {
     if (isRunActive(run.status)) {
         return (
             <>
-                <PageHeader title="Analyzing your inbox" back={back} />
+                <PageHeader
+                    title={
+                        run.source === "upload"
+                            ? "Reading your imported invoices"
+                            : "Analyzing your inbox"
+                    }
+                    back={back}
+                />
                 <RunPending run={run} />
             </>
         );
     }
     return (
         <>
-            <PageHeader title="Extraction session" back={back} />
+            <PageHeader
+                title="Extraction session"
+                description={
+                    run.source === "upload"
+                        ? "Invoices imported by hand."
+                        : "Invoices found in your Gmail inbox."
+                }
+                back={back}
+            />
             <RunSessionView run={run} />
         </>
     );

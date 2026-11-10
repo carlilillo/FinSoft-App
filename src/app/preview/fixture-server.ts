@@ -23,6 +23,8 @@ const RUN_DURATION_MS = 20_000;
 const runStarts = new Map<string, number>([
     [PREVIEW_RUN_ID, Date.now() - 3_600_000],
 ]);
+/** Preview imports: run id → names of the PDFs the person picked. */
+const importedRuns = new Map<string, string[]>();
 let isGmailConnected = true;
 
 export async function answerFromFixtures(
@@ -30,7 +32,7 @@ export async function answerFromFixtures(
 ): Promise<unknown> {
     await new Promise((resolve) => setTimeout(resolve, LATENCY_MS));
     const url = new URL(request.path, "http://preview.local");
-    const result = route(request.method, url);
+    const result = route(request.method, url, request.body);
     if (result === undefined)
         throw new Error(
             `Preview mode has no fixture for ${request.method} ${url.pathname}`,
@@ -38,7 +40,7 @@ export async function answerFromFixtures(
     return result;
 }
 
-type Handler = (url: URL, id: string) => unknown;
+type Handler = (url: URL, id: string, body: unknown) => unknown;
 
 /** First matching [method, path pattern] wins; ":id" captures the second path segment. */
 const ROUTES: ReadonlyArray<[string, RegExp, Handler]> = [
@@ -63,6 +65,11 @@ const ROUTES: ReadonlyArray<[string, RegExp, Handler]> = [
         () => ({ url: `/analyses/${startRun()}` }),
     ],
     ["POST", /^\/analyses$/, () => ({ runId: startRun() })],
+    [
+        "POST",
+        /^\/analyses\/imports$/,
+        (_url, _id, body) => ({ runId: startImport(body) }),
+    ],
     ["GET", /^\/analyses$/, () => runList()],
     ["POST", /^\/analyses\/[^/]+\/continue$/, (_url, id) => continueRun(id)],
     ["GET", /^\/analyses\/[^/]+$/, (_url, id) => runDetail(id)],
@@ -74,26 +81,15 @@ const ROUTES: ReadonlyArray<[string, RegExp, Handler]> = [
             expiresInSeconds: 300,
         }),
     ],
-    [
-        "POST",
-        /^\/documents\/upload-url$/,
-        () => ({
-            documentId: "preview",
-            uploadUrl: "",
-            method: "PUT",
-            headers: {},
-        }),
-    ],
-    ["POST", /^\/documents\/[^/]+\/confirm$/, () => ({})],
     ["DELETE", /^\/me$/, () => null],
 ];
 
-function route(method: string, url: URL): unknown {
+function route(method: string, url: URL, body: unknown): unknown {
     const match = ROUTES.find(
         ([routeMethod, pattern]) =>
             routeMethod === method && pattern.test(url.pathname),
     );
-    return match?.[2](url, url.pathname.split("/")[2] ?? "");
+    return match?.[2](url, url.pathname.split("/")[2] ?? "", body);
 }
 
 function isoDaysAgo(days: number): string {
@@ -359,14 +355,26 @@ function startRun(): string {
     return id;
 }
 
+function startImport(body: unknown): string {
+    const files =
+        body instanceof FormData
+            ? body
+                  .getAll("files")
+                  .flatMap((file) => (file instanceof File ? [file.name] : []))
+            : [];
+    const id = startRun();
+    importedRuns.set(id, files);
+    return id;
+}
+
 function continueRun(id: string) {
     runStarts.set(id, Date.now() - 8_000);
     return { runId: id };
 }
 
-function runStatus(elapsed: number): RunDetail["status"] {
+function runStatus(elapsed: number, isImport: boolean): RunDetail["status"] {
     if (elapsed < 3_000) return "pending";
-    if (elapsed < 8_000) return "ingesting";
+    if (elapsed < 8_000) return isImport ? "extracting" : "ingesting";
     if (elapsed < RUN_DURATION_MS) return "extracting";
     return "awaiting_review";
 }
@@ -374,16 +382,21 @@ function runStatus(elapsed: number): RunDetail["status"] {
 function runDetail(id: string): RunDetail {
     const startedAt = runStarts.get(id) ?? Date.now() - 3_600_000;
     const elapsed = Date.now() - startedAt;
-    const status = runStatus(elapsed);
+    const importedFiles = importedRuns.get(id);
+    const status = runStatus(elapsed, importedFiles !== undefined);
     const share = Math.min(
         1,
         Math.max(0, (elapsed - 8_000) / (RUN_DURATION_MS - 8_000)),
     );
     const sessionInvoices = sortedInvoices()
         .filter((invoice) => invoice.daysAgo < 8)
-        .map(toSummary);
+        .map(toSummary)
+        .slice(0, importedFiles?.length);
+    const emailsTotal = importedFiles ? 0 : 34;
+    const documentsTotal = importedFiles?.length ?? 0;
     const base = {
         id,
+        source: importedFiles ? ("upload" as const) : ("gmail" as const),
         status,
         stageDetail: null,
         error: null,
@@ -394,13 +407,42 @@ function runDetail(id: string): RunDetail {
                 ? new Date(startedAt + RUN_DURATION_MS).toISOString()
                 : null,
         progress: {
-            emailsTotal: 34,
-            emailsReviewed: Math.round(34 * share),
+            emailsTotal,
+            emailsReviewed: Math.round(emailsTotal * share),
+            documentsTotal,
+            documentsProcessed: Math.round(documentsTotal * share),
             invoicesFound: Math.round(sessionInvoices.length * share),
         },
     };
     if (status !== "awaiting_review") return { ...base, session: null };
-    return { ...base, session: previewSession(sessionInvoices) };
+    const session = previewSession(sessionInvoices);
+    return importedFiles
+        ? {
+              ...base,
+              session: {
+                  ...session,
+                  emails: [],
+                  documents: previewDocuments(importedFiles, sessionInvoices),
+              },
+          }
+        : { ...base, session };
+}
+
+function previewDocuments(
+    fileNames: string[],
+    invoices: InvoiceSummary[],
+): NonNullable<RunDetail["session"]>["documents"] {
+    return fileNames.map((fileName, index) => {
+        const invoice = invoices[index];
+        return {
+            id: `01JI${String(index).padStart(22, "0")}`,
+            fileName,
+            sizeBytes: 84_211,
+            status: invoice ? "extracted" : "not_invoice",
+            reason: invoice ? null : "This document is not an invoice.",
+            invoiceIds: invoice ? [invoice.id] : [],
+        };
+    });
 }
 
 function previewSession(
@@ -478,6 +520,7 @@ function previewSession(
     ] as const;
     return {
         totals: [...totals.values()],
+        documents: [],
         invoices,
         products: PRODUCTS.slice(0, 6).map(toProductSummary),
         emails: subjects.map(([subject, sender, verdict, reason], index) => ({
@@ -502,8 +545,10 @@ function runList(): RunListItem[] {
         .map((id) => runDetail(id))
         .map((run) => ({
             id: run.id,
+            source: run.source,
             status: run.status,
-            emailsTotal: 34,
+            emailsTotal: run.progress.emailsTotal,
+            documentsTotal: run.progress.documentsTotal,
             createdAt: run.createdAt,
             finishedAt: run.finishedAt,
         }))

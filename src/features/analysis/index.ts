@@ -1,3 +1,4 @@
+export { ImportInvoicesButton } from "./ImportInvoicesButton";
 export {
     useDisconnectGmail,
     useGmailConnection,

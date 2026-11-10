@@ -10,7 +10,9 @@ export function SessionTotals({ totals, run }: SessionTotalsProps) {
                 Expenses found
             </h2>
             <p className={styles.meta}>
-                {run.progress.emailsTotal} emails reviewed
+                {run.source === "upload"
+                    ? `${run.progress.documentsTotal} documents read`
+                    : `${run.progress.emailsTotal} emails reviewed`}
                 {run.finishedAt
                     ? `, finished ${formatDateTime(run.finishedAt)}`
                     : ""}

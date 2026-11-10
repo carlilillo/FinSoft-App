@@ -4,6 +4,12 @@ import type { ProductSummary } from "@/features/products";
 export type RunStatus =
     "pending" | "ingesting" | "extracting" | "awaiting_review" | "failed";
 
+/** Where a session's documents come from: the Gmail inbox, or PDFs imported by hand. */
+export type RunSource = "gmail" | "upload";
+
+export type ImportedDocumentStatus =
+    "pending" | "extracted" | "not_invoice" | "failed";
+
 export type EmailVerdict =
     | "pending"
     | "likely_invoice"
@@ -15,6 +21,8 @@ export type EmailVerdict =
 export type RunProgress = {
     emailsTotal: number;
     emailsReviewed: number;
+    documentsTotal: number;
+    documentsProcessed: number;
     invoicesFound: number;
 };
 
@@ -39,15 +47,26 @@ export type EvaluatedEmail = {
     invoiceIds: string[];
 };
 
+export type ImportedDocument = {
+    id: string;
+    fileName: string;
+    sizeBytes: number;
+    status: ImportedDocumentStatus;
+    reason: string | null;
+    invoiceIds: string[];
+};
+
 export type RunSession = {
     totals: CurrencyTotals[];
     invoices: InvoiceSummary[];
     products: ProductSummary[];
     emails: EvaluatedEmail[];
+    documents: ImportedDocument[];
 };
 
 export type RunDetail = {
     id: string;
+    source: RunSource;
     status: RunStatus;
     stageDetail: string | null;
     error: string | null;
@@ -60,8 +79,10 @@ export type RunDetail = {
 
 export type RunListItem = {
     id: string;
+    source: RunSource;
     status: RunStatus;
     emailsTotal: number;
+    documentsTotal: number;
     createdAt: string;
     finishedAt: string | null;
 };
@@ -90,10 +111,26 @@ export type EmailReviewRowProps = {
     onToggle: (id: string) => void;
 };
 export type RunFailedProps = { run: RunDetail };
+export type ImportedDocumentListProps = { documents: ImportedDocument[] };
 export type RunHistoryProps = { runs: RunListItem[] };
 export type StartButtonProps = {
     isConnected: boolean;
     googleEmail: string | null;
     isBusy: boolean;
+    /** Why the analysis can't start right now, or null when it can. */
+    blockedReason: string | null;
     onStart: (isConnected: boolean) => void;
 };
+
+/** How many analyses may still start right now (the server allows a few in progress at once). */
+export type RunCapacity = {
+    activeCount: number;
+    limit: number;
+    isAtLimit: boolean;
+    /** The inbox is being extracted right now; a second Gmail analysis can't start until it ends. */
+    isGmailRunActive: boolean;
+};
+
+/** A picked set of files is either importable as-is or rejected with a reason the person can act on. */
+export type ImportSelection =
+    { kind: "valid"; files: File[] } | { kind: "invalid"; message: string };

@@ -52,7 +52,7 @@ export type InvoiceDocument = {
     fileName: string;
     mimeType: string;
     sizeBytes: number;
-    source: "email" | "upload";
+    source: "email" | "import";
     createdAt: string;
 };
 
@@ -70,13 +70,6 @@ export type InvoicePage = Page<InvoiceSummary>;
 
 export type InvoiceFilters = { search: string; page: number };
 
-export type UploadUrlResponse = {
-    documentId: string;
-    uploadUrl: string;
-    method: "PUT";
-    headers: Record<string, string>;
-};
-
 export type DownloadUrlResponse = { url: string; expiresInSeconds: number };
 
 export type DetailField = { label: string; value: string };
@@ -93,10 +86,7 @@ export type InvoiceHeaderProps = { invoice: InvoiceDetail };
 export type VendorPanelProps = { vendor: Vendor };
 export type LineItemsTableProps = { lines: InvoiceLine[]; currency: string };
 export type InvoiceTotalsProps = { invoice: InvoiceDetail };
-export type DocumentListProps = {
-    invoiceId: string;
-    documents: InvoiceDocument[];
-};
+export type DocumentListProps = { documents: InvoiceDocument[] };
 export type PaginationProps = {
     page: number;
     pageSize: number;

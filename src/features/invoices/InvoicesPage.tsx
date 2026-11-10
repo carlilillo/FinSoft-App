@@ -1,4 +1,5 @@
 import { useDeferredValue, useState } from "react";
+import { ImportInvoicesButton } from "@/features/analysis";
 import {
     ButtonLink,
     EmptyState,
@@ -23,7 +24,8 @@ export function InvoicesPage() {
         <>
             <PageHeader
                 title="Invoices"
-                description="Every invoice extracted from your inbox, newest first."
+                description="Every invoice extracted from your inbox or imported by hand, newest first."
+                actions={<ImportInvoicesButton />}
             />
             <label className={styles.search}>
                 <Icon name="search" />
@@ -68,8 +70,8 @@ function InvoiceResults({ query, search, onPageChange }: InvoiceResultsProps) {
                     </ButtonLink>
                 }
             >
-                Run an analysis and the invoices FinSift finds will be listed
-                here.
+                Run an analysis or import your PDF invoices, and everything
+                FinSift extracts will be listed here.
             </EmptyState>
         );
     }

@@ -1,23 +1,11 @@
-import { type ChangeEvent, useRef } from "react";
-import { Button, Icon } from "@/shared/ui";
+import { Icon } from "@/shared/ui";
 import { formatFileSize } from "./invoices.model";
 import type { DocumentListProps } from "./types";
-import { useDocumentDownload, useDocumentUpload } from "./useInvoices";
+import { useDocumentDownload } from "./useInvoices";
 import styles from "./SidePanel.module.css";
 
-const ACCEPTED =
-    "application/pdf,image/png,image/jpeg,image/webp,application/xml,text/xml";
-
-export function DocumentList({ invoiceId, documents }: DocumentListProps) {
+export function DocumentList({ documents }: DocumentListProps) {
     const download = useDocumentDownload();
-    const upload = useDocumentUpload(invoiceId);
-    const inputRef = useRef<HTMLInputElement>(null);
-
-    const handleFile = (event: ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) upload.mutate(file);
-        event.target.value = "";
-    };
 
     return (
         <section aria-labelledby="documents-title" className={styles.panel}>
@@ -49,26 +37,6 @@ export function DocumentList({ invoiceId, documents }: DocumentListProps) {
                     </li>
                 ))}
             </ul>
-            <input
-                ref={inputRef}
-                type="file"
-                accept={ACCEPTED}
-                hidden
-                onChange={handleFile}
-            />
-            <Button
-                variant="secondary"
-                isBusy={upload.isPending}
-                onClick={() => inputRef.current?.click()}
-            >
-                <Icon name="upload" size={16} />
-                {upload.isPending ? "Uploading" : "Upload a document"}
-            </Button>
-            {upload.isError && (
-                <p className={styles.error} role="alert">
-                    {upload.error.message}
-                </p>
-            )}
             {download.isError && (
                 <p className={styles.error} role="alert">
                     The download link couldn&apos;t be created. Try again.

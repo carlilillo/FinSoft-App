@@ -7,11 +7,12 @@ import {
     fetchGmailConnection,
     fetchRun,
     fetchRuns,
+    importInvoices,
     requestGmailConsentUrl,
     startAnalysis,
 } from "./analysis.api";
-import { isRunActive } from "./analysis.model";
-import type { ContinueRequest, RunStatus } from "./types";
+import { isRunActive, runCapacity } from "./analysis.model";
+import type { ContinueRequest, RunCapacity, RunStatus } from "./types";
 
 const POLL_MS = 3_000;
 
@@ -51,6 +52,27 @@ export function useStartAnalysis() {
             });
         },
     });
+}
+
+/** Imported PDFs become a new extraction session; the person follows it on its run page. */
+export function useImportInvoices() {
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: importInvoices,
+        onSuccess: async (result) => {
+            await queryClient.invalidateQueries({ queryKey: ["runs"] });
+            await navigate(`/analyses/${result.runId}`, {
+                viewTransition: true,
+            });
+        },
+    });
+}
+
+/** Unknown until the run list loads: treated as available, the server still enforces the limit. */
+export function useRunCapacity(): RunCapacity {
+    const { data: runs } = useRuns();
+    return runCapacity(runs ?? []);
 }
 
 export function useRun(runId: string) {

@@ -69,8 +69,11 @@ export type PageHeaderProps = {
     title: string;
     description?: string;
     actions?: ReactNode;
-    back?: { to: string; label: string };
+    /** Where the back link leads when there is no previous page in the app to return to. */
+    back?: BackLinkProps;
 };
+
+export type BackLinkProps = { to: string; label: string };
 
 export type Toast = {
     id: number;

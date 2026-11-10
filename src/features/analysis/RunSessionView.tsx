@@ -2,6 +2,7 @@ import { InvoiceTable } from "@/features/invoices";
 import { ProductList } from "@/features/products";
 import { EmptyState } from "@/shared/ui";
 import { EmailReview } from "./EmailReview";
+import { ImportedDocumentList } from "./ImportedDocumentList";
 import { SessionTotals } from "./SessionTotals";
 import type { RunSessionProps } from "./types";
 import styles from "./RunSessionView.module.css";
@@ -26,8 +27,9 @@ export function RunSessionView({ run }: RunSessionProps) {
                     <InvoiceTable invoices={session.invoices} />
                 ) : (
                     <EmptyState title="No invoices were found in this session">
-                        If an email does contain an invoice, select it below and
-                        re-run the analysis.
+                        {run.source === "upload"
+                            ? "The documents below explain why nothing was extracted."
+                            : "If an email does contain an invoice, select it below and re-run the analysis."}
                     </EmptyState>
                 )}
             </section>
@@ -39,7 +41,11 @@ export function RunSessionView({ run }: RunSessionProps) {
                     <ProductList products={session.products} />
                 </section>
             )}
-            <EmailReview runId={run.id} emails={session.emails} />
+            {run.source === "upload" ? (
+                <ImportedDocumentList documents={session.documents} />
+            ) : (
+                <EmailReview runId={run.id} emails={session.emails} />
+            )}
         </div>
     );
 }

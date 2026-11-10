@@ -1,8 +1,8 @@
 import { Link } from "react-router";
 import { formatDateTime } from "@/shared/lib/dates";
 import { Badge } from "@/shared/ui";
-import { runTone } from "./analysis.model";
-import type { RunHistoryProps, RunStatus } from "./types";
+import { runSizeLabel, runTone } from "./analysis.model";
+import type { RunHistoryProps, RunSource, RunStatus } from "./types";
 import styles from "./RunHistory.module.css";
 
 const STATUS_LABEL: Record<RunStatus, string> = {
@@ -11,6 +11,11 @@ const STATUS_LABEL: Record<RunStatus, string> = {
     extracting: "In progress",
     awaiting_review: "Ready to review",
     failed: "Stopped",
+};
+
+const SOURCE_LABEL: Record<RunSource, string> = {
+    gmail: "Gmail",
+    upload: "Imported",
 };
 
 export function RunHistory({ runs }: RunHistoryProps) {
@@ -31,7 +36,7 @@ export function RunHistory({ runs }: RunHistoryProps) {
                             {formatDateTime(run.createdAt)}
                         </time>
                         <span className={styles.muted}>
-                            {run.emailsTotal} emails
+                            {SOURCE_LABEL[run.source]} · {runSizeLabel(run)}
                         </span>
                         <Badge tone={runTone(run.status)}>
                             {STATUS_LABEL[run.status]}

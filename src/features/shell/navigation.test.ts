@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { navDirection, sectionIndex } from "./navigation";
+import { navDirection, sectionIndex, sectionLabel } from "./navigation";
 
 describe("sectionIndex", () => {
     it("puts detail pages in their list's section", () => {
@@ -10,6 +10,19 @@ describe("sectionIndex", () => {
     it("puts analysis runs under Analyze", () => {
         expect(sectionIndex("/analyses/01J")).toBe(3);
         expect(sectionIndex("/analyze")).toBe(3);
+    });
+});
+
+describe("sectionLabel", () => {
+    it("names the section of list and detail pages", () => {
+        expect(sectionLabel("/invoices")).toBe("Invoices");
+        expect(sectionLabel("/invoices/01J")).toBe("Invoices");
+        expect(sectionLabel("/analyses/01J")).toBe("Analyze");
+    });
+
+    it("has no name for pages outside the nav", () => {
+        expect(sectionLabel("/")).toBeNull();
+        expect(sectionLabel("/sign-in")).toBeNull();
     });
 });
 

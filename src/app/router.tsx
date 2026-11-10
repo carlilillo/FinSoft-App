@@ -12,8 +12,9 @@ import { loadInvoiceDetailPage, loadInvoicesPage } from "@/features/invoices";
 import { loadLandingPage } from "@/features/landing";
 import { loadProductDetailPage, loadProductsPage } from "@/features/products";
 import { loadSettingsPage } from "@/features/settings";
-import { AppLayout, trackNavDirection } from "@/features/shell";
+import { AppLayout, sectionLabel, trackNavDirection } from "@/features/shell";
 import { IS_PREVIEW_MODE } from "@/shared/lib/env";
+import { trackPageNames } from "@/shared/lib/history";
 import { RootLayout } from "./RootLayout";
 import { RouteErrorBoundary } from "./RouteErrorBoundary";
 
@@ -66,3 +67,4 @@ export const router = createBrowserRouter([
 ]);
 
 trackNavDirection(router);
+trackPageNames(router, sectionLabel);

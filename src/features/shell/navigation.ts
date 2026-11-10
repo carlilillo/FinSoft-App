@@ -1,4 +1,5 @@
 import { NavigationType, type RouterSubscriber } from "react-router";
+import { historyIndex } from "@/shared/lib/history";
 import type { NavDirection, NavItem } from "./types";
 
 export const NAV_ITEMS: readonly NavItem[] = [
@@ -18,6 +19,14 @@ export function sectionIndex(pathname: string): number {
     return index === -1 ? 0 : index;
 }
 
+/** Name of the nav section a path belongs to; null for pages outside the app nav (home, sign-in). */
+export function sectionLabel(pathname: string): string | null {
+    const isInNav =
+        pathname.startsWith("/analyses") ||
+        NAV_ITEMS.some((item) => pathname.startsWith(item.to));
+    return isInNav ? (NAV_ITEMS[sectionIndex(pathname)]?.label ?? null) : null;
+}
+
 function depth(pathname: string): number {
     return pathname.split("/").filter(Boolean).length;
 }
@@ -32,14 +41,6 @@ export function navDirection(fromPath: string, toPath: string): NavDirection {
     if (toDepth !== fromDepth) return toDepth > fromDepth ? "forward" : "back";
     if (toDepth > 1) return "forward";
     return sectionIndex(toPath) >= sectionIndex(fromPath) ? "forward" : "back";
-}
-
-/** Browser back/forward: React Router keeps the history position in `history.state.idx`. */
-function historyIndex(): number | null {
-    const state: unknown = window.history.state;
-    if (typeof state !== "object" || state === null || !("idx" in state))
-        return null;
-    return typeof state.idx === "number" ? state.idx : null;
 }
 
 /**

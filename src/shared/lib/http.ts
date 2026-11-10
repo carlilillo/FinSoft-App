@@ -40,6 +40,11 @@ export function apiPost<T>(path: string, body?: unknown): Promise<T> {
     return request<T>({ method: "POST", path, body });
 }
 
+/** Multipart POST (file uploads); the browser sets the multipart boundary itself. */
+export function apiPostForm<T>(path: string, body: FormData): Promise<T> {
+    return request<T>({ method: "POST", path, body });
+}
+
 export function apiDelete<T = void>(path: string): Promise<T> {
     return request<T>({ method: "DELETE", path });
 }
@@ -48,13 +53,11 @@ async function request<T>(apiRequest: ApiRequest): Promise<T> {
     if (interceptor) return (await interceptor(apiRequest)) as T;
 
     const token = await getToken();
+    const isForm = apiRequest.body instanceof FormData;
     const response = await fetch(`${API_URL}${apiRequest.path}`, {
         method: apiRequest.method,
-        headers: buildHeaders(token, apiRequest.method),
-        body:
-            apiRequest.body === undefined
-                ? undefined
-                : JSON.stringify(apiRequest.body),
+        headers: buildHeaders(token, apiRequest.method, isForm),
+        body: toRequestBody(apiRequest.body),
     });
 
     if (!response.ok) throw await toApiError(response);
@@ -62,9 +65,19 @@ async function request<T>(apiRequest: ApiRequest): Promise<T> {
     return (await response.json()) as T;
 }
 
-function buildHeaders(token: string | null, method: HttpMethod): HeadersInit {
+function toRequestBody(body: unknown): BodyInit | undefined {
+    if (body === undefined) return undefined;
+    return body instanceof FormData ? body : JSON.stringify(body);
+}
+
+function buildHeaders(
+    token: string | null,
+    method: HttpMethod,
+    isForm: boolean,
+): HeadersInit {
     const headers: Record<string, string> = { Accept: "application/json" };
-    if (method !== "GET") headers["Content-Type"] = "application/json";
+    if (method !== "GET" && !isForm)
+        headers["Content-Type"] = "application/json";
     if (token) headers.Authorization = `Bearer ${token}`;
     return headers;
 }
@@ -86,20 +99,4 @@ async function toApiError(response: Response): Promise<ApiError> {
     } catch {
         return new ApiError(response.status, response.statusText, null);
     }
-}
-
-/** Uploads a file straight to S3 with a presigned URL (no auth header: the URL is the credential). */
-export async function uploadToPresignedUrl(
-    url: string,
-    file: File,
-    headers: Record<string, string>,
-): Promise<void> {
-    if (interceptor) return;
-    const response = await fetch(url, { method: "PUT", body: file, headers });
-    if (!response.ok)
-        throw new ApiError(
-            response.status,
-            "The upload was rejected by storage",
-            null,
-        );
 }

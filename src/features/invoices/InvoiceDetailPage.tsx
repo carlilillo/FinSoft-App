@@ -65,10 +65,7 @@ export function InvoiceDetailPage() {
                         </section>
                         <aside className={styles.side}>
                             <VendorPanel vendor={invoice.vendor} />
-                            <DocumentList
-                                invoiceId={invoice.id}
-                                documents={invoice.documents}
-                            />
+                            <DocumentList documents={invoice.documents} />
                             {invoice.notes && (
                                 <section aria-labelledby="notes-title">
                                     <h2
