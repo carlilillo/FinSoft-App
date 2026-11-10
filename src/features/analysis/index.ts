@@ -4,7 +4,13 @@ export {
     useGmailConnection,
     useRunWatcher,
 } from "./useAnalysis";
-export type { GmailConnection, RunDetail, RunListItem } from "./types";
+export type {
+    AnalysisSchedule,
+    GmailConnection,
+    RunDetail,
+    RunListItem,
+    ScheduleUpdate,
+} from "./types";
 
 export const loadAnalyzePage = () =>
     import("./AnalyzePage").then((module) => module.AnalyzePage);

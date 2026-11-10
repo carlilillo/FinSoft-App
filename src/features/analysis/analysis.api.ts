@@ -1,9 +1,17 @@
-import { apiDelete, apiGet, apiPost, apiPostForm } from "@/shared/lib/http";
+import {
+    apiDelete,
+    apiGet,
+    apiPost,
+    apiPostForm,
+    apiPut,
+} from "@/shared/lib/http";
 import type {
+    AnalysisSchedule,
     ContinueRequest,
     GmailConnection,
     RunDetail,
     RunListItem,
+    ScheduleUpdate,
 } from "./types";
 
 export function fetchGmailConnection(): Promise<GmailConnection> {
@@ -43,4 +51,14 @@ export function fetchRun(runId: string): Promise<RunDetail> {
 
 export function fetchRuns(): Promise<RunListItem[]> {
     return apiGet<RunListItem[]>("/analyses");
+}
+
+export function fetchAnalysisSchedule(): Promise<AnalysisSchedule> {
+    return apiGet<AnalysisSchedule>("/analysis-schedule");
+}
+
+export function saveAnalysisSchedule(
+    update: ScheduleUpdate,
+): Promise<AnalysisSchedule> {
+    return apiPut<AnalysisSchedule>("/analysis-schedule", update);
 }

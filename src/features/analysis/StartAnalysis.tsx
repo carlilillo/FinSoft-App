@@ -4,6 +4,7 @@ import {
     connectionErrorMessage,
     gmailStartBlockedReason,
 } from "./analysis.model";
+import { ScheduledAnalysis } from "./ScheduledAnalysis";
 import {
     useGmailConnection,
     useRunCapacity,
@@ -64,6 +65,7 @@ export function StartAnalysis() {
                 </p>
             )}
             {start.isError && <ErrorState error={start.error} />}
+            <ScheduledAnalysis />
         </section>
     );
 }

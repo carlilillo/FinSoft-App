@@ -23,6 +23,28 @@ export type SegmentedControlProps<T extends string> = {
     onChange: (value: T) => void;
 };
 
+/** A labelled native select: keyboard, screen reader and mobile pickers come for free. */
+export type SelectProps<T extends string> = Omit<
+    ComponentProps<"select">,
+    "value" | "onChange" | "children"
+> & {
+    label: string;
+    options: ReadonlyArray<SegmentOption<T>>;
+    value: T;
+    onChange: (value: T) => void;
+};
+
+export type SwitchProps = Omit<
+    ComponentProps<"button">,
+    "onChange" | "role" | "aria-checked"
+> & {
+    label: string;
+    /** Secondary line under the label. */
+    description?: string;
+    isOn: boolean;
+    onChange: (isOn: boolean) => void;
+};
+
 export type DialogProps = {
     isOpen: boolean;
     title: string;

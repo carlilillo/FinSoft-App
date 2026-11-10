@@ -4,17 +4,26 @@ import { useNavigate } from "react-router";
 import {
     continueAnalysis,
     disconnectGmail,
+    fetchAnalysisSchedule,
     fetchGmailConnection,
     fetchRun,
     fetchRuns,
     importInvoices,
     requestGmailConsentUrl,
+    saveAnalysisSchedule,
     startAnalysis,
 } from "./analysis.api";
 import { isRunActive, runCapacity } from "./analysis.model";
-import type { ContinueRequest, RunCapacity, RunStatus } from "./types";
+import type {
+    AnalysisSchedule,
+    ContinueRequest,
+    RunCapacity,
+    RunStatus,
+    ScheduleUpdate,
+} from "./types";
 
 const POLL_MS = 3_000;
+const SCHEDULE_KEY = ["analysis-schedule"];
 
 export function useGmailConnection() {
     return useQuery({
@@ -139,4 +148,38 @@ export function useRunWatcher(
     return {
         hasActiveRun: runs?.some((run) => isRunActive(run.status)) ?? false,
     };
+}
+
+export function useAnalysisSchedule() {
+    return useQuery({
+        queryKey: SCHEDULE_KEY,
+        queryFn: fetchAnalysisSchedule,
+    });
+}
+
+/**
+ * Saves as soon as the person changes something. The switch and the selects move at once (optimistic),
+ * saves run one after another so the last choice always wins, and a failed save reloads what is stored.
+ */
+export function useSaveAnalysisSchedule() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationKey: SCHEDULE_KEY,
+        mutationFn: saveAnalysisSchedule,
+        scope: { id: "analysis-schedule" },
+        onMutate: async (update: ScheduleUpdate) => {
+            await queryClient.cancelQueries({ queryKey: SCHEDULE_KEY });
+            queryClient.setQueryData<AnalysisSchedule>(SCHEDULE_KEY, {
+                ...update,
+                nextRunAt: null,
+            });
+        },
+        // Only the last queued save writes its answer, so an earlier one can't flash an older choice.
+        onSuccess: (saved) => {
+            if (queryClient.isMutating({ mutationKey: SCHEDULE_KEY }) <= 1)
+                queryClient.setQueryData(SCHEDULE_KEY, saved);
+        },
+        onError: () =>
+            queryClient.invalidateQueries({ queryKey: SCHEDULE_KEY }),
+    });
 }

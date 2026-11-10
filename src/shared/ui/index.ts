@@ -4,5 +4,7 @@ export { Dialog } from "./Dialog";
 export { Icon } from "./Icon";
 export { PageHeader } from "./PageHeader";
 export { SegmentedControl } from "./SegmentedControl";
+export { Select } from "./Select";
 export { Badge, EmptyState, ErrorState, Skeleton } from "./States";
+export { Switch } from "./Switch";
 export { ToastProvider, useToast } from "./Toast";

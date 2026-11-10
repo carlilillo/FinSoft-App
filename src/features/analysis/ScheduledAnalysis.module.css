@@ -1,0 +1,42 @@
+.schedule {
+    display: grid;
+    max-width: 40rem;
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+}
+
+/* Motion animates the height; the overflow keeps the fields inside while it does. */
+.reveal {
+    overflow: hidden;
+}
+
+.time {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-line);
+}
+
+.fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+}
+
+.next {
+    color: var(--color-ink-2);
+    font-size: var(--text-sm);
+}
+
+.zone {
+    color: var(--color-ink-3);
+}
+
+@media (max-width: 30rem) {
+    .fields {
+        grid-template-columns: 1fr;
+    }
+}

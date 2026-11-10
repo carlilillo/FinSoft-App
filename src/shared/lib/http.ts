@@ -45,6 +45,10 @@ export function apiPostForm<T>(path: string, body: FormData): Promise<T> {
     return request<T>({ method: "POST", path, body });
 }
 
+export function apiPut<T>(path: string, body: unknown): Promise<T> {
+    return request<T>({ method: "PUT", path, body });
+}
+
 export function apiDelete<T = void>(path: string): Promise<T> {
     return request<T>({ method: "DELETE", path });
 }

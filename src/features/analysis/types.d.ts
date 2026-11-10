@@ -134,3 +134,31 @@ export type RunCapacity = {
 /** A picked set of files is either importable as-is or rejected with a reason the person can act on. */
 export type ImportSelection =
     { kind: "valid"; files: File[] } | { kind: "invalid"; message: string };
+
+export type Weekday =
+    | "monday"
+    | "tuesday"
+    | "wednesday"
+    | "thursday"
+    | "friday"
+    | "saturday"
+    | "sunday";
+
+/** The weekly analysis the server starts on its own, on `weekday` at `hour`:00 in `timeZone`. */
+export type AnalysisSchedule = {
+    enabled: boolean;
+    weekday: Weekday;
+    hour: number;
+    timeZone: string;
+    /** When the next scheduled analysis starts; null while the schedule is off. */
+    nextRunAt: string | null;
+};
+
+export type ScheduleUpdate = Omit<AnalysisSchedule, "nextRunAt">;
+
+export type ScheduleTimeProps = {
+    schedule: AnalysisSchedule;
+    /** Gmail is disconnected: the schedule can be turned off but not moved. */
+    isPaused: boolean;
+    onChange: (patch: Partial<ScheduleUpdate>) => void;
+};

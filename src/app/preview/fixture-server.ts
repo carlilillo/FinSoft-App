@@ -1,4 +1,9 @@
-import type { RunDetail, RunListItem } from "@/features/analysis";
+import type {
+    AnalysisSchedule,
+    RunDetail,
+    RunListItem,
+    ScheduleUpdate,
+} from "@/features/analysis";
 import type { DashboardSummary, SpendSeries } from "@/features/dashboard";
 import type {
     InvoiceDetail,
@@ -26,6 +31,12 @@ const runStarts = new Map<string, number>([
 /** Preview imports: run id → names of the PDFs the person picked. */
 const importedRuns = new Map<string, string[]>();
 let isGmailConnected = true;
+let schedule: ScheduleUpdate = {
+    enabled: false,
+    weekday: "monday",
+    hour: 9,
+    timeZone: "UTC",
+};
 
 export async function answerFromFixtures(
     request: ApiRequest,
@@ -81,6 +92,8 @@ const ROUTES: ReadonlyArray<[string, RegExp, Handler]> = [
             expiresInSeconds: 300,
         }),
     ],
+    ["GET", /^\/analysis-schedule$/, () => analysisSchedule()],
+    ["PUT", /^\/analysis-schedule$/, (_url, _id, body) => saveSchedule(body)],
     ["DELETE", /^\/me$/, () => null],
 ];
 
@@ -553,4 +566,33 @@ function runList(): RunListItem[] {
             finishedAt: run.finishedAt,
         }))
         .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+function analysisSchedule(): AnalysisSchedule {
+    return { ...schedule, nextRunAt: nextWeeklyRun(schedule) };
+}
+
+function saveSchedule(body: unknown): AnalysisSchedule {
+    schedule = body as ScheduleUpdate;
+    return analysisSchedule();
+}
+
+/** Close enough for preview: the next matching day and hour in the browser's own zone. */
+function nextWeeklyRun(update: ScheduleUpdate): string | null {
+    if (!update.enabled) return null;
+    const days = [
+        "sunday",
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+    ];
+    const next = new Date();
+    next.setHours(update.hour, 0, 0, 0);
+    const ahead = (days.indexOf(update.weekday) - next.getDay() + 7) % 7;
+    next.setDate(next.getDate() + ahead);
+    if (next.getTime() <= Date.now()) next.setDate(next.getDate() + 7);
+    return next.toISOString();
 }
