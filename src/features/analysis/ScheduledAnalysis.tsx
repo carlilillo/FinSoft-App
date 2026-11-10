@@ -10,7 +10,7 @@ import {
 } from "./schedule.model";
 import {
     useAnalysisSchedule,
-    useGmailConnection,
+    useGmailAccounts,
     useSaveAnalysisSchedule,
 } from "./useAnalysis";
 import type { ScheduleTimeProps, ScheduleUpdate } from "./types";
@@ -20,11 +20,11 @@ const REVEAL = { duration: 0.32, ease: [0.22, 1, 0.36, 1] } as const;
 
 /** Weekly analysis the server runs on its own; every change is saved right away. */
 export function ScheduledAnalysis() {
-    const connection = useGmailConnection();
+    const accounts = useGmailAccounts();
     const schedule = useAnalysisSchedule();
     const save = useSaveAnalysisSchedule();
 
-    if (schedule.isPending || connection.isPending)
+    if (schedule.isPending || accounts.isPending)
         return <Skeleton lines={1} height="4.5rem" />;
     if (schedule.isError)
         return (
@@ -35,7 +35,7 @@ export function ScheduledAnalysis() {
         );
 
     const current = schedule.data;
-    const isGmailConnected = connection.data?.connected ?? false;
+    const isGmailConnected = (accounts.data?.length ?? 0) > 0;
     const change = (patch: Partial<ScheduleUpdate>) =>
         save.mutate(applyScheduleChange(current, patch, browserTimeZone()));
     const gmailNote = scheduleGmailNote(current, isGmailConnected);

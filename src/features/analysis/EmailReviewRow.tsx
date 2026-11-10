@@ -12,6 +12,7 @@ const TONE_TO_BADGE = {
 
 export function EmailReviewRow({
     email,
+    showsAccount,
     isSelected,
     onToggle,
 }: EmailReviewRowProps) {
@@ -33,6 +34,11 @@ export function EmailReviewRow({
                         ? ` · ${email.attachmentCount} attachment${email.attachmentCount > 1 ? "s" : ""}`
                         : ""}
                 </span>
+                {showsAccount && email.gmailAccount && (
+                    <span className={styles.account}>
+                        Received in {email.gmailAccount}
+                    </span>
+                )}
                 {email.reason && (
                     <span className={styles.reason}>{email.reason}</span>
                 )}

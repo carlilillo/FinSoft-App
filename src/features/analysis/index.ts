@@ -1,12 +1,15 @@
 export { ImportInvoicesButton } from "./ImportInvoicesButton";
+export { connectionErrorMessage } from "./analysis.model";
 export {
-    useDisconnectGmail,
-    useGmailConnection,
+    useConnectGmailAccount,
+    useDisconnectGmailAccount,
+    useGmailAccounts,
     useRunWatcher,
 } from "./useAnalysis";
 export type {
     AnalysisSchedule,
-    GmailConnection,
+    GmailAccount,
+    GmailConsentIntent,
     RunDetail,
     RunListItem,
     ScheduleUpdate,

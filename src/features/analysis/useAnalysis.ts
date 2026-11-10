@@ -3,9 +3,9 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import {
     continueAnalysis,
-    disconnectGmail,
+    disconnectGmailAccount,
     fetchAnalysisSchedule,
-    fetchGmailConnection,
+    fetchGmailAccounts,
     fetchRun,
     fetchRuns,
     importInvoices,
@@ -25,19 +25,30 @@ import type {
 const POLL_MS = 3_000;
 const SCHEDULE_KEY = ["analysis-schedule"];
 
-export function useGmailConnection() {
+const GMAIL_ACCOUNTS_KEY = ["gmail-accounts"];
+
+export function useGmailAccounts() {
     return useQuery({
-        queryKey: ["gmail-connection"],
-        queryFn: fetchGmailConnection,
+        queryKey: GMAIL_ACCOUNTS_KEY,
+        queryFn: fetchGmailAccounts,
     });
 }
 
-export function useDisconnectGmail() {
+export function useDisconnectGmailAccount() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: disconnectGmail,
+        mutationFn: disconnectGmailAccount,
         onSuccess: () =>
-            queryClient.invalidateQueries({ queryKey: ["gmail-connection"] }),
+            queryClient.invalidateQueries({ queryKey: GMAIL_ACCOUNTS_KEY }),
+    });
+}
+
+/** Links one more Gmail account: goes through Google consent and the server comes back to Settings. */
+export function useConnectGmailAccount() {
+    return useMutation({
+        mutationFn: async () => {
+            window.location.assign(await requestGmailConsentUrl("connect"));
+        },
     });
 }
 
@@ -48,7 +59,7 @@ export function useStartAnalysis() {
     return useMutation({
         mutationFn: async (isConnected: boolean) => {
             if (!isConnected) {
-                window.location.assign(await requestGmailConsentUrl());
+                window.location.assign(await requestGmailConsentUrl("analyze"));
                 return null;
             }
             return startAnalysis();

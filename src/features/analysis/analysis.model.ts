@@ -1,6 +1,7 @@
 import type {
     EmailVerdict,
     EvaluatedEmail,
+    GmailAccount,
     ImportedDocumentStatus,
     ImportSelection,
     RunCapacity,
@@ -227,6 +228,31 @@ export function selectionChanged(
 
 export function senderLabel(email: EvaluatedEmail): string {
     return email.senderName ?? email.senderEmail;
+}
+
+/** "a@x", "a@x and b@y", or "a@x, b@y and 2 more": long lists name the first two only. */
+export function listAddresses(addresses: string[]): string {
+    const [first = "", second = "", ...rest] = addresses;
+    if (addresses.length <= 1) return first;
+    if (addresses.length === 2) return `${first} and ${second}`;
+    if (addresses.length === 3) return `${first}, ${second} and ${rest[0]}`;
+    return `${first}, ${second} and ${rest.length} more`;
+}
+
+/** The note under the start button: every Gmail account the analysis will read. */
+export function connectedAccountsText(accounts: GmailAccount[]): string {
+    if (accounts.length === 0) return "Gmail is not connected yet";
+    return `Connected as ${listAddresses(accounts.map((account) => account.googleEmail))}`;
+}
+
+/** The Gmail accounts whose inboxes fed a session, in alphabetical order. */
+export function sessionAccounts(emails: EvaluatedEmail[]): string[] {
+    const accounts = new Set(
+        emails.flatMap((email) =>
+            email.gmailAccount ? [email.gmailAccount] : [],
+        ),
+    );
+    return [...accounts].toSorted((a, b) => a.localeCompare(b));
 }
 
 const CONNECTION_ERRORS: Record<string, string> = {

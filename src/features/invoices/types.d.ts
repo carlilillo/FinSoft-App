@@ -60,6 +60,8 @@ export type InvoiceDetail = Omit<InvoiceSummary, "vendor"> & {
     paymentMethod: string | null;
     notes: string | null;
     emailId: string | null;
+    /** The connected Gmail account the invoice arrived in; null for imported invoices. */
+    gmailAccount: string | null;
     createdAt: string;
     vendor: Vendor;
     lines: InvoiceLine[];

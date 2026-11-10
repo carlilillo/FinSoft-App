@@ -34,6 +34,9 @@ export function invoiceFields(invoice: InvoiceDetail): DetailField[] {
             : null,
         { label: "Language", value: LANGUAGE_LABELS[invoice.language] },
         { label: "Currency", value: invoice.currency },
+        invoice.gmailAccount
+            ? { label: "Received in", value: invoice.gmailAccount }
+            : null,
     ];
     return fields.filter((field): field is DetailField => field !== null);
 }

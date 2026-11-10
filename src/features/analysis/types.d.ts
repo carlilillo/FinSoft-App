@@ -37,6 +37,8 @@ export type CurrencyTotals = {
 
 export type EvaluatedEmail = {
     id: string;
+    /** The connected Gmail account whose inbox the email was found in. */
+    gmailAccount: string | null;
     subject: string | null;
     senderName: string | null;
     senderEmail: string;
@@ -87,11 +89,15 @@ export type RunListItem = {
     finishedAt: string | null;
 };
 
-export type GmailConnection = {
-    connected: boolean;
-    googleEmail: string | null;
-    connectedAt: string | null;
+/** One Gmail account the person linked; an analysis reads the inbox of every one of them. */
+export type GmailAccount = {
+    id: string;
+    googleEmail: string;
+    connectedAt: string;
 };
+
+/** Why the person is sent to Google: to start an analysis, or only to link another account. */
+export type GmailConsentIntent = "analyze" | "connect";
 
 export type ContinueRequest = { emailIds: string[]; note?: string };
 
@@ -107,6 +113,8 @@ export type SessionTotalsProps = { totals: CurrencyTotals[]; run: RunDetail };
 export type EmailReviewProps = { runId: string; emails: EvaluatedEmail[] };
 export type EmailReviewRowProps = {
     email: EvaluatedEmail;
+    /** Shown only when the session mixes several inboxes; otherwise it is the same on every row. */
+    showsAccount: boolean;
     isSelected: boolean;
     onToggle: (id: string) => void;
 };
@@ -114,8 +122,7 @@ export type RunFailedProps = { run: RunDetail };
 export type ImportedDocumentListProps = { documents: ImportedDocument[] };
 export type RunHistoryProps = { runs: RunListItem[] };
 export type StartButtonProps = {
-    isConnected: boolean;
-    googleEmail: string | null;
+    accounts: GmailAccount[];
     isBusy: boolean;
     /** Why the analysis can't start right now, or null when it can. */
     blockedReason: string | null;

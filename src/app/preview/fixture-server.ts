@@ -1,5 +1,7 @@
 import type {
     AnalysisSchedule,
+    GmailAccount,
+    GmailConsentIntent,
     RunDetail,
     RunListItem,
     ScheduleUpdate,
@@ -30,7 +32,19 @@ const runStarts = new Map<string, number>([
 ]);
 /** Preview imports: run id → names of the PDFs the person picked. */
 const importedRuns = new Map<string, string[]>();
-let isGmailConnected = true;
+const DEFAULT_GMAIL_ACCOUNTS: GmailAccount[] = [
+    {
+        id: "01JG0000000000000000000001",
+        googleEmail: "lucia.moreno@gmail.com",
+        connectedAt: isoDaysAgo(12),
+    },
+    {
+        id: "01JG0000000000000000000002",
+        googleEmail: "estudio.moreno@gmail.com",
+        connectedAt: isoDaysAgo(3),
+    },
+];
+let gmailAccounts = [...DEFAULT_GMAIL_ACCOUNTS];
 let schedule: ScheduleUpdate = {
     enabled: false,
     weekday: "monday",
@@ -68,12 +82,16 @@ const ROUTES: ReadonlyArray<[string, RegExp, Handler]> = [
     ["GET", /^\/invoices\/[^/]+$/, (_url, id) => invoiceDetail(id)],
     ["GET", /^\/products$/, (url) => productPage(url)],
     ["GET", /^\/products\/[^/]+$/, (_url, id) => productDetail(id)],
-    ["GET", /^\/gmail\/connection$/, () => gmailConnection()],
-    ["DELETE", /^\/gmail\/connection$/, () => disconnect()],
+    ["GET", /^\/gmail\/connections$/, () => gmailAccounts],
+    [
+        "DELETE",
+        /^\/gmail\/connections\/[^/]+$/,
+        (url) => disconnect(url.pathname.split("/").at(-1) ?? ""),
+    ],
     [
         "POST",
         /^\/gmail\/oauth\/url$/,
-        () => ({ url: `/analyses/${startRun()}` }),
+        (_url, _id, body) => ({ url: consentUrl(body) }),
     ],
     ["POST", /^\/analyses$/, () => ({ runId: startRun() })],
     [
@@ -182,6 +200,7 @@ function invoiceDetail(id: string): InvoiceDetail | undefined {
         paymentMethod: invoice.paymentMethod,
         notes: null,
         emailId: null,
+        gmailAccount: DEFAULT_GMAIL_ACCOUNTS[0]?.googleEmail ?? null,
         createdAt: new Date().toISOString(),
         vendor,
         lines: invoice.lines.map((line, index) =>
@@ -348,21 +367,27 @@ function summary(): DashboardSummary {
     };
 }
 
-function gmailConnection() {
-    return {
-        connected: isGmailConnected,
-        googleEmail: isGmailConnected ? "lucia.moreno@gmail.com" : null,
-        connectedAt: isGmailConnected ? isoDaysAgo(12) : null,
-    };
-}
-
-function disconnect(): null {
-    isGmailConnected = false;
+function disconnect(accountId: string): null {
+    gmailAccounts = gmailAccounts.filter((account) => account.id !== accountId);
     return null;
 }
 
+/** Stands in for Google consent: links the next sample account and lands where the server would. */
+function consentUrl(body: unknown): string {
+    const { intent } = body as { intent: GmailConsentIntent };
+    const next = DEFAULT_GMAIL_ACCOUNTS.find(
+        (candidate) =>
+            !gmailAccounts.some((account) => account.id === candidate.id),
+    );
+    if (next)
+        gmailAccounts = [
+            ...gmailAccounts,
+            { ...next, connectedAt: new Date().toISOString() },
+        ];
+    return intent === "connect" ? "/settings" : `/analyses/${startRun()}`;
+}
+
 function startRun(): string {
-    isGmailConnected = true;
     const id = `01JR${String(Date.now()).padStart(22, "0")}`.slice(0, 26);
     runStarts.set(id, Date.now());
     return id;
@@ -538,6 +563,9 @@ function previewSession(
         products: PRODUCTS.slice(0, 6).map(toProductSummary),
         emails: subjects.map(([subject, sender, verdict, reason], index) => ({
             id: `01JE${String(index).padStart(22, "0")}`,
+            gmailAccount:
+                DEFAULT_GMAIL_ACCOUNTS[index % 3 === 2 ? 1 : 0]?.googleEmail ??
+                null,
             subject,
             senderName: sender,
             senderEmail: `hello@${sender.toLowerCase().replace(/[^a-z]+/g, "")}.example`,

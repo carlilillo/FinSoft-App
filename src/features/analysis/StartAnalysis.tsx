@@ -1,12 +1,13 @@
 import { useSearchParams } from "react-router";
 import { Button, ErrorState, Skeleton } from "@/shared/ui";
 import {
+    connectedAccountsText,
     connectionErrorMessage,
     gmailStartBlockedReason,
 } from "./analysis.model";
 import { ScheduledAnalysis } from "./ScheduledAnalysis";
 import {
-    useGmailConnection,
+    useGmailAccounts,
     useRunCapacity,
     useStartAnalysis,
 } from "./useAnalysis";
@@ -30,7 +31,7 @@ const STEPS = [
 
 export function StartAnalysis() {
     const [searchParams] = useSearchParams();
-    const connection = useGmailConnection();
+    const accounts = useGmailAccounts();
     const start = useStartAnalysis();
     const capacity = useRunCapacity();
     const errorMessage = connectionErrorMessage(searchParams.get("error"));
@@ -48,12 +49,11 @@ export function StartAnalysis() {
                     </li>
                 ))}
             </ol>
-            {connection.isPending ? (
+            {accounts.isPending ? (
                 <Skeleton lines={1} height="2.75rem" />
             ) : (
                 <StartButton
-                    isConnected={connection.data?.connected ?? false}
-                    googleEmail={connection.data?.googleEmail ?? null}
+                    accounts={accounts.data ?? []}
                     isBusy={start.isPending}
                     blockedReason={gmailStartBlockedReason(capacity)}
                     onStart={(isConnected) => start.mutate(isConnected)}
@@ -71,15 +71,12 @@ export function StartAnalysis() {
 }
 
 function StartButton({
-    isConnected,
-    googleEmail,
+    accounts,
     isBusy,
     blockedReason,
     onStart,
 }: StartButtonProps) {
-    const connectionText = isConnected
-        ? `Connected as ${googleEmail ?? "your Google account"}`
-        : "Gmail is not connected yet";
+    const isConnected = accounts.length > 0;
     return (
         <div className={styles.action}>
             <Button
@@ -93,7 +90,7 @@ function StartButton({
                     : "Connect Gmail and analyze"}
             </Button>
             <p id="start-note" className={styles.connection}>
-                {blockedReason ?? connectionText}
+                {blockedReason ?? connectedAccountsText(accounts)}
             </p>
         </div>
     );

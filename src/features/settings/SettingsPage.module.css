@@ -15,6 +15,14 @@
     font-size: var(--text-lg);
 }
 
+.sectionHelp {
+    color: var(--color-ink-2);
+}
+
+.device {
+    overflow-wrap: anywhere;
+}
+
 .photoRow {
     display: flex;
     align-items: center;

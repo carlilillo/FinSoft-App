@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Button, ErrorState } from "@/shared/ui";
 import {
     initialSelection,
+    listAddresses,
     selectionChanged,
+    sessionAccounts,
     sortEmailsForReview,
     toggleSelection,
 } from "./analysis.model";
@@ -17,6 +19,7 @@ export function EmailReview({ runId, emails }: EmailReviewProps) {
     const [note, setNote] = useState("");
     const rerun = useContinueAnalysis(runId);
     const sorted = sortEmailsForReview(emails);
+    const accounts = sessionAccounts(emails);
     const canRerun =
         selection.size > 0 &&
         (selectionChanged(emails, selection) || note.trim().length > 0);
@@ -31,12 +34,21 @@ export function EmailReview({ runId, emails }: EmailReviewProps) {
                     Selected emails are the ones that contain invoices. Fix the
                     selection if FinSift missed or misread one, then re-run.
                 </p>
+                {accounts.length > 0 && (
+                    <p className={styles.accounts}>
+                        {accounts.length === 1
+                            ? "From the inbox of "
+                            : `From ${accounts.length} inboxes combined: `}
+                        {listAddresses(accounts)}
+                    </p>
+                )}
             </div>
             <ul className={styles.list}>
                 {sorted.map((email) => (
                     <EmailReviewRow
                         key={email.id}
                         email={email}
+                        showsAccount={accounts.length > 1}
                         isSelected={selection.has(email.id)}
                         onToggle={(id) =>
                             setSelection((current) =>

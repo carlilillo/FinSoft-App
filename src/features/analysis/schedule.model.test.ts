@@ -49,8 +49,8 @@ describe("schedule model", () => {
     });
 
     it("describes the next run, or that it is being worked out", () => {
-        expect(describeNextRun(schedule, "en-GB")).toMatch(
-            /^Next analysis on \w+day \d+ Nov at \d\d:00$/,
+        expect(describeNextRun(schedule)).toMatch(
+            /^Next analysis on \d+ Nov at \d\d:00$/,
         );
         expect(describeNextRun({ ...schedule, nextRunAt: null })).toBe(
             "Working out the next analysis…",

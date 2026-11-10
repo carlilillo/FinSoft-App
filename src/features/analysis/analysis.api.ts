@@ -8,22 +8,28 @@ import {
 import type {
     AnalysisSchedule,
     ContinueRequest,
-    GmailConnection,
+    GmailAccount,
+    GmailConsentIntent,
     RunDetail,
     RunListItem,
     ScheduleUpdate,
 } from "./types";
 
-export function fetchGmailConnection(): Promise<GmailConnection> {
-    return apiGet<GmailConnection>("/gmail/connection");
+export function fetchGmailAccounts(): Promise<GmailAccount[]> {
+    return apiGet<GmailAccount[]>("/gmail/connections");
 }
 
-export function disconnectGmail(): Promise<void> {
-    return apiDelete("/gmail/connection");
+export function disconnectGmailAccount(accountId: string): Promise<void> {
+    return apiDelete(`/gmail/connections/${accountId}`);
 }
 
-export async function requestGmailConsentUrl(): Promise<string> {
-    const { url } = await apiPost<{ url: string }>("/gmail/oauth/url");
+/** Google's consent page; it always offers the account picker, so a second account can be linked. */
+export async function requestGmailConsentUrl(
+    intent: GmailConsentIntent,
+): Promise<string> {
+    const { url } = await apiPost<{ url: string }>("/gmail/oauth/url", {
+        intent,
+    });
     return url;
 }
 

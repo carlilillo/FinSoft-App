@@ -1,15 +1,18 @@
 import { describe, expect, it } from "vitest";
 import {
     checkImportSelection,
+    connectedAccountsText,
     connectionErrorMessage,
     gmailStartBlockedReason,
     describeStage,
     initialSelection,
     isRunActive,
+    listAddresses,
     MAX_IMPORT_FILE_BYTES,
     runCapacity,
     runSizeLabel,
     selectionChanged,
+    sessionAccounts,
     sortEmailsForReview,
     toggleSelection,
 } from "./analysis.model";
@@ -41,6 +44,7 @@ const email = (
     receivedAt = "2026-11-08T10:00:00Z",
 ): EvaluatedEmail => ({
     id,
+    gmailAccount: null,
     subject: id,
     senderName: null,
     senderEmail: `${id}@example.com`,
@@ -106,6 +110,34 @@ describe("email review", () => {
         expect(
             selectionChanged(emails, toggleSelection(initial, "maybe")),
         ).toBe(true);
+    });
+
+    it("names every connected Gmail account under the start button", () => {
+        const account = (googleEmail: string) => ({
+            id: googleEmail,
+            googleEmail,
+            connectedAt: "2026-11-01T00:00:00Z",
+        });
+        expect(connectedAccountsText([])).toBe("Gmail is not connected yet");
+        expect(connectedAccountsText([account("a@x.com")])).toBe(
+            "Connected as a@x.com",
+        );
+        expect(
+            connectedAccountsText([account("a@x.com"), account("b@x.com")]),
+        ).toBe("Connected as a@x.com and b@x.com");
+        expect(listAddresses(["a", "b", "c"])).toBe("a, b and c");
+        expect(listAddresses(["a", "b", "c", "d"])).toBe("a, b and 2 more");
+    });
+
+    it("finds the inboxes a session combined", () => {
+        expect(sessionAccounts(emails)).toEqual([]);
+        expect(
+            sessionAccounts([
+                { ...email("1", "extracted"), gmailAccount: "b@x.com" },
+                { ...email("2", "not_invoice"), gmailAccount: "a@x.com" },
+                { ...email("3", "not_invoice"), gmailAccount: "b@x.com" },
+            ]),
+        ).toEqual(["a@x.com", "b@x.com"]);
     });
 
     it("explains Gmail connection errors", () => {

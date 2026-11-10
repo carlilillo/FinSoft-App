@@ -41,15 +41,17 @@ export function applyScheduleChange(
     };
 }
 
-/** "Next analysis on Monday 17 Nov at 09:00", or what is still being worked out. */
+/**
+ * "Next analysis on 17 Nov at 09:00", or what is still being worked out. No weekday: the person just
+ * picked it. English like the rest of the copy, whatever the browser's language.
+ */
 export function describeNextRun(
     schedule: AnalysisSchedule,
-    locale?: string,
+    locale = "en-GB",
 ): string {
     if (!schedule.nextRunAt) return "Working out the next analysis…";
     const next = new Date(schedule.nextRunAt);
     const day = new Intl.DateTimeFormat(locale, {
-        weekday: "long",
         day: "numeric",
         month: "short",
     }).format(next);
