@@ -1,0 +1,43 @@
+/* The home page and the overview are one surface, so leaving slides it along the track. */
+.page {
+    position: relative;
+    isolation: isolate;
+    min-height: 100dvh;
+    view-transition-name: page;
+}
+
+.main {
+    width: min(100% - 2 * clamp(var(--space-4), 5vw, var(--space-8)), 78rem);
+    margin-inline: auto;
+}
+
+.main section[id] {
+    scroll-margin-top: 5rem;
+}
+
+.footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-4);
+    width: min(100% - 2 * clamp(var(--space-4), 5vw, var(--space-8)), 78rem);
+    margin-inline: auto;
+    padding-block: var(--space-6);
+    border-top: 1px solid var(--color-line);
+    color: var(--color-ink-3);
+    font-size: var(--text-sm);
+}
+
+.footerLinks {
+    display: flex;
+    gap: var(--space-5);
+}
+
+.footerLinks a {
+    color: var(--color-ink-2);
+    text-decoration: none;
+}
+
+.footerLinks a:hover {
+    color: var(--color-ink);
+}

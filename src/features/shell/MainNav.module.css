@@ -10,14 +10,15 @@
     position: relative;
     display: flex;
     align-items: center;
-    gap: var(--space-2);
-    padding: 0.5rem 0.75rem;
-    border-radius: var(--radius-md);
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
     color: var(--nav-ink-2);
     font-size: var(--text-sm);
     font-weight: 500;
     text-decoration: none;
-    transition: color var(--duration-fast) var(--ease-out);
+    transition:
+        color var(--duration-fast) var(--ease-out),
+        padding 320ms var(--ease-out);
 }
 
 .link:hover {
@@ -26,6 +27,7 @@
 
 .link[aria-current="page"] {
     color: var(--nav-active-ink);
+    font-weight: 600;
 }
 
 .activeBackground {
@@ -38,6 +40,28 @@
 .icon,
 .label {
     position: relative;
+}
+
+.icon {
+    display: grid;
+    flex-shrink: 0;
+}
+
+/* The label sits in a one-column grid so the compact pill can collapse it smoothly (1fr → 0fr). */
+.label {
+    display: inline-grid;
+    grid-template-columns: 1fr;
+    margin-left: var(--space-2);
+    transition:
+        grid-template-columns 320ms var(--ease-out),
+        margin-left 320ms var(--ease-out),
+        opacity 220ms var(--ease-out);
+}
+
+.labelText {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .pending {
@@ -60,42 +84,16 @@
     }
 }
 
-/* Sidebar designs: vertical list. */
-:global([data-nav="sidebar"]) .list {
-    flex-direction: column;
+/* Compact pill (while scrolling): icons only until hovered or focused. The label's grid track,
+   its spacing and the link padding all transition, so the bar widens smoothly. */
+:global([data-compact="true"]:not(:hover, :focus-within)) .link {
+    padding-inline: 0.6rem;
 }
 
-:global([data-design="ledger"]) .link[aria-current="page"] {
-    font-weight: 600;
-}
-
-:global([data-design="signal"]) .link {
-    font-weight: 600;
-    padding: 0.65rem 0.85rem;
-}
-
-/* Paper Trail & Grid: underline the current section instead of filling it. */
-:global([data-design="paper"]) .activeBackground {
-    inset: auto 0.75rem -0.65rem;
-    height: 2px;
-    border-radius: 0;
-    background: var(--color-accent);
-}
-
-:global([data-design="grid"]) .link {
-    border-radius: 0;
-    font-weight: 700;
-    font-size: var(--text-md);
-}
-
-/* Pill designs: rounded chips inside a floating bar. */
-:global([data-nav="pill"]) .link {
-    border-radius: 999px;
-    padding: 0.5rem 1rem;
-}
-
-:global([data-design="flow"]) .link[aria-current="page"] {
-    font-weight: 600;
+:global([data-compact="true"]:not(:hover, :focus-within)) .label {
+    grid-template-columns: 0fr;
+    margin-left: 0;
+    opacity: 0;
 }
 
 @media (max-width: 48rem) {
@@ -103,17 +101,8 @@
         display: none;
     }
 
-    :global([data-nav="sidebar"]) .list {
-        flex-direction: row;
+    /* Icons only on phones: tighter chips so all five fit inside the pill without squeezing. */
+    .link {
+        padding-inline: 0.6rem;
     }
-}
-
-/* Flow's compact pill (while scrolling): icons only until hovered or focused. */
-:global([data-compact="true"]) .label {
-    display: none;
-}
-
-:global([data-compact="true"]:hover) .label,
-:global([data-compact="true"]:focus-within) .label {
-    display: inline;
 }

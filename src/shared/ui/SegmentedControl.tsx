@@ -3,12 +3,7 @@ import { useId } from "react";
 import type { SegmentedControlProps } from "./types";
 import styles from "./SegmentedControl.module.css";
 
-const CALM = {
-    type: "tween",
-    duration: 0.22,
-    ease: [0.22, 1, 0.36, 1],
-} as const;
-const SPRINGY = {
+const SPRING = {
     type: "spring",
     stiffness: 420,
     damping: 22,
@@ -20,7 +15,6 @@ export function SegmentedControl<T extends string>({
     options,
     value,
     onChange,
-    isSpringy = false,
 }: SegmentedControlProps<T>) {
     const layoutId = useId();
     return (
@@ -40,7 +34,7 @@ export function SegmentedControl<T extends string>({
                             <m.span
                                 layoutId={layoutId}
                                 className={styles.highlight}
-                                transition={isSpringy ? SPRINGY : CALM}
+                                transition={SPRING}
                             />
                         )}
                         <span className={styles.text}>{option.label}</span>

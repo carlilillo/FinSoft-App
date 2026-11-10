@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useDesign } from "@/features/design-lab";
 import { SegmentedControl } from "@/shared/ui";
 import { PriceHistoryChart } from "./PriceHistoryChart";
 import type { PriceSectionProps, PriceSeries } from "./types";
@@ -11,7 +10,6 @@ const SERIES_OPTIONS = [
 ] as const;
 
 export function PriceSection({ points, currency }: PriceSectionProps) {
-    const { design } = useDesign();
     const [series, setSeries] = useState<PriceSeries>("net");
     return (
         <section className={styles.chart} aria-labelledby="price-title">
@@ -24,7 +22,6 @@ export function PriceSection({ points, currency }: PriceSectionProps) {
                     options={SERIES_OPTIONS}
                     value={series}
                     onChange={setSeries}
-                    isSpringy={design.motion !== "calm"}
                 />
             </div>
             {points.length > 1 ? (

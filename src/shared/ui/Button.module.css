@@ -1,15 +1,13 @@
 .button {
-    --mx: 0;
-    --my: 0;
     position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: var(--space-2);
     min-height: 2.5rem;
-    padding: 0 var(--space-4);
+    padding: 0 var(--space-5);
     border: 1px solid transparent;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
     font-weight: 600;
     font-size: var(--text-sm);
     text-decoration: none;
@@ -73,48 +71,4 @@
 .danger {
     background: var(--color-danger);
     color: #ffffff;
-}
-
-/* Designs with rounder, softer personalities use pill buttons. */
-:global([data-design="apricot"]) .button,
-:global([data-design="flow"]) .button,
-:global([data-design="tangerine"]) .button {
-    border-radius: 999px;
-    padding: 0 var(--space-5);
-}
-
-:global([data-design="grid"]) .button {
-    text-transform: none;
-    letter-spacing: 0;
-    border-width: 2px;
-}
-
-:global([data-design="grid"]) .secondary {
-    border-color: var(--color-ink);
-}
-
-/* Tangerine: buttons lean toward the pointer, the label leans a little further. */
-:global([data-design="tangerine"]) .button {
-    transform: translate(calc(var(--mx) * 6px), calc(var(--my) * 6px));
-    transition:
-        transform 260ms var(--ease-spring),
-        background-color var(--duration-fast) var(--ease-out),
-        box-shadow var(--duration-base) var(--ease-out);
-}
-
-:global([data-design="tangerine"]) .label {
-    transform: translate(calc(var(--mx) * 4px), calc(var(--my) * 4px));
-    transition: transform 260ms var(--ease-spring);
-}
-
-:global([data-design="tangerine"]) .button:active:not(:disabled) {
-    transform: translate(calc(var(--mx) * 6px), calc(var(--my) * 6px))
-        scale(0.94);
-}
-
-@media (prefers-reduced-motion: reduce) {
-    :global([data-design="tangerine"]) .button,
-    :global([data-design="tangerine"]) .label {
-        transform: none;
-    }
 }

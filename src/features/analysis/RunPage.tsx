@@ -8,7 +8,10 @@ import { useRun } from "./useAnalysis";
 export function RunPage() {
     const { runId = "" } = useParams();
     const query = useRun(runId);
-    const back = { to: "/analyze", label: "Analyze emails" };
+    const back = {
+        to: "/analyze",
+        label: "Analyze emails",
+    };
 
     if (query.isPending) {
         return (

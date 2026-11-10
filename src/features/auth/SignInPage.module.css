@@ -42,7 +42,7 @@
     min-height: 3rem;
     padding: 0 var(--space-4);
     border: 1px solid var(--color-line);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
     background: var(--color-surface);
     font-weight: 600;
     cursor: pointer;
@@ -95,24 +95,6 @@
 .receipt span:nth-child(even) {
     color: var(--color-ink);
     font-weight: 600;
-}
-
-:global([data-design="signal"]) .sample,
-:global([data-design="tangerine"]) .sample {
-    align-self: stretch;
-    border-radius: var(--radius-lg);
-    background: var(--color-accent);
-}
-
-:global([data-design="grid"]) .provider {
-    border: 2px solid var(--color-ink);
-    border-radius: 0;
-}
-
-:global([data-design="apricot"]) .provider,
-:global([data-design="flow"]) .provider,
-:global([data-design="tangerine"]) .provider {
-    border-radius: 999px;
 }
 
 @media (max-width: 52rem) {

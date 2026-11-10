@@ -56,9 +56,3 @@
     color: var(--color-ink-3);
     font-size: var(--text-sm);
 }
-
-:global([data-design="grid"]) .track {
-    height: 1rem;
-    border-radius: 0;
-    border: 2px solid var(--color-ink);
-}

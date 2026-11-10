@@ -30,7 +30,7 @@ export function RunPending({ run }: RunPendingProps) {
                 This runs in the background. You can leave this page; we&apos;ll
                 let you know when it&apos;s ready.
             </p>
-            <ButtonLink to="/" variant="secondary">
+            <ButtonLink to="/overview" variant="secondary">
                 Back to overview
             </ButtonLink>
         </section>

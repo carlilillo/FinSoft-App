@@ -1,17 +1,19 @@
 import { useState } from "react";
-import { Navigate } from "react-router";
+import { Navigate, useLocation } from "react-router";
 import { useAccount } from "./AccountContext";
-import { SSO_PROVIDERS } from "./auth.model";
+import { returnPath, SSO_PROVIDERS } from "./auth.model";
 import { ProviderButton } from "./ProviderButton";
 import type { SsoProvider } from "./types";
 import styles from "./SignInPage.module.css";
 
 export function SignInPage() {
     const account = useAccount();
+    const location = useLocation();
     const [pending, setPending] = useState<SsoProvider | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    if (account.status === "signed-in") return <Navigate to="/" replace />;
+    if (account.status === "signed-in")
+        return <Navigate to={returnPath(location.state)} replace />;
 
     const handleSelect = async (provider: SsoProvider) => {
         setPending(provider);
@@ -61,7 +63,7 @@ export function SignInPage() {
                 <div className={styles.receipt}>
                     <span>Papelería Martínez</span>
                     <span className="numeric">106,00 €</span>
-                    <span>Iberdrola · Factura</span>
+                    <span>Luz Norte · Factura</span>
                     <span className="numeric">84,12 €</span>
                     <span>Brew &amp; Bean receipt</span>
                     <span className="numeric">£12.00</span>

@@ -1,0 +1,131 @@
+.stack {
+    display: grid;
+    width: 100%;
+    min-height: 19rem;
+    padding-top: 2.25rem;
+}
+
+.empty {
+    grid-area: 1 / 1;
+    display: grid;
+    place-items: center;
+    padding: var(--space-5);
+    border: 1px dashed var(--color-line);
+    border-radius: var(--radius-lg);
+    color: var(--color-ink-3);
+    font-size: var(--text-sm);
+    text-align: center;
+}
+
+.card {
+    position: relative;
+    grid-area: 1 / 1;
+    align-self: start;
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow:
+        0 1px 2px rgb(0 0 0 / 4%),
+        0 18px 40px -28px rgb(0 0 0 / 30%);
+    transform-origin: top center;
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: var(--space-3);
+}
+
+.vendor {
+    font-size: var(--text-md);
+    letter-spacing: normal;
+}
+
+.reference {
+    color: var(--color-ink-3);
+    font-size: var(--text-xs);
+}
+
+.total {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.lines {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+}
+
+.lines th,
+.lines td {
+    padding: var(--space-1) 0;
+    border-top: 1px solid var(--color-line);
+    vertical-align: top;
+}
+
+.lines th {
+    font-weight: 500;
+    text-align: left;
+}
+
+.lines td {
+    padding-left: var(--space-3);
+    color: var(--color-ink-2);
+    text-align: right;
+    white-space: nowrap;
+}
+
+.lines td:last-child {
+    color: var(--color-ink);
+}
+
+.totals {
+    display: grid;
+    gap: var(--space-1);
+    margin: 0;
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--color-ink);
+    font-size: var(--text-sm);
+}
+
+.totals div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.totals dt {
+    color: var(--color-ink-2);
+}
+
+.totals dt span {
+    margin-left: var(--space-2);
+    color: var(--color-ink-3);
+    font-size: var(--text-xs);
+    font-style: italic;
+}
+
+.totals dd {
+    margin: 0;
+}
+
+.stamp {
+    display: none;
+}
+
+/* The top card carries the orange glow. */
+.card[data-depth="0"] {
+    box-shadow:
+        0 1px 2px rgb(0 0 0 / 4%),
+        var(--shadow-raised);
+}
+
+.card[data-depth="0"] .total {
+    color: var(--color-accent-text);
+}

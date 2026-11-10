@@ -1,29 +1,16 @@
 import { animate, useReducedMotion } from "motion/react";
 import { useEffect, useRef } from "react";
-import { Odometer } from "./Odometer";
 import type { AnimatedNumberProps } from "./types";
 
-/**
- * Renders a formatted number. "tween" counts toward new values; "odometer" rolls each digit.
- * Both fall back to the plain value when the person prefers reduced motion.
- */
-export function AnimatedNumber({
-    value,
-    format,
-    numberStyle = "plain",
-}: AnimatedNumberProps) {
+/** Renders a formatted number that counts toward new values (plain when motion is reduced). */
+export function AnimatedNumber({ value, format }: AnimatedNumberProps) {
     const prefersReducedMotion = useReducedMotion();
-    const style = prefersReducedMotion ? "plain" : numberStyle;
-
-    if (style === "odometer") return <Odometer text={format(value)} />;
-    if (style === "tween") return <TweenNumber value={value} format={format} />;
-    return <span className="numeric">{format(value)}</span>;
+    if (prefersReducedMotion)
+        return <span className="numeric">{format(value)}</span>;
+    return <TweenNumber value={value} format={format} />;
 }
 
-function TweenNumber({
-    value,
-    format,
-}: Omit<AnimatedNumberProps, "numberStyle">) {
+function TweenNumber({ value, format }: AnimatedNumberProps) {
     const ref = useRef<HTMLSpanElement>(null);
     const previous = useRef(value);
 

@@ -82,7 +82,3 @@
     background: #fffaeb;
     color: #93370d;
 }
-
-:global([data-design="grid"]) .badge {
-    border-radius: 0;
-}

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useDesign } from "@/features/design-lab";
 import {
     ButtonLink,
     EmptyState,
@@ -17,7 +16,6 @@ import { useDashboardSummary, useSpendOverview } from "./useSpend";
 import styles from "./DashboardPage.module.css";
 
 export function DashboardPage() {
-    const { design } = useDesign();
     const [range, setRange] = useState<SpendRange>("7d");
 
     return (
@@ -37,7 +35,6 @@ export function DashboardPage() {
                         options={SPEND_RANGES}
                         value={range}
                         onChange={setRange}
-                        isSpringy={design.motion !== "calm"}
                     />
                 </div>
                 <SpendSection range={range} />

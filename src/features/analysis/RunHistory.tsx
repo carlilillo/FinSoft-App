@@ -22,7 +22,11 @@ export function RunHistory({ runs }: RunHistoryProps) {
         <ul className={styles.list}>
             {runs.map((run) => (
                 <li key={run.id}>
-                    <Link to={`/analyses/${run.id}`} className={styles.row}>
+                    <Link
+                        to={`/analyses/${run.id}`}
+                        viewTransition
+                        className={styles.row}
+                    >
                         <time dateTime={run.createdAt}>
                             {formatDateTime(run.createdAt)}
                         </time>

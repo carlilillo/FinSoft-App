@@ -19,13 +19,14 @@
     text-align: left;
 }
 
+/* The row under the pointer nudges to the right. */
 .row {
     position: relative;
-    transition: background-color var(--duration-fast) var(--ease-out);
+    transition: transform 240ms var(--ease-spring);
 }
 
 .row:hover {
-    background: var(--color-surface-2);
+    transform: translateX(6px);
 }
 
 .vendor {
@@ -64,29 +65,6 @@
 
 .total {
     font-weight: 600;
-}
-
-:global([data-design="grid"]) .table thead th {
-    border-bottom: 2px solid var(--color-ink);
-    color: var(--color-ink);
-    font-weight: 700;
-}
-
-:global([data-design="grid"]) .row:hover {
-    background: var(--color-accent);
-}
-
-:global([data-design="flow"]) .row:hover,
-:global([data-design="tangerine"]) .row:hover {
-    background: transparent;
-}
-
-:global([data-design="tangerine"]) .row {
-    transition: transform 240ms var(--ease-spring);
-}
-
-:global([data-design="tangerine"]) .row:hover {
-    transform: translateX(6px);
 }
 
 @media (max-width: 40rem) {

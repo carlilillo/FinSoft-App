@@ -43,31 +43,3 @@
     color: var(--color-ink-3);
     font-size: var(--text-sm);
 }
-
-:global([data-design="paper"]) .total {
-    font-weight: 500;
-}
-
-:global([data-design="grid"]) .total {
-    font-size: clamp(3.5rem, 9vw, 7rem);
-    letter-spacing: -0.05em;
-}
-
-:global([data-design="grid"]) .kpis {
-    gap: 0;
-    border-top: 2px solid var(--color-ink);
-}
-
-:global([data-design="grid"]) .kpi {
-    padding: var(--space-3) var(--space-5) 0 0;
-    margin-right: var(--space-5);
-}
-
-:global([data-design="signal"]) .total {
-    font-size: clamp(3.25rem, 8vw, 6rem);
-}
-
-:global([data-design="tangerine"]) .total {
-    font-size: clamp(3.25rem, 8vw, 6rem);
-    color: var(--color-ink);
-}

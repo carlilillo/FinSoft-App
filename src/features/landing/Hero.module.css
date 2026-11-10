@@ -1,0 +1,59 @@
+.hero {
+    display: grid;
+    grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+    gap: clamp(var(--space-6), 5vw, var(--space-8));
+    align-items: center;
+    padding-block: clamp(var(--space-6), 7vw, var(--space-8));
+}
+
+.copy {
+    display: grid;
+    gap: var(--space-5);
+    align-content: center;
+}
+
+.title {
+    font-size: var(--text-hero);
+    line-height: 1.02;
+    max-width: 13ch;
+}
+
+.lead {
+    max-width: 38ch;
+    color: var(--color-ink-2);
+    font-size: var(--text-lg);
+    line-height: 1.5;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-5);
+}
+
+.secondary {
+    color: var(--color-ink);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-underline-offset: 4px;
+}
+
+.secondary:hover {
+    color: var(--color-accent-text);
+}
+
+.note {
+    color: var(--color-ink-3);
+    font-size: var(--text-sm);
+}
+
+.visual {
+    padding: var(--space-3);
+}
+
+@media (max-width: 60rem) {
+    .hero {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

@@ -94,10 +94,3 @@
     color: var(--color-ink-3);
     font-size: var(--text-sm);
 }
-
-:global([data-design="tangerine"]) .row,
-:global([data-design="apricot"]) .row {
-    border-radius: var(--radius-md);
-    border-bottom: 0;
-    margin-bottom: var(--space-1);
-}

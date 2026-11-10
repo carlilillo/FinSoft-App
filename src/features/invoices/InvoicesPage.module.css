@@ -23,14 +23,3 @@
     background: transparent;
     color: var(--color-ink);
 }
-
-:global([data-design="apricot"]) .search,
-:global([data-design="flow"]) .search,
-:global([data-design="tangerine"]) .search {
-    border-radius: 999px;
-}
-
-:global([data-design="grid"]) .search {
-    border: 2px solid var(--color-ink);
-    border-radius: 0;
-}

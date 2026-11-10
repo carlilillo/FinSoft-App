@@ -44,7 +44,7 @@ function ClerkAccountBridge({ children }: AccountProviderProps) {
             const { error } = await signIn.sso({
                 strategy: `oauth_${provider}`,
                 redirectCallbackUrl: "/sso-callback",
-                redirectUrl: "/",
+                redirectUrl: "/overview",
             });
             if (error) throw error;
         },

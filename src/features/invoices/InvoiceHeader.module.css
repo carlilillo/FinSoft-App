@@ -54,19 +54,3 @@
     font-weight: 500;
     color: var(--color-ink-3);
 }
-
-/* Paper Trail: the total is stamped. */
-:global([data-design="paper"]) .total .numeric {
-    padding: 0.1em 0.4em;
-    border: 2px solid var(--color-accent);
-    color: var(--color-accent-text);
-    rotate: -3deg;
-}
-
-:global([data-design="grid"]) .header {
-    border-bottom: 2px solid var(--color-ink);
-}
-
-:global([data-design="grid"]) .total {
-    font-size: clamp(2.5rem, 6vw, 4rem);
-}

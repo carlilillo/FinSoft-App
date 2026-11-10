@@ -107,18 +107,6 @@
     font-size: var(--text-sm);
 }
 
-:global([data-design="grid"]) .section {
-    border-top: 2px solid var(--color-ink);
-}
-
-:global([data-design="apricot"]) .section,
-:global([data-design="tangerine"]) .section {
-    padding: var(--space-5);
-    border: 0;
-    border-radius: var(--radius-lg);
-    background: var(--color-surface-2);
-}
-
 @media (max-width: 36rem) {
     .form {
         grid-template-columns: 1fr;

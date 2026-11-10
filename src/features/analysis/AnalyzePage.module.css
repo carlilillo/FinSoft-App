@@ -60,21 +60,3 @@
     font-size: var(--text-lg);
     margin-bottom: var(--space-3);
 }
-
-:global([data-design="grid"]) .steps li::before {
-    border-radius: 0;
-    background: var(--color-ink);
-    color: var(--color-bg);
-}
-
-:global([data-design="grid"]) .steps li {
-    padding-top: var(--space-3);
-    border-top: 2px solid var(--color-ink);
-}
-
-:global([data-design="apricot"]) .start,
-:global([data-design="tangerine"]) .start {
-    padding: var(--space-6);
-    border-radius: var(--radius-lg);
-    background: var(--color-surface-2);
-}

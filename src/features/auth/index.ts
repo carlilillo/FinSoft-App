@@ -1,5 +1,5 @@
 export { useAccount, useSignedInUser } from "./AccountContext";
-export { initials, displayName } from "./auth.model";
+export { initials } from "./auth.model";
 export { ClerkAccountProvider } from "./ClerkAccountProvider";
 export { PreviewAccountProvider } from "./PreviewAccountProvider";
 export { RequireAuth } from "./RequireAuth";

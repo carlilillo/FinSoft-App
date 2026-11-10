@@ -43,16 +43,3 @@
 .muted {
     color: var(--color-ink-3);
 }
-
-:global([data-design="paper"]) .chart,
-:global([data-design="apricot"]) .chart,
-:global([data-design="tangerine"]) .chart {
-    padding: var(--space-6);
-    border-radius: var(--radius-lg);
-    background: var(--color-surface);
-    box-shadow: var(--shadow-raised);
-}
-
-:global([data-design="apricot"]) .chart {
-    box-shadow: none;
-}

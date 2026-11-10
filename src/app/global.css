@@ -1,5 +1,5 @@
-/* Reset, base typography and the tokens every design shares. Design-specific tokens live in
-   features/design-lab/designs.css until a design is chosen. */
+/* Reset, base typography and design tokens (the Flow design: white and orange, General Sans,
+   soft corners, pages that slide and morph). */
 
 *,
 *::before,
@@ -29,6 +29,38 @@
     --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
     --duration-fast: 140ms;
     --duration-base: 240ms;
+
+    --font-body: "General Sans", system-ui, sans-serif;
+    --font-display: "General Sans", system-ui, sans-serif;
+    --font-numeric: "General Sans", system-ui, sans-serif;
+    --weight-display: 600;
+    --tracking-display: -0.025em;
+
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-surface-2: #fff8f2;
+    --color-ink: #20140b;
+    --color-ink-2: #5e4b3e;
+    --color-ink-3: #85715f;
+    --color-line: #f1e6dc;
+    --color-accent: #ff7a1a;
+    --color-accent-text: #b04d05;
+    --color-accent-fill: #ff8a3d;
+    --color-accent-ink: #2a1200;
+    --color-accent-soft: #fff0e2;
+    --brand-mark-fill: linear-gradient(120deg, #ff7a1a, #ffb347);
+
+    --nav-bg: rgb(255 255 255 / 78%);
+    --nav-ink: #20140b;
+    --nav-ink-2: #5e4b3e;
+    --nav-active-bg: #ff8a3d;
+    --nav-active-ink: #2a1200;
+
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --shadow-raised: 0 12px 40px -18px rgb(255 122 26 / 35%);
+    --chart-1: #e65c00;
 
     --content-width: 72rem;
     --color-danger: #b42318;
@@ -125,13 +157,13 @@ svg {
     }
 }
 
-/* Shared-element morphs between list rows and detail pages (used by designs with fluid motion). */
+/* Shared-element morphs between list rows and detail pages. */
 ::view-transition-group(*) {
     animation-duration: 420ms;
     animation-timing-function: var(--ease-out);
 }
 
-/* Flow: pages slide along a horizontal track; direction comes from navigation (see shell/navigation.ts). */
+/* Pages slide along a horizontal track; the direction comes from navigation (see shell/navigation.ts). */
 @keyframes page-out-left {
     to {
         opacity: 0;
@@ -157,15 +189,15 @@ svg {
     }
 }
 
-[data-design="flow"]::view-transition-old(page) {
+::view-transition-old(page) {
     animation: page-out-left 380ms var(--ease-out) both;
 }
-[data-design="flow"]::view-transition-new(page) {
+::view-transition-new(page) {
     animation: page-in-right 420ms var(--ease-out) both;
 }
-[data-design="flow"][data-nav-direction="back"]::view-transition-old(page) {
+[data-nav-direction="back"]::view-transition-old(page) {
     animation-name: page-out-right;
 }
-[data-design="flow"][data-nav-direction="back"]::view-transition-new(page) {
+[data-nav-direction="back"]::view-transition-new(page) {
     animation-name: page-in-left;
 }

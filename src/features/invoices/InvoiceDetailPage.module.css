@@ -29,36 +29,20 @@
     color: var(--color-ink-2);
 }
 
-/* Paper Trail: the invoice is a sheet of paper on the desk, with a perforated top edge. */
-:global([data-design="paper"]) .sheet {
-    position: relative;
-    padding: var(--space-7);
+/* One card holds the whole invoice: a rounded bottom and a soft shadow, with a perforated top
+   edge. The mask cuts the notches and the frame's drop-shadow follows them, so the tear reads on a
+   white page too. */
+.sheetFrame {
+    filter: drop-shadow(0 0 1px rgb(31 18 9 / 22%))
+        drop-shadow(0 16px 18px rgb(31 18 9 / 12%));
+}
+
+.sheet {
+    padding: var(--space-7) var(--space-6) var(--space-6);
+    border-radius: 0 0 32px 32px;
     background: var(--color-surface);
-    box-shadow: var(--shadow-raised);
-}
-
-:global([data-design="paper"]) .sheet::before {
-    content: "";
-    position: absolute;
-    inset: -6px 0 auto;
-    height: 12px;
-    background: radial-gradient(
-            circle at 8px 0,
-            transparent 6px,
-            var(--color-surface) 6.5px
-        )
-        0 0 / 16px 12px repeat-x;
-}
-
-:global([data-design="apricot"]) .sheet,
-:global([data-design="tangerine"]) .sheet {
-    padding: var(--space-6);
-    border-radius: var(--radius-lg);
-    background: var(--color-surface);
-}
-
-:global([data-design="tangerine"]) .sheet {
-    box-shadow: var(--shadow-raised);
+    mask: radial-gradient(circle at 8px 0, transparent 5.5px, #000 6px) 0 0 /
+        16px 100% repeat-x;
 }
 
 @media (max-width: 60rem) {

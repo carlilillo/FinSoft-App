@@ -1,23 +1,15 @@
-import { useDesign } from "@/features/design-lab";
 import { formatMoney } from "@/shared/lib/money";
 import { invoiceFields, invoiceTitle } from "./invoices.model";
 import type { InvoiceHeaderProps } from "./types";
 import styles from "./InvoiceHeader.module.css";
 
 export function InvoiceHeader({ invoice }: InvoiceHeaderProps) {
-    const { design } = useDesign();
-    const morphName =
-        design.motion === "fluid" ? `invoice-${invoice.id}` : undefined;
     return (
         <header className={styles.header}>
             <div className={styles.identity}>
                 <p
                     className={styles.vendor}
-                    style={
-                        morphName
-                            ? { viewTransitionName: morphName }
-                            : undefined
-                    }
+                    style={{ viewTransitionName: `invoice-${invoice.id}` }}
                 >
                     {invoice.vendor.name}
                 </p>

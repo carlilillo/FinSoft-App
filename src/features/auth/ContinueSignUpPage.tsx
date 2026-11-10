@@ -23,7 +23,9 @@ export function ContinueSignUpPage() {
         });
         const finalize = update.error
             ? update
-            : await signUp.finalize({ navigate: () => void navigate("/") });
+            : await signUp.finalize({
+                  navigate: () => void navigate("/overview"),
+              });
         if (finalize.error) {
             setError(
                 "We couldn't finish creating your account. Check the fields and try again.",

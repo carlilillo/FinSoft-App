@@ -1,5 +1,4 @@
 import { useParams } from "react-router";
-import { useDesign } from "@/features/design-lab";
 import { ErrorState, PageHeader, Skeleton } from "@/shared/ui";
 import { PriceSection } from "./PriceSection";
 import { PriceStatsList } from "./PriceStatsList";
@@ -16,12 +15,10 @@ import styles from "./ProductDetailPage.module.css";
 
 export function ProductDetailPage() {
     const { productId = "" } = useParams();
-    const { design } = useDesign();
     const query = useProduct(productId);
     const back = {
         to: "/products",
         label: "Products",
-        viewTransition: design.motion === "fluid",
     };
 
     if (query.isPending) {
@@ -56,20 +53,17 @@ export function ProductDetailPage() {
 }
 
 function ProductBody({ product }: ProductBodyProps) {
-    const { design } = useDesign();
     const currency = mainCurrency(product);
     const points = toPriceChartPoints(product.priceHistory, currency);
     const stats = computePriceStats(points, currency);
     return (
         <>
-            {design.motion === "fluid" && (
-                <span
-                    className="visually-hidden"
-                    style={{ viewTransitionName: `product-${product.id}` }}
-                >
-                    {product.displayName}
-                </span>
-            )}
+            <span
+                className="visually-hidden"
+                style={{ viewTransitionName: `product-${product.id}` }}
+            >
+                {product.displayName}
+            </span>
             {stats && <PriceStatsList stats={stats} />}
             <PriceSection points={points} currency={currency} />
             <section aria-labelledby="purchases-title">

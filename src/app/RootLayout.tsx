@@ -1,6 +1,5 @@
 import { Outlet } from "react-router";
 import { ClerkAccountProvider, PreviewAccountProvider } from "@/features/auth";
-import { DesignSwitcher } from "@/features/design-lab";
 import { CLERK_PUBLISHABLE_KEY, IS_PREVIEW_MODE } from "@/shared/lib/env";
 import { ToastProvider } from "@/shared/ui";
 
@@ -9,7 +8,6 @@ export function RootLayout() {
     const content = (
         <ToastProvider>
             <Outlet />
-            <DesignSwitcher />
         </ToastProvider>
     );
     if (IS_PREVIEW_MODE || !CLERK_PUBLISHABLE_KEY)

@@ -1,0 +1,17 @@
+.band {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-4);
+    padding-block: var(--space-8);
+}
+
+.title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    max-width: 18ch;
+}
+
+.body {
+    max-width: 46ch;
+    color: var(--color-ink-2);
+    font-size: var(--text-lg);
+}

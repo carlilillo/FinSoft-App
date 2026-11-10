@@ -28,17 +28,19 @@ sign-in options (no email), and add `http://localhost:5173` to the allowed origi
 `@clerk/react` v6 hooks: `signIn.sso()` → `/sso-callback` (`HandleSSOCallback`) → `/sign-up/continue` when
 a provider doesn't share the required fields.
 
-## Design lab (temporary)
+## Design
 
-Seven directions are live on the real screens. Use the floating switcher (bottom-right, dev only or `?designlab`)
-or **Alt + ← / →**:
+One direction, **Flow**: white and orange, General Sans, soft 10px buttons. The navigation is a floating
+pill that shrinks to icons while you scroll, and its orange highlight glides between tabs. Pages slide
+forward into detail pages and back out of them, and list rows morph into their detail pages (View
+Transitions). Tokens live in `src/app/global.css`; everything respects `prefers-reduced-motion`.
 
-1. **Ledger** · 2. **Signal** · 3. **Paper Trail** · 4. **Apricot** · 5. **Grid** — professional and restrained
-2. **Flow** — morphing pill nav, horizontal page slides and shared-element morphs (View Transitions), pointer glow
-3. **Tangerine** — magnifying dock, magnetic buttons, odometer numbers, liquid backdrop, drag-to-dismiss dialogs, ⌘K palette
+## Routes
 
-Once one is chosen: move its block from `features/design-lab/designs.css` into `app/global.css`, replace
-`useDesign()` with the chosen config, and delete `features/design-lab` and the unused fonts in `index.html`.
+- `/` — public home page (`features/landing`). Every call to action opens the overview; signed-out visitors
+  go through sign-in first and come back to the page they asked for.
+- `/overview` — the dashboard. Every other app page (`/invoices`, `/products`, `/analyze`, `/analyses/:id`,
+  `/settings`) sits behind sign-in.
 
 ## Structure
 
@@ -46,14 +48,14 @@ Once one is chosen: move its block from `features/design-lab/designs.css` into `
 src/
 ├── app/           entry, router (lazy routes), providers, error boundary, preview fixture server
 ├── features/
+│   ├── landing/   public home page (inbox animation, price chart)
 │   ├── auth/      Clerk facade (useAccount) + preview provider, SSO pages, RequireAuth
-│   ├── shell/     layout with 4 nav variants, route transitions, dock, command palette
+│   ├── shell/     floating pill navigation, page-slide direction tracking, user menu
 │   ├── dashboard/ spend headline + Recharts area chart (7 / 14 / 30 days), latest invoices
 │   ├── invoices/  list, detail (vendor, lines, totals), presigned document download/upload
 │   ├── products/  catalog, stepped price-history chart, purchases table
 │   ├── analysis/  connect Gmail, background run status (polling), session review + re-run on the same thread
-│   ├── settings/  photo & name (Clerk), Gmail connection, devices, account deletion
-│   └── design-lab/ TEMPORARY
+│   └── settings/  photo & name (Clerk), Gmail connection, devices, account deletion
 └── shared/        ui kit (plain CSS Modules), http client, money (integer cents) and date helpers
 ```
 

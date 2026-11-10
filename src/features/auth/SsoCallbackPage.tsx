@@ -13,7 +13,7 @@ export function SsoCallbackPage() {
         >
             <HandleSSOCallback
                 navigateToApp={({ decorateUrl }) => {
-                    const destination = decorateUrl("/");
+                    const destination = decorateUrl("/overview");
                     if (destination.startsWith("http"))
                         window.location.href = destination;
                     else void navigate(destination, { replace: true });

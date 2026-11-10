@@ -7,18 +7,12 @@ import {
     XAxis,
     YAxis,
 } from "recharts";
-import { useDesign } from "@/features/design-lab";
 import { formatShortDate } from "@/shared/lib/dates";
 import { formatMoney, formatMoneyCompact } from "@/shared/lib/money";
 import type { PriceHistoryChartProps, PriceTooltipProps } from "./types";
 import styles from "./PriceHistoryChart.module.css";
 
-const ANIMATION_MS = {
-    calm: 450,
-    soft: 700,
-    fluid: 1200,
-    expressive: 1400,
-} as const;
+const ANIMATION_MS = 1200;
 const SERIES_COLOR = {
     net: "var(--chart-1)",
     gross: "var(--chart-2)",
@@ -30,7 +24,6 @@ export function PriceHistoryChart({
     currency,
     series,
 }: PriceHistoryChartProps) {
-    const { design } = useDesign();
     return (
         <figure className={styles.figure}>
             <ResponsiveContainer width="100%" height={280}>
@@ -85,7 +78,7 @@ export function PriceHistoryChart({
                             strokeWidth: 2,
                             stroke: "var(--color-surface)",
                         }}
-                        animationDuration={ANIMATION_MS[design.motion]}
+                        animationDuration={ANIMATION_MS}
                         animationEasing="ease-out"
                     />
                 </LineChart>

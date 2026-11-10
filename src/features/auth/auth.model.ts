@@ -17,8 +17,17 @@ export function initials(
         .join("");
 }
 
-export function displayName(user: AccountUser): string {
-    return user.fullName.trim() || user.email || "Your account";
+/** Where to go after signing in: the protected page that sent the person here, or the overview. */
+export function returnPath(state: unknown): string {
+    if (typeof state !== "object" || state === null || !("from" in state))
+        return "/overview";
+    const from = state.from;
+    const isInternal =
+        typeof from === "string" &&
+        from.startsWith("/") &&
+        !from.startsWith("//") &&
+        from !== "/";
+    return isInternal ? from : "/overview";
 }
 
 export function describeDevice(

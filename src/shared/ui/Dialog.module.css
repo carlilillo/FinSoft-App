@@ -24,18 +24,3 @@
 .title {
     font-size: var(--text-lg);
 }
-
-.grabber {
-    justify-self: center;
-    width: 2.5rem;
-    height: 0.3rem;
-    margin-top: calc(var(--space-3) * -1);
-    border-radius: 999px;
-    background: var(--color-line);
-    cursor: grab;
-}
-
-:global([data-design="grid"]) .panel {
-    border: 2px solid var(--color-ink);
-    box-shadow: 8px 8px 0 var(--color-ink);
-}

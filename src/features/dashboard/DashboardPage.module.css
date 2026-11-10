@@ -24,25 +24,3 @@
 .muted {
     color: var(--color-ink-3);
 }
-
-/* Paper Trail and Apricot hold the spend block on its own surface. */
-:global([data-design="paper"]) .spend,
-:global([data-design="apricot"]) .spend {
-    padding: var(--space-6);
-    border-radius: var(--radius-lg);
-    background: var(--color-surface);
-    box-shadow: var(--shadow-raised);
-}
-
-:global([data-design="grid"]) .sectionTitle {
-    font-size: var(--text-md);
-    font-weight: 700;
-}
-
-:global([data-design="tangerine"]) .spend {
-    padding: var(--space-6);
-    border-radius: var(--radius-lg);
-    background: rgb(255 255 255 / 72%);
-    backdrop-filter: blur(12px);
-    box-shadow: var(--shadow-raised);
-}

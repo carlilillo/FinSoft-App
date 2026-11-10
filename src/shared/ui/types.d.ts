@@ -21,7 +21,6 @@ export type SegmentedControlProps<T extends string> = {
     options: ReadonlyArray<SegmentOption<T>>;
     value: T;
     onChange: (value: T) => void;
-    isSpringy?: boolean;
 };
 
 export type DialogProps = {
@@ -29,18 +28,12 @@ export type DialogProps = {
     title: string;
     onClose: () => void;
     children: ReactNode;
-    isDraggable?: boolean;
 };
-
-export type NumberStyle = "plain" | "tween" | "odometer";
 
 export type AnimatedNumberProps = {
     value: number;
     format: (value: number) => string;
-    numberStyle?: NumberStyle;
 };
-
-export type OdometerProps = { text: string };
 
 export type EmptyStateProps = {
     title: string;
@@ -68,8 +61,7 @@ export type IconName =
     | "mail"
     | "check"
     | "back"
-    | "logout"
-    | "command";
+    | "logout";
 
 export type IconProps = { name: IconName; size?: number };
 
@@ -77,7 +69,7 @@ export type PageHeaderProps = {
     title: string;
     description?: string;
     actions?: ReactNode;
-    back?: { to: string; label: string; viewTransition?: boolean };
+    back?: { to: string; label: string };
 };
 
 export type Toast = {
@@ -91,5 +83,3 @@ export type ToastContextValue = {
 };
 
 export type ToastProviderProps = { children: ReactNode };
-
-export type PointerGlowProps = { children: ReactNode; className?: string };

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useDesign } from "@/features/design-lab";
 import { Button, Dialog, ErrorState } from "@/shared/ui";
 import { DELETE_CONFIRMATION, isDeleteConfirmed } from "./settings.model";
 import type { DeleteAccountDialogProps } from "./types";
@@ -10,7 +9,6 @@ export function DeleteAccountDialog({
     isOpen,
     onClose,
 }: DeleteAccountDialogProps) {
-    const { design } = useDesign();
     const [confirmation, setConfirmation] = useState("");
     const deletion = useDeleteAccount();
 
@@ -24,7 +22,6 @@ export function DeleteAccountDialog({
             isOpen={isOpen}
             title="Delete your account"
             onClose={handleClose}
-            isDraggable={design.motion === "expressive"}
         >
             <p>
                 This permanently deletes your invoices, products, stored

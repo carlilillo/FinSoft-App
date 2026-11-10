@@ -9,9 +9,10 @@ import {
 } from "@/features/auth";
 import { loadDashboardPage } from "@/features/dashboard";
 import { loadInvoiceDetailPage, loadInvoicesPage } from "@/features/invoices";
+import { loadLandingPage } from "@/features/landing";
 import { loadProductDetailPage, loadProductsPage } from "@/features/products";
 import { loadSettingsPage } from "@/features/settings";
-import { AppLayout } from "@/features/shell";
+import { AppLayout, trackNavDirection } from "@/features/shell";
 import { IS_PREVIEW_MODE } from "@/shared/lib/env";
 import { RootLayout } from "./RootLayout";
 import { RouteErrorBoundary } from "./RouteErrorBoundary";
@@ -26,11 +27,12 @@ export const router = createBrowserRouter([
         element: <RootLayout />,
         errorElement: <RouteErrorBoundary />,
         children: [
+            { index: true, lazy: page(loadLandingPage) },
             { path: "/sign-in", lazy: page(loadSignInPage) },
             IS_PREVIEW_MODE
                 ? {
                       path: "/sso-callback",
-                      element: <Navigate to="/" replace />,
+                      element: <Navigate to="/overview" replace />,
                   }
                 : { path: "/sso-callback", lazy: page(loadSsoCallbackPage) },
             { path: "/sign-up/continue", lazy: page(loadContinueSignUpPage) },
@@ -42,7 +44,7 @@ export const router = createBrowserRouter([
                 ),
                 errorElement: <RouteErrorBoundary />,
                 children: [
-                    { index: true, lazy: page(loadDashboardPage) },
+                    { path: "overview", lazy: page(loadDashboardPage) },
                     { path: "invoices", lazy: page(loadInvoicesPage) },
                     {
                         path: "invoices/:invoiceId",
@@ -56,9 +58,11 @@ export const router = createBrowserRouter([
                     { path: "analyze", lazy: page(loadAnalyzePage) },
                     { path: "analyses/:runId", lazy: page(loadRunPage) },
                     { path: "settings", lazy: page(loadSettingsPage) },
-                    { path: "*", element: <Navigate to="/" replace /> },
+                    { path: "*", element: <Navigate to="/overview" replace /> },
                 ],
             },
         ],
     },
 ]);
+
+trackNavDirection(router);

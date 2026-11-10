@@ -13,11 +13,7 @@ export function PageHeader({
         <header className={styles.header}>
             <div className={styles.text}>
                 {back && (
-                    <Link
-                        to={back.to}
-                        className={styles.back}
-                        viewTransition={back.viewTransition ?? false}
-                    >
+                    <Link to={back.to} className={styles.back} viewTransition>
                         <Icon name="back" size={16} />
                         {back.label}
                     </Link>

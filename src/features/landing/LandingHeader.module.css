@@ -1,0 +1,84 @@
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    padding: var(--space-3) clamp(var(--space-4), 5vw, var(--space-8));
+    /* Opaque, so nothing flickers through it while the page glides to a section. */
+    background: var(--color-surface);
+    transition: box-shadow var(--duration-base) var(--ease-out);
+}
+
+.header[data-scrolled="true"] {
+    box-shadow:
+        0 1px 0 rgb(32 20 11 / 6%),
+        0 10px 30px -24px rgb(32 20 11 / 35%);
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-display);
+    font-weight: var(--weight-display);
+    font-size: var(--text-lg);
+    letter-spacing: var(--tracking-display);
+    text-decoration: none;
+}
+
+.mark {
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    /* The same mark as the app's navigation bar. */
+    border-radius: 10px;
+    background: var(--brand-mark-fill);
+    color: var(--color-accent-ink);
+    font-size: var(--text-sm);
+}
+
+.links {
+    display: flex;
+    gap: var(--space-5);
+    margin-right: auto;
+    font-size: var(--text-sm);
+}
+
+.links a {
+    color: var(--color-ink-2);
+    text-decoration: none;
+}
+
+.links a:hover {
+    color: var(--color-ink);
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.signIn {
+    color: var(--color-ink-2);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.signIn:hover {
+    color: var(--color-ink);
+}
+
+@media (max-width: 52rem) {
+    .links {
+        display: none;
+    }
+
+    .actions {
+        margin-left: auto;
+    }
+}

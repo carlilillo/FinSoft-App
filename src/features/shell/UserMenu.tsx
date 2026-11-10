@@ -1,10 +1,9 @@
-import { displayName, useSignedInUser } from "@/features/auth";
+import { useSignedInUser } from "@/features/auth";
 import { Icon } from "@/shared/ui";
 import { Avatar } from "./Avatar";
-import type { UserMenuProps } from "./types";
 import styles from "./UserMenu.module.css";
 
-export function UserMenu({ isCompact = false }: UserMenuProps) {
+export function UserMenu() {
     const { user, actions } = useSignedInUser();
     return (
         <div className={styles.menu}>
@@ -13,14 +12,6 @@ export function UserMenu({ isCompact = false }: UserMenuProps) {
                 email={user.email}
                 imageUrl={user.imageUrl}
             />
-            {!isCompact && (
-                <span className={styles.identity}>
-                    <span className={styles.name}>{displayName(user)}</span>
-                    {user.email && (
-                        <span className={styles.email}>{user.email}</span>
-                    )}
-                </span>
-            )}
             <button
                 type="button"
                 className={styles.signOut}

@@ -8,7 +8,3 @@
     color: var(--color-accent-text);
     font-weight: 700;
 }
-
-:global([data-design="grid"]) .avatar {
-    border-radius: 0;
-}

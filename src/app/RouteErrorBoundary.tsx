@@ -16,7 +16,7 @@ export function RouteErrorBoundary() {
                     ? "The link may be old or mistyped."
                     : "Reload the page, or go back to the overview."}
             </p>
-            <Link to="/">Go to overview</Link>
+            <Link to="/overview">Go to overview</Link>
         </main>
     );
 }

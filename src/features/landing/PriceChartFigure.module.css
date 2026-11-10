@@ -1,0 +1,110 @@
+.figure {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+}
+
+.caption {
+    color: var(--color-ink-2);
+    font-size: var(--text-sm);
+    font-weight: 600;
+}
+
+.plot {
+    position: relative;
+}
+
+.svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    cursor: crosshair;
+    touch-action: pan-y;
+}
+
+.svg:focus-visible {
+    outline-offset: 6px;
+}
+
+.grid {
+    stroke: var(--chart-grid);
+    stroke-width: 1;
+}
+
+.axis {
+    fill: var(--color-ink-3);
+    font-size: 12px;
+    font-family: var(--font-body);
+    font-variant-numeric: tabular-nums;
+}
+
+.crosshair {
+    stroke: var(--color-ink-3);
+    stroke-width: 1;
+    stroke-dasharray: 3 3;
+}
+
+.line {
+    fill: none;
+    stroke: var(--chart-1);
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.marker {
+    fill: var(--chart-1);
+    stroke: var(--color-surface);
+    stroke-width: 2;
+    transition: r var(--duration-fast) var(--ease-out);
+}
+
+.valueLabel {
+    fill: var(--color-ink);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-numeric);
+    font-variant-numeric: tabular-nums;
+}
+
+.tooltip {
+    position: absolute;
+    z-index: 1;
+    display: grid;
+    gap: 0.125rem;
+    min-width: 9.5rem;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    box-shadow: 0 10px 30px -16px rgb(0 0 0 / 35%);
+    font-size: var(--text-xs);
+    pointer-events: none;
+    transform: translate(-50%, calc(-100% - 14px));
+}
+
+.tooltip strong {
+    font-size: var(--text-sm);
+}
+
+.tooltip > span {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    color: var(--color-ink-2);
+}
+
+.tooltip :global(.numeric) {
+    color: var(--color-ink);
+}
+
+/* The SVG scales down on phones; larger user-space text keeps labels around 12px on screen. */
+@media (max-width: 40rem) {
+    .axis {
+        font-size: 19px;
+    }
+
+    .valueLabel {
+        font-size: 21px;
+    }
+}
