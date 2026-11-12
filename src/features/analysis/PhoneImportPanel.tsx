@@ -1,10 +1,10 @@
 import { Button, ErrorState, Icon } from "@/shared/ui";
 import { MAX_IMPORT_FILES } from "./analysis.model";
+import { BackButton } from "./BackButton";
 import { CopyableLink } from "./CopyableLink";
 import { LinkCountdown } from "./LinkCountdown";
 import { QrCode } from "./QrCode";
 import type {
-    BackButtonProps,
     LinkNoteProps,
     LinkStatusProps,
     PhoneImportFrameProps,
@@ -155,14 +155,5 @@ function LinkNote({ status, expiresAt }: LinkNoteProps) {
         <p className={styles.note}>
             One-time link, expires in <LinkCountdown expiresAt={expiresAt} />
         </p>
-    );
-}
-
-function BackButton({ onBack }: BackButtonProps) {
-    return (
-        <Button variant="ghost" className={styles.back} onClick={onBack}>
-            <Icon name="back" size={16} />
-            Back
-        </Button>
     );
 }

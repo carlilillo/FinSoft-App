@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
-    checkImportSelection,
     connectedAccountsText,
     connectionErrorMessage,
     gmailStartBlockedReason,
+    importButtonLabel,
     describeStage,
     displayUrl,
     formatCountdown,
@@ -11,11 +11,14 @@ import {
     isRunActive,
     listAddresses,
     MAX_IMPORT_FILE_BYTES,
+    MAX_IMPORT_FILES,
     runCapacity,
     runSizeLabel,
     selectionChanged,
     sessionAccounts,
     sortEmailsForReview,
+    stagedFileKind,
+    stageImportFiles,
     toggleSelection,
 } from "./analysis.model";
 import type { EvaluatedEmail, RunDetail, RunListItem } from "./types";
@@ -161,7 +164,7 @@ const listItem = (overrides: Partial<RunListItem>): RunListItem => ({
 });
 
 const pdf = (name: string, size = 1_000, type = "application/pdf") =>
-    new File([new Uint8Array(size)], name, { type });
+    new File([new Uint8Array(size)], name, { type, lastModified: 0 });
 
 describe("imports", () => {
     it("describes an import session by documents, not emails", () => {
@@ -184,41 +187,97 @@ describe("imports", () => {
         });
     });
 
-    it("accepts 1 to 10 PDFs", () => {
-        const files = [pdf("a.pdf"), pdf("b.pdf")];
-        expect(checkImportSelection(files)).toEqual({ kind: "valid", files });
-    });
+    const stageAll = (files: File[]) => {
+        const result = stageImportFiles([], files);
+        if (result.kind !== "added") throw new Error(result.message);
+        return result.staged;
+    };
 
-    it("accepts images as invoices, by type or by extension", () => {
-        const files = [
+    it("stages PDFs and images, by type or by extension", () => {
+        const staged = stageAll([
+            pdf("a.pdf"),
             pdf("ticket.jpg", 1_000, "image/jpeg"),
-            pdf("screenshot.png", 1_000, "image/png"),
             pdf("IMG_0042.HEIC", 1_000, ""),
             pdf("scan.tiff", 1_000, "application/octet-stream"),
-            pdf("receipt.webp", 1_000, "image/webp"),
-        ];
-        expect(checkImportSelection(files)).toEqual({ kind: "valid", files });
+            pdf("bill.PDF", 1_000, ""),
+        ]);
+        expect(staged.map((item) => item.format)).toEqual([
+            "pdf",
+            "image",
+            "image",
+            "image",
+            "pdf",
+        ]);
     });
 
-    it("rejects empty, oversized, unsupported and too-large selections", () => {
-        expect(checkImportSelection([]).kind).toBe("invalid");
+    it("adds to what is staged and skips files already attached", () => {
+        const first = stageAll([pdf("a.pdf")]);
+        const result = stageImportFiles(first, [pdf("a.pdf"), pdf("b.pdf")]);
+        expect(result).toMatchObject({ kind: "added" });
+        if (result.kind === "added")
+            expect(result.staged.map((item) => item.file.name)).toEqual([
+                "a.pdf",
+                "b.pdf",
+            ]);
+        expect(stageImportFiles(first, [pdf("a.pdf")])).toMatchObject({
+            kind: "rejected",
+            message: /a\.pdf is already attached/,
+        });
+    });
+
+    it("refuses a whole drop with an unsupported, empty or oversized file", () => {
         expect(
-            checkImportSelection(
-                Array.from({ length: 11 }, (_, index) => pdf(`${index}.pdf`)),
+            stageImportFiles(
+                [],
+                [pdf("a.pdf"), pdf("logo.svg", 10, "image/svg+xml")],
             ),
-        ).toMatchObject({ kind: "invalid", message: /up to 10/ });
-        expect(
-            checkImportSelection([pdf("logo.svg", 10, "image/svg+xml")]),
         ).toMatchObject({
-            kind: "invalid",
+            kind: "rejected",
             message: /logo\.svg is not a PDF or a supported image/,
         });
         expect(
-            checkImportSelection([pdf("notes.docx", 10, "application/msword")]),
-        ).toMatchObject({ kind: "invalid" });
+            stageImportFiles([], [pdf("notes.docx", 10, "application/msword")]),
+        ).toMatchObject({ kind: "rejected" });
         expect(
-            checkImportSelection([pdf("big.pdf", MAX_IMPORT_FILE_BYTES + 1)]),
-        ).toMatchObject({ kind: "invalid", message: /20 MB/ });
+            stageImportFiles([], [pdf("big.pdf", MAX_IMPORT_FILE_BYTES + 1)]),
+        ).toMatchObject({ kind: "rejected", message: /20 MB/ });
+        expect(stageImportFiles([], [pdf("empty.pdf", 0)])).toMatchObject({
+            kind: "rejected",
+        });
+    });
+
+    it("refuses more files than the slots left", () => {
+        const nine = stageAll(
+            Array.from({ length: 9 }, (_, index) => pdf(`${index}.pdf`)),
+        );
+        expect(
+            stageImportFiles(nine, [pdf("x.pdf"), pdf("y.pdf")]),
+        ).toMatchObject({ kind: "rejected", message: /only 1 more fits/ });
+        const ten = stageAll(
+            Array.from({ length: MAX_IMPORT_FILES }, (_, index) =>
+                pdf(`${index}.pdf`),
+            ),
+        );
+        expect(stageImportFiles(ten, [pdf("x.pdf")])).toMatchObject({
+            kind: "rejected",
+            message: /Remove one to add another/,
+        });
+    });
+
+    it("names a staged file's kind by its extension", () => {
+        const kinds = stageAll([
+            pdf("a.pdf"),
+            pdf("b.jpg", 1_000, "image/jpeg"),
+            pdf("c.heic", 1_000, ""),
+            pdf("scan", 1_000, "image/png"),
+        ]).map(stagedFileKind);
+        expect(kinds).toEqual(["PDF", "JPEG", "HEIC", "Image"]);
+    });
+
+    it("names the import button by how many invoices it starts", () => {
+        expect(importButtonLabel(0)).toBe("Import invoices");
+        expect(importButtonLabel(1)).toBe("Import 1 invoice");
+        expect(importButtonLabel(3)).toBe("Import 3 invoices");
     });
 
     it("labels a run by where its documents came from", () => {

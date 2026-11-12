@@ -1,0 +1,169 @@
+.step {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+    container-type: inline-size;
+}
+
+/* The in-tray: a quiet dashed well that warms up when files hover over it. */
+.tray {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-3);
+    padding: var(--space-5) var(--space-4) var(--space-5);
+    border: 1.5px dashed #e8d5c4;
+    border-radius: var(--radius-md);
+    background: var(--color-surface-2);
+    text-align: center;
+    transition:
+        border-color var(--duration-fast) var(--ease-out),
+        background-color var(--duration-fast) var(--ease-out);
+}
+
+.tray[data-dragging] {
+    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
+}
+
+.tray[data-invalid]:not([data-dragging]) {
+    border-color: rgb(180 35 24 / 35%);
+}
+
+/* Once invoices are attached the list below matters more: the tray folds into one row. */
+.tray[data-compact] {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    justify-items: start;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+    text-align: left;
+}
+
+@container (max-width: 22rem) {
+    .tray[data-compact] {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .tray[data-compact] > button {
+        grid-column: 1 / -1;
+        justify-self: stretch;
+    }
+}
+
+/* Three blank invoices on top of each other: they look like one until files arrive, then fan out. */
+.stack {
+    position: relative;
+    width: 4.75rem;
+    height: 5.75rem;
+    margin-block: var(--space-2) var(--space-1);
+    flex: none;
+    filter: drop-shadow(0 0 1px rgb(31 18 9 / 22%))
+        drop-shadow(0 10px 12px rgb(31 18 9 / 10%));
+}
+
+.sheet {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    padding: 1.125rem 0.75rem 0.75rem;
+    border-radius: 0 0 12px 12px;
+    background: var(--color-surface);
+    /* The perforated tear-off edge of the invoice page, at a smaller scale. */
+    mask: radial-gradient(circle at 5px 0, transparent 3.25px, #000 3.75px) 0
+        0 / 10px 100% repeat-x;
+    transform-origin: 50% 100%;
+    transition: transform var(--duration-base) var(--ease-spring);
+}
+
+.sheet[data-layer="back"] {
+    background: #fbeee3;
+}
+
+.sheet[data-layer="middle"] {
+    background: #fff6ee;
+}
+
+/* The same stack at half size: zoom scales the perforations and the fan-out with it. */
+.tray[data-compact] .stack {
+    zoom: 0.5;
+    margin: var(--space-2) var(--space-3) 0 var(--space-2);
+}
+
+.tray[data-dragging] .sheet[data-layer="back"] {
+    transform: translate(-0.875rem, -0.125rem) rotate(-9deg);
+}
+
+.tray[data-dragging] .sheet[data-layer="middle"] {
+    transform: translate(0.875rem, -0.125rem) rotate(8deg);
+}
+
+.tray[data-dragging] .sheet[data-layer="front"] {
+    transform: translateY(-0.5rem);
+}
+
+.rule {
+    display: block;
+    height: 0.25rem;
+    border-radius: 999px;
+    background: var(--color-line);
+}
+
+.rule[data-length="short"] {
+    width: 55%;
+    margin-bottom: 0.25rem;
+    background: #e8d5c4;
+}
+
+/* The total line: the one figure every invoice is read for. */
+.total {
+    display: block;
+    align-self: flex-end;
+    width: 45%;
+    height: 0.375rem;
+    margin-top: auto;
+    border-radius: 999px;
+    background: var(--color-accent-fill);
+}
+
+.copy {
+    display: grid;
+    gap: 0.125rem;
+    min-width: 0;
+}
+
+.prompt {
+    color: var(--color-ink);
+    font-size: var(--text-md);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.tray[data-compact] .prompt {
+    font-size: var(--text-sm);
+}
+
+.hint {
+    color: var(--color-ink-3);
+    font-size: var(--text-xs);
+}
+
+.error {
+    color: var(--color-danger);
+    font-size: var(--text-sm);
+}
+
+.footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sheet {
+        transition: none;
+    }
+}

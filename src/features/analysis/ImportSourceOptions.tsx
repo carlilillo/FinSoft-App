@@ -1,32 +1,19 @@
-import { type ChangeEvent, useRef } from "react";
 import { Icon } from "@/shared/ui";
-import { IMPORT_ACCEPT } from "./analysis.model";
 import type { ImportSourceOptionsProps } from "./types";
 import styles from "./ImportSourceDialog.module.css";
 
-/**
- * The two ways in. The file input lives inside the dialog: everything outside a modal dialog is
- * inert, so a picker opened from there might not open at all.
- */
+/** The two ways in; each opens its own step in the dialog. */
 export function ImportSourceOptions({
-    onFilesChosen,
+    onChooseComputer,
     onChoosePhone,
 }: ImportSourceOptionsProps) {
-    const inputRef = useRef<HTMLInputElement>(null);
-
-    const handleFiles = (event: ChangeEvent<HTMLInputElement>) => {
-        const files = [...(event.target.files ?? [])];
-        event.target.value = "";
-        if (files.length > 0) onFilesChosen(files);
-    };
-
     return (
         <ul className={styles.options}>
             <li>
                 <button
                     type="button"
                     className={styles.option}
-                    onClick={() => inputRef.current?.click()}
+                    onClick={onChooseComputer}
                 >
                     <span className={styles.optionIcon}>
                         <Icon name="laptop" size={20} />
@@ -36,21 +23,13 @@ export function ImportSourceOptions({
                             From this computer
                         </span>
                         <span className={styles.optionDetail}>
-                            Pick files from a folder
+                            Drag files in or pick them from a folder
                         </span>
                     </span>
                     <span className={styles.chevron}>
                         <Icon name="chevron" size={16} />
                     </span>
                 </button>
-                <input
-                    ref={inputRef}
-                    type="file"
-                    accept={IMPORT_ACCEPT}
-                    multiple
-                    hidden
-                    onChange={handleFiles}
-                />
             </li>
             <li>
                 <button

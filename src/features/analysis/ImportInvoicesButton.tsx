@@ -1,40 +1,30 @@
 import { useId, useState } from "react";
 import { ApiError } from "@/shared/lib/http";
 import { Button, Icon } from "@/shared/ui";
-import {
-    checkImportSelection,
-    MAX_IMPORT_FILES,
-    RUN_LIMIT_MESSAGE,
-} from "./analysis.model";
+import { MAX_IMPORT_FILES, RUN_LIMIT_MESSAGE } from "./analysis.model";
 import { ImportSourceDialog } from "./ImportSourceDialog";
 import { useImportInvoices, useRunCapacity } from "./useAnalysis";
 import styles from "./ImportInvoicesButton.module.css";
 
 /**
- * Asks where the invoices come from. Files picked on this computer start a new extraction session,
+ * Asks where the invoices come from. Files from this computer start a new extraction session,
  * followed on its run page; the phone route does the same once the phone sends its files.
  */
 export function ImportInvoicesButton() {
     const noteId = useId();
     const [isChoosingSource, setIsChoosingSource] = useState(false);
-    const [selectionError, setSelectionError] = useState<string | null>(null);
     const importing = useImportInvoices();
     const capacity = useRunCapacity();
 
+    // The dialog has already checked the files and explained any it refused.
     const handleFilesChosen = (files: File[]) => {
         setIsChoosingSource(false);
-        const selection = checkImportSelection(files);
-        if (selection.kind === "invalid") {
-            setSelectionError(selection.message);
-            return;
-        }
-        setSelectionError(null);
-        importing.mutate(selection.files);
+        importing.mutate(files);
     };
 
     const note = capacity.isAtLimit
         ? RUN_LIMIT_MESSAGE
-        : (selectionError ?? importErrorMessage(importing.error));
+        : importErrorMessage(importing.error);
 
     return (
         <div className={styles.import}>

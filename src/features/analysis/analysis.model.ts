@@ -3,12 +3,13 @@ import type {
     EvaluatedEmail,
     GmailAccount,
     ImportedDocumentStatus,
-    ImportSelection,
     RunCapacity,
     RunDetail,
     RunListItem,
     RunStage,
     RunStatus,
+    StagedImportFile,
+    StageImportResult,
     VerdictLabel,
 } from "./types";
 
@@ -95,36 +96,90 @@ function isImportable(file: File): boolean {
     return IMPORT_EXTENSIONS.some((extension) => name.endsWith(extension));
 }
 
-/** The picked files must be 1 to 10 invoices (PDFs or images) of at most 20 MB each. */
-export function checkImportSelection(files: File[]): ImportSelection {
-    if (files.length === 0)
-        return {
-            kind: "invalid",
-            message: "Choose at least one invoice (PDF or image).",
-        };
-    if (files.length > MAX_IMPORT_FILES) {
-        return {
-            kind: "invalid",
-            message: `You can import up to ${MAX_IMPORT_FILES} invoices at once; you chose ${files.length}.`,
-        };
-    }
+function isPdf(file: File): boolean {
+    return (
+        file.type.toLowerCase() === "application/pdf" ||
+        file.name.toLowerCase().endsWith(".pdf")
+    );
+}
+
+/** The same file dropped or picked twice gets the same id, so it is attached once. */
+function stagedId(file: File): string {
+    return `${file.name}:${file.size}:${file.lastModified}`;
+}
+
+/**
+ * Adds a drop or a pick to the invoices waiting to be imported. It is all or nothing: every file
+ * must be a PDF or a supported image of a usable size, and the new ones must fit in the slots left
+ * (10 in total). Files already attached are skipped.
+ */
+export function stageImportFiles(
+    staged: StagedImportFile[],
+    files: File[],
+): StageImportResult {
     const unsupported = files.find((file) => !isImportable(file));
-    if (unsupported) {
+    if (unsupported)
         return {
-            kind: "invalid",
+            kind: "rejected",
             message: `${unsupported.name} is not a PDF or a supported image. Invoices can be imported as ${IMPORT_FORMATS_LABEL}.`,
         };
-    }
-    const tooLarge = files.find(
+    const badSize = files.find(
         (file) => file.size === 0 || file.size > MAX_IMPORT_FILE_BYTES,
     );
-    if (tooLarge) {
+    if (badSize)
         return {
-            kind: "invalid",
-            message: `${tooLarge.name} is empty or larger than 20 MB.`,
+            kind: "rejected",
+            message: `${badSize.name} is empty or larger than ${MAX_IMPORT_FILE_BYTES / 1024 / 1024} MB.`,
         };
+
+    const known = new Set(staged.map((item) => item.id));
+    const fresh: StagedImportFile[] = [];
+    for (const file of files) {
+        const id = stagedId(file);
+        if (known.has(id)) continue;
+        known.add(id);
+        fresh.push({ id, file, format: isPdf(file) ? "pdf" : "image" });
     }
-    return { kind: "valid", files };
+    if (fresh.length === 0)
+        return {
+            kind: "rejected",
+            message:
+                files.length === 1
+                    ? `${files[0]?.name} is already attached.`
+                    : "Those files are already attached.",
+        };
+
+    const remaining = MAX_IMPORT_FILES - staged.length;
+    if (fresh.length > remaining)
+        return {
+            kind: "rejected",
+            message: overLimitMessage(fresh.length, remaining),
+        };
+    return { kind: "added", staged: [...staged, ...fresh] };
+}
+
+function overLimitMessage(count: number, remaining: number): string {
+    if (remaining <= 0)
+        return `${MAX_IMPORT_FILES} invoices are attached, the most for one import. Remove one to add another.`;
+    const fits =
+        remaining === 1 ? "only 1 more fits" : `only ${remaining} more fit`;
+    return `You added ${count} files but ${fits} (${MAX_IMPORT_FILES} per import).`;
+}
+
+/** "PDF", "JPEG", "HEIC": what a staged file is, by its extension (or "Image" when it has none). */
+export function stagedFileKind(item: StagedImportFile): string {
+    if (item.format === "pdf") return "PDF";
+    const dot = item.file.name.lastIndexOf(".");
+    const extension = dot > 0 ? item.file.name.slice(dot + 1) : "";
+    if (!extension) return "Image";
+    const upper = extension.toUpperCase();
+    return upper === "JPG" ? "JPEG" : upper === "TIF" ? "TIFF" : upper;
+}
+
+/** "Import 3 invoices": the button names exactly what it will start. */
+export function importButtonLabel(count: number): string {
+    if (count === 0) return "Import invoices";
+    return count === 1 ? "Import 1 invoice" : `Import ${count} invoices`;
 }
 
 /** "29:41": minutes and seconds left before a phone upload link expires; never negative. */

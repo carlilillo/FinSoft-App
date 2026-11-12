@@ -35,7 +35,10 @@ export function Dialog({
     }, [isOpen]);
 
     // Escape would close the dialog at once; ask the owner to close it so the exit animation plays.
+    // A file input inside fires a bubbling "cancel" too when its picker is dismissed: that one
+    // belongs to the input, not to the dialog, so it must not close anything.
     const handleCancel = (event: SyntheticEvent<HTMLDialogElement>) => {
+        if (event.target !== event.currentTarget) return;
         event.preventDefault();
         onClose();
     };

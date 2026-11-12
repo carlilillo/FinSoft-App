@@ -139,9 +139,17 @@ export type RunCapacity = {
     isGmailRunActive: boolean;
 };
 
-/** A picked set of files is either importable as-is or rejected with a reason the person can act on. */
-export type ImportSelection =
-    { kind: "valid"; files: File[] } | { kind: "invalid"; message: string };
+/** An invoice attached in the import dialog, waiting for "Import". The id is derived from the file. */
+export type StagedImportFile = {
+    id: string;
+    file: File;
+    format: "pdf" | "image";
+};
+
+/** Each drop or pick is attached whole, or refused with a reason the person can act on. */
+export type StageImportResult =
+    | { kind: "added"; staged: StagedImportFile[] }
+    | { kind: "rejected"; message: string };
 
 export type Weekday =
     | "monday"
@@ -171,8 +179,8 @@ export type ScheduleTimeProps = {
     onChange: (patch: Partial<ScheduleUpdate>) => void;
 };
 
-/** The import dialog first asks where the invoices come from; "phone" shows the QR code. */
-export type ImportStep = "choose" | "phone";
+/** The import dialog first asks where the invoices come from; "computer" shows the drop tray, "phone" the QR code. */
+export type ImportStep = "choose" | "computer" | "phone";
 
 /** A single-use link the computer shows as a QR code; it expires 30 minutes after it is created. */
 export type PhoneUploadLink = { id: string; url: string; expiresAt: string };
@@ -190,13 +198,32 @@ export type PhoneUploadLinkState = {
 export type ImportSourceDialogProps = {
     isOpen: boolean;
     onClose: () => void;
-    /** Files picked on this computer: the same import as before the phone option existed. */
+    /** Files dropped or picked on this computer, already checked: the dialog closes and they import. */
     onFilesChosen: (files: File[]) => void;
 };
 export type ImportSourceOptionsProps = {
-    onFilesChosen: (files: File[]) => void;
+    onChooseComputer: () => void;
     onChoosePhone: () => void;
 };
+export type ComputerImportStepProps = {
+    onFilesChosen: (files: File[]) => void;
+    onBack: () => void;
+};
+export type StagedFileListProps = {
+    staged: StagedImportFile[];
+    /** Hands each row's remove button to the step, which moves focus between them. */
+    registerRemoveButton: (
+        id: string,
+        button: HTMLButtonElement | null,
+    ) => void;
+    onRemove: (id: string) => void;
+};
+export type StagedFileRowProps = {
+    item: StagedImportFile;
+    onRemove: (id: string) => void;
+    removeRef: (button: HTMLButtonElement | null) => void;
+};
+export type StagedThumbProps = { item: StagedImportFile };
 export type PhoneLinkStepProps = {
     link: PhoneUploadLink | undefined;
     error: Error | null;

@@ -1,11 +1,11 @@
 import { formatFileSize } from "@/features/invoices";
+import { useFilePreview } from "@/shared/lib/file-preview";
 import { Icon } from "@/shared/ui";
 import type {
     PhotoPreviewProps,
     PickedFileListProps,
     PickedFileRowProps,
 } from "./types";
-import { useFilePreview } from "./usePhoneUpload";
 import styles from "./PhoneUploadPage.module.css";
 
 export function PickedFileList({
