@@ -10,6 +10,7 @@
 /* White cards with a shadow all the way round; hovering only moves the card. */
 .item {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-1);
     padding: var(--space-5);
     border-radius: var(--radius-lg);
@@ -33,6 +34,7 @@
 
 .name {
     width: fit-content;
+    max-width: 100%;
     font-weight: 600;
 }
 
@@ -48,4 +50,14 @@
 .unit {
     color: var(--color-ink-3);
     font-weight: 400;
+}
+
+/* On desktop the cards sit in a grid, so long names and vendors stay on one line. */
+@media (min-width: 48rem) {
+    .name,
+    .vendor {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 }

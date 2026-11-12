@@ -22,7 +22,7 @@ export function ProductList({ products }: ProductListProps) {
                         >
                             {product.displayName}
                         </span>
-                        <span className={styles.meta}>
+                        <span className={`${styles.meta} ${styles.vendor}`}>
                             {product.vendorName}
                             {product.sku ? ` · ${product.sku}` : ""}
                         </span>
