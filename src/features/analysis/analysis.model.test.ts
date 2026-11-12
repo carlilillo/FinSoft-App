@@ -5,6 +5,8 @@ import {
     connectionErrorMessage,
     gmailStartBlockedReason,
     describeStage,
+    displayUrl,
+    formatCountdown,
     initialSelection,
     isRunActive,
     listAddresses,
@@ -187,7 +189,18 @@ describe("imports", () => {
         expect(checkImportSelection(files)).toEqual({ kind: "valid", files });
     });
 
-    it("rejects empty, oversized, non-PDF and too-large selections", () => {
+    it("accepts images as invoices, by type or by extension", () => {
+        const files = [
+            pdf("ticket.jpg", 1_000, "image/jpeg"),
+            pdf("screenshot.png", 1_000, "image/png"),
+            pdf("IMG_0042.HEIC", 1_000, ""),
+            pdf("scan.tiff", 1_000, "application/octet-stream"),
+            pdf("receipt.webp", 1_000, "image/webp"),
+        ];
+        expect(checkImportSelection(files)).toEqual({ kind: "valid", files });
+    });
+
+    it("rejects empty, oversized, unsupported and too-large selections", () => {
         expect(checkImportSelection([]).kind).toBe("invalid");
         expect(
             checkImportSelection(
@@ -195,11 +208,14 @@ describe("imports", () => {
             ),
         ).toMatchObject({ kind: "invalid", message: /up to 10/ });
         expect(
-            checkImportSelection([pdf("photo.png", 10, "image/png")]),
+            checkImportSelection([pdf("logo.svg", 10, "image/svg+xml")]),
         ).toMatchObject({
             kind: "invalid",
-            message: /photo\.png is not a PDF/,
+            message: /logo\.svg is not a PDF or a supported image/,
         });
+        expect(
+            checkImportSelection([pdf("notes.docx", 10, "application/msword")]),
+        ).toMatchObject({ kind: "invalid" });
         expect(
             checkImportSelection([pdf("big.pdf", MAX_IMPORT_FILE_BYTES + 1)]),
         ).toMatchObject({ kind: "invalid", message: /20 MB/ });
@@ -263,6 +279,30 @@ describe("gmail start", () => {
     it("explains the rule when the server refuses a second Gmail run", () => {
         expect(connectionErrorMessage("GMAIL_RUN_ALREADY_ACTIVE")).toMatch(
             /inbox is already being analyzed/,
+        );
+    });
+});
+
+describe("formatCountdown", () => {
+    it("shows minutes and zero-padded seconds", () => {
+        expect(formatCountdown(30 * 60_000)).toBe("30:00");
+        expect(formatCountdown(29 * 60_000 + 41_000)).toBe("29:41");
+        expect(formatCountdown(5_000)).toBe("0:05");
+    });
+
+    it("rounds a partial second up and never goes below zero", () => {
+        expect(formatCountdown(400)).toBe("0:01");
+        expect(formatCountdown(-3_000)).toBe("0:00");
+    });
+});
+
+describe("displayUrl", () => {
+    it("drops the protocol and keeps the rest", () => {
+        expect(displayUrl("https://app.finsift.com/upload/abc")).toBe(
+            "app.finsift.com/upload/abc",
+        );
+        expect(displayUrl("http://localhost:5173/upload/abc")).toBe(
+            "localhost:5173/upload/abc",
         );
     });
 });

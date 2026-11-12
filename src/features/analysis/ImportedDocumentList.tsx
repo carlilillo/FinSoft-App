@@ -11,7 +11,7 @@ const TONE_TO_BADGE = {
     neutral: "neutral",
 } as const;
 
-/** What happened to each PDF of a manual import, with a way into the invoices read from it. */
+/** What happened to each document (PDF or image) of a manual import, with a way into the invoices read from it. */
 export function ImportedDocumentList({ documents }: ImportedDocumentListProps) {
     return (
         <section aria-labelledby="documents-title" className={styles.documents}>

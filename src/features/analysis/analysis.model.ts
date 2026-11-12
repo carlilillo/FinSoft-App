@@ -48,28 +48,71 @@ export function gmailStartBlockedReason(capacity: RunCapacity): string | null {
     return null;
 }
 
-function isPdf(file: File): boolean {
-    return (
-        file.type === "application/pdf" ||
-        (file.type === "" && file.name.toLowerCase().endsWith(".pdf"))
-    );
+/** Invoices can be imported as PDFs or as images: photos, scans and screenshots. */
+export const IMPORT_FORMATS_LABEL =
+    "PDF, JPEG, PNG, WebP, GIF, HEIC/HEIF, AVIF, TIFF or BMP";
+
+const IMPORT_MIME_TYPES = new Set([
+    "application/pdf",
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif",
+    "image/heic",
+    "image/heif",
+    "image/avif",
+    "image/tiff",
+    "image/bmp",
+]);
+
+const IMPORT_EXTENSIONS = [
+    ".pdf",
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".webp",
+    ".gif",
+    ".heic",
+    ".heif",
+    ".avif",
+    ".tif",
+    ".tiff",
+    ".bmp",
+];
+
+/** For the file picker: phones open their photo library, desktops filter by extension. */
+export const IMPORT_ACCEPT = [...IMPORT_MIME_TYPES, ...IMPORT_EXTENSIONS].join(
+    ",",
+);
+
+/**
+ * Browsers often report HEIC photos and some scans with an empty or generic type, so the
+ * extension is checked too. The server has the final word: it reads each file's real format.
+ */
+function isImportable(file: File): boolean {
+    if (IMPORT_MIME_TYPES.has(file.type.toLowerCase())) return true;
+    const name = file.name.toLowerCase();
+    return IMPORT_EXTENSIONS.some((extension) => name.endsWith(extension));
 }
 
-/** The picked files must be 1 to 10 PDFs of at most 20 MB each. */
+/** The picked files must be 1 to 10 invoices (PDFs or images) of at most 20 MB each. */
 export function checkImportSelection(files: File[]): ImportSelection {
     if (files.length === 0)
-        return { kind: "invalid", message: "Choose at least one PDF." };
+        return {
+            kind: "invalid",
+            message: "Choose at least one invoice (PDF or image).",
+        };
     if (files.length > MAX_IMPORT_FILES) {
         return {
             kind: "invalid",
             message: `You can import up to ${MAX_IMPORT_FILES} invoices at once; you chose ${files.length}.`,
         };
     }
-    const notPdf = files.find((file) => !isPdf(file));
-    if (notPdf) {
+    const unsupported = files.find((file) => !isImportable(file));
+    if (unsupported) {
         return {
             kind: "invalid",
-            message: `${notPdf.name} is not a PDF. Only PDF invoices can be imported.`,
+            message: `${unsupported.name} is not a PDF or a supported image. Invoices can be imported as ${IMPORT_FORMATS_LABEL}.`,
         };
     }
     const tooLarge = files.find(
@@ -82,6 +125,19 @@ export function checkImportSelection(files: File[]): ImportSelection {
         };
     }
     return { kind: "valid", files };
+}
+
+/** "29:41": minutes and seconds left before a phone upload link expires; never negative. */
+export function formatCountdown(msLeft: number): string {
+    const totalSeconds = Math.max(0, Math.ceil(msLeft / 1000));
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${String(seconds).padStart(2, "0")}`;
+}
+
+/** The link as people read it: "app.finsift.com/upload/…", without the protocol. */
+export function displayUrl(url: string): string {
+    return url.replace(/^https?:\/\//, "");
 }
 
 function invoicesFoundText(count: number): string {

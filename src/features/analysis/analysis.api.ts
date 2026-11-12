@@ -10,6 +10,8 @@ import type {
     ContinueRequest,
     GmailAccount,
     GmailConsentIntent,
+    PhoneUploadLink,
+    PhoneUploadLinkState,
     RunDetail,
     RunListItem,
     ScheduleUpdate,
@@ -37,11 +39,22 @@ export function startAnalysis(): Promise<{ runId: string }> {
     return apiPost<{ runId: string }>("/analyses");
 }
 
-/** Starts an extraction session from PDFs the person picked, instead of their inbox. */
+/** Starts an extraction session from invoice files (PDFs or images) the person picked, instead of their inbox. */
 export function importInvoices(files: File[]): Promise<{ runId: string }> {
     const form = new FormData();
     for (const file of files) form.append("files", file, file.name);
     return apiPostForm<{ runId: string }>("/analyses/imports", form);
+}
+
+/** A fresh single-use link (shown as a QR code) through which the person's phone imports invoices. */
+export function createPhoneUploadLink(): Promise<PhoneUploadLink> {
+    return apiPost<PhoneUploadLink>("/phone-uploads");
+}
+
+export function fetchPhoneUploadLink(
+    linkId: string,
+): Promise<PhoneUploadLinkState> {
+    return apiGet<PhoneUploadLinkState>(`/phone-uploads/${linkId}`);
 }
 
 export function continueAnalysis(

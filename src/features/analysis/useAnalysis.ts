@@ -74,7 +74,7 @@ export function useStartAnalysis() {
     });
 }
 
-/** Imported PDFs become a new extraction session; the person follows it on its run page. */
+/** Imported invoices (PDFs or images) become a new extraction session; the person follows it on its run page. */
 export function useImportInvoices() {
     const navigate = useNavigate();
     const queryClient = useQueryClient();

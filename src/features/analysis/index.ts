@@ -1,5 +1,9 @@
 export { ImportInvoicesButton } from "./ImportInvoicesButton";
-export { connectionErrorMessage } from "./analysis.model";
+export {
+    connectionErrorMessage,
+    MAX_IMPORT_FILE_BYTES,
+    MAX_IMPORT_FILES,
+} from "./analysis.model";
 export {
     useConnectGmailAccount,
     useDisconnectGmailAccount,
@@ -10,6 +14,8 @@ export type {
     AnalysisSchedule,
     GmailAccount,
     GmailConsentIntent,
+    PhoneUploadLink,
+    PhoneUploadLinkState,
     RunDetail,
     RunListItem,
     ScheduleUpdate,

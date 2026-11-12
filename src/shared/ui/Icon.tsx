@@ -15,6 +15,14 @@ const PATHS: Record<IconName, string> = {
     check: "M5 12l5 5 9-10",
     back: "M15 5l-7 7 7 7",
     logout: "M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10",
+    copy: "M9 9h11v11H9zM5 15H4V4h11v1",
+    external: "M14 4h6v6M20 4l-9 9M18 14v6H4V6h6",
+    phone: "M7 2h10v20H7zM11 18h2",
+    laptop: "M5 5h14v10H5zM2 19h20",
+    image: "M3 5h18v14H3zM3 17l5-5 4 4 3-3 6 6M15 9h.01",
+    document: "M6 2h9l5 5v15H6zM14 2v6h6",
+    close: "M6 6l12 12M18 6L6 18",
+    chevron: "M9 5l7 7-7 7",
 };
 
 export function Icon({ name, size = 18 }: IconProps) {

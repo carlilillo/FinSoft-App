@@ -1,5 +1,6 @@
 .dialog {
     width: min(30rem, calc(100vw - 2rem));
+    max-height: calc(100dvh - 2rem);
     padding: 0;
     border: 0;
     background: transparent;
@@ -7,20 +8,87 @@
     overflow: visible;
 }
 
+/* The backdrop fades in with the panel and out with it (the panel's spring is driven by Motion). */
 .dialog::backdrop {
     background: rgb(20 12 6 / 40%);
     backdrop-filter: blur(3px);
+    opacity: 1;
+    transition: opacity var(--duration-base) var(--ease-out);
 }
 
+@starting-style {
+    .dialog[open]::backdrop {
+        opacity: 0;
+    }
+}
+
+.dialog[data-state="closing"]::backdrop {
+    opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dialog::backdrop {
+        transition: none;
+    }
+}
+
+/* minmax(0, 1fr): long unbreakable content (a URL, a file name) ellipsizes instead of widening the panel. */
 .panel {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-4);
-    padding: var(--space-6);
+    max-height: calc(100dvh - 2rem);
+    padding: var(--space-5);
+    overflow-y: auto;
     border-radius: var(--radius-lg);
     background: var(--color-surface);
     box-shadow: 0 30px 80px -30px rgb(0 0 0 / 45%);
 }
 
+.header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.heading {
+    display: grid;
+    gap: var(--space-1);
+}
+
 .title {
     font-size: var(--text-lg);
+}
+
+.description {
+    color: var(--color-ink-3);
+    font-size: var(--text-sm);
+}
+
+.close {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    margin: -0.25rem -0.5rem 0 0;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-ink-3);
+    cursor: pointer;
+    transition:
+        background-color var(--duration-fast) var(--ease-out),
+        color var(--duration-fast) var(--ease-out);
+}
+
+.close:hover {
+    background: var(--color-surface-2);
+    color: var(--color-ink);
+}
+
+.close:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
 }

@@ -1,10 +1,11 @@
+import type { ReactNode } from "react";
 import type { InvoiceSummary } from "@/features/invoices";
 import type { ProductSummary } from "@/features/products";
 
 export type RunStatus =
     "pending" | "ingesting" | "extracting" | "awaiting_review" | "failed";
 
-/** Where a session's documents come from: the Gmail inbox, or PDFs imported by hand. */
+/** Where a session's documents come from: the Gmail inbox, or invoices (PDFs or images) imported by hand. */
 export type RunSource = "gmail" | "upload";
 
 export type ImportedDocumentStatus =
@@ -169,3 +170,60 @@ export type ScheduleTimeProps = {
     isPaused: boolean;
     onChange: (patch: Partial<ScheduleUpdate>) => void;
 };
+
+/** The import dialog first asks where the invoices come from; "phone" shows the QR code. */
+export type ImportStep = "choose" | "phone";
+
+/** A single-use link the computer shows as a QR code; it expires 30 minutes after it is created. */
+export type PhoneUploadLink = { id: string; url: string; expiresAt: string };
+
+export type PhoneUploadLinkStatus = "open" | "expired" | "used";
+
+/** What the computer learns while it waits: once used, `runId` is the session the phone's invoices started. */
+export type PhoneUploadLinkState = {
+    id: string;
+    status: PhoneUploadLinkStatus;
+    runId: string | null;
+    expiresAt: string;
+};
+
+export type ImportSourceDialogProps = {
+    isOpen: boolean;
+    onClose: () => void;
+    /** Files picked on this computer: the same import as before the phone option existed. */
+    onFilesChosen: (files: File[]) => void;
+};
+export type ImportSourceOptionsProps = {
+    onFilesChosen: (files: File[]) => void;
+    onChoosePhone: () => void;
+};
+export type PhoneLinkStepProps = {
+    link: PhoneUploadLink | undefined;
+    error: Error | null;
+    onRenew: () => void;
+    onBack: () => void;
+};
+export type PhoneImportPanelProps = {
+    link: PhoneUploadLink;
+    onRenew: () => void;
+    onBack: () => void;
+};
+/** The phone step's layout, shared by the real panel and its loading placeholder. */
+export type PhoneImportFrameProps = {
+    code: ReactNode;
+    status: ReactNode;
+    link: ReactNode;
+    note: ReactNode;
+    onBack: () => void;
+};
+export type LinkStatusProps = { status: PhoneUploadLinkStatus };
+export type BackButtonProps = { onBack: () => void };
+export type LinkNoteProps = {
+    status: PhoneUploadLinkStatus;
+    expiresAt: string;
+};
+export type LinkCountdownProps = { expiresAt: string };
+export type QrCodeProps = { value: string; label: string };
+export type CopyableLinkProps = { url: string };
+/** Copying to the clipboard can fail (permissions, insecure context): the person is told either way. */
+export type CopyStatus = "idle" | "copied" | "failed";

@@ -48,6 +48,8 @@ export type SwitchProps = Omit<
 export type DialogProps = {
     isOpen: boolean;
     title: string;
+    /** One short line under the title. */
+    description?: string;
     onClose: () => void;
     children: ReactNode;
 };
@@ -83,7 +85,15 @@ export type IconName =
     | "mail"
     | "check"
     | "back"
-    | "logout";
+    | "logout"
+    | "copy"
+    | "external"
+    | "phone"
+    | "laptop"
+    | "image"
+    | "document"
+    | "close"
+    | "chevron";
 
 export type IconProps = { name: IconName; size?: number };
 

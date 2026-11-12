@@ -2,6 +2,8 @@ import type {
     AnalysisSchedule,
     GmailAccount,
     GmailConsentIntent,
+    PhoneUploadLink,
+    PhoneUploadLinkState,
     RunDetail,
     RunListItem,
     ScheduleUpdate,
@@ -18,6 +20,7 @@ import type {
     ProductSummary,
 } from "@/features/products";
 import type { FixtureInvoice } from "@/app/types";
+import { ApiError } from "@/shared/lib/http";
 import type { ApiRequest } from "@/shared/types";
 import { INVOICES, PREVIEW_RUN_ID, PRODUCTS, VENDORS } from "./fixture-data";
 
@@ -30,8 +33,14 @@ const RUN_DURATION_MS = 20_000;
 const runStarts = new Map<string, number>([
     [PREVIEW_RUN_ID, Date.now() - 3_600_000],
 ]);
-/** Preview imports: run id → names of the PDFs the person picked. */
+/** Preview imports: run id → names of the files (PDFs or images) the person picked. */
 const importedRuns = new Map<string, string[]>();
+const PHONE_LINK_TTL_MS = 30 * 60_000;
+/** Preview phone upload links, by token. Open the link in another tab of this browser to try the phone page. */
+const phoneLinks = new Map<
+    string,
+    { id: string; expiresAt: number; runId: string | null }
+>();
 const DEFAULT_GMAIL_ACCOUNTS: GmailAccount[] = [
     {
         id: "01JG0000000000000000000001",
@@ -98,6 +107,18 @@ const ROUTES: ReadonlyArray<[string, RegExp, Handler]> = [
         "POST",
         /^\/analyses\/imports$/,
         (_url, _id, body) => ({ runId: startImport(body) }),
+    ],
+    ["POST", /^\/phone-uploads$/, () => createPhoneLink()],
+    ["GET", /^\/phone-uploads\/[^/]+$/, (_url, id) => phoneLinkState(id)],
+    [
+        "GET",
+        /^\/phone-upload-links\/[^/]+$/,
+        (_url, token) => describePhoneLink(token),
+    ],
+    [
+        "POST",
+        /^\/phone-upload-links\/[^/]+\/files$/,
+        (_url, token, body) => submitPhoneLink(token, body),
     ],
     ["GET", /^\/analyses$/, () => runList()],
     ["POST", /^\/analyses\/[^/]+\/continue$/, (_url, id) => continueRun(id)],
@@ -403,6 +424,71 @@ function startImport(body: unknown): string {
     const id = startRun();
     importedRuns.set(id, files);
     return id;
+}
+
+function createPhoneLink(): PhoneUploadLink {
+    const token = Array.from(
+        crypto.getRandomValues(new Uint8Array(32)),
+        (byte) => byte.toString(16).padStart(2, "0"),
+    ).join("");
+    const link = {
+        id: `01JP${String(Date.now()).padStart(22, "0")}`.slice(0, 26),
+        expiresAt: Date.now() + PHONE_LINK_TTL_MS,
+        runId: null,
+    };
+    phoneLinks.set(token, link);
+    return {
+        id: link.id,
+        url: `${window.location.origin}/upload/${token}`,
+        expiresAt: new Date(link.expiresAt).toISOString(),
+    };
+}
+
+function phoneLinkState(id: string): PhoneUploadLinkState {
+    const link = [...phoneLinks.values()].find((item) => item.id === id);
+    if (!link) throw new ApiError(404, "Phone upload link not found", null);
+    return {
+        id,
+        status: phoneLinkStatus(link),
+        runId: link.runId,
+        expiresAt: new Date(link.expiresAt).toISOString(),
+    };
+}
+
+function phoneLinkStatus(link: { expiresAt: number; runId: string | null }) {
+    if (link.runId) return "used";
+    return Date.now() >= link.expiresAt ? "expired" : "open";
+}
+
+function openPhoneLink(token: string) {
+    const link = phoneLinks.get(token);
+    if (!link) throw new ApiError(404, "This upload link is not valid.", null);
+    const status = phoneLinkStatus(link);
+    if (status === "used")
+        throw new ApiError(
+            410,
+            "The invoices for this link were already sent.",
+            "PHONE_UPLOAD_LINK_USED",
+        );
+    if (status === "expired")
+        throw new ApiError(
+            410,
+            "This upload link has expired.",
+            "PHONE_UPLOAD_LINK_EXPIRED",
+        );
+    return link;
+}
+
+function describePhoneLink(token: string) {
+    return {
+        expiresAt: new Date(openPhoneLink(token).expiresAt).toISOString(),
+    };
+}
+
+function submitPhoneLink(token: string, body: unknown) {
+    const link = openPhoneLink(token);
+    link.runId = startImport(body);
+    return { runId: link.runId };
 }
 
 function continueRun(id: string) {

@@ -10,6 +10,7 @@ import {
 import { loadDashboardPage } from "@/features/dashboard";
 import { loadInvoiceDetailPage, loadInvoicesPage } from "@/features/invoices";
 import { loadLandingPage } from "@/features/landing";
+import { loadPhoneUploadPage } from "@/features/phone-upload";
 import { loadProductDetailPage, loadProductsPage } from "@/features/products";
 import { loadSettingsPage } from "@/features/settings";
 import { AppLayout, sectionLabel, trackNavDirection } from "@/features/shell";
@@ -37,6 +38,8 @@ export const router = createBrowserRouter([
                   }
                 : { path: "/sso-callback", lazy: page(loadSsoCallbackPage) },
             { path: "/sign-up/continue", lazy: page(loadContinueSignUpPage) },
+            // Opened on a phone from the QR code: no sign-in, the token in the path is the credential.
+            { path: "/upload/:token", lazy: page(loadPhoneUploadPage) },
             {
                 element: (
                     <RequireAuth>

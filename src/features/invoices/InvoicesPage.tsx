@@ -70,8 +70,8 @@ function InvoiceResults({ query, search, onPageChange }: InvoiceResultsProps) {
                     </ButtonLink>
                 }
             >
-                Run an analysis or import your PDF invoices, and everything
-                FinSift extracts will be listed here.
+                Run an analysis or import your invoices (PDFs or photos), and
+                everything FinSift extracts will be listed here.
             </EmptyState>
         );
     }
