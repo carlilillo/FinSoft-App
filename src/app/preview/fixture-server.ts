@@ -36,6 +36,7 @@ const runStarts = new Map<string, number>([
 /** Preview imports: run id → names of the files (PDFs or images) the person picked. */
 const importedRuns = new Map<string, string[]>();
 const PHONE_LINK_TTL_MS = 30 * 60_000;
+const PHONE_LINK_MIN_REUSE_MS = 5 * 60_000;
 /** Preview phone upload links, by token. Open the link in another tab of this browser to try the phone page. */
 const phoneLinks = new Map<
     string,
@@ -426,7 +427,17 @@ function startImport(body: unknown): string {
     return id;
 }
 
+/** Like the server: shows the open link again while 5+ minutes are left, else creates one. */
 function createPhoneLink(): PhoneUploadLink {
+    const reusable = [...phoneLinks.entries()]
+        .filter(
+            ([, link]) =>
+                phoneLinkStatus(link) === "open" &&
+                link.expiresAt - Date.now() >= PHONE_LINK_MIN_REUSE_MS,
+        )
+        .sort(([, a], [, b]) => b.expiresAt - a.expiresAt)[0];
+    if (reusable) return toPhoneLink(...reusable);
+
     const token = Array.from(
         crypto.getRandomValues(new Uint8Array(32)),
         (byte) => byte.toString(16).padStart(2, "0"),
@@ -437,6 +448,13 @@ function createPhoneLink(): PhoneUploadLink {
         runId: null,
     };
     phoneLinks.set(token, link);
+    return toPhoneLink(token, link);
+}
+
+function toPhoneLink(
+    token: string,
+    link: { id: string; expiresAt: number },
+): PhoneUploadLink {
     return {
         id: link.id,
         url: `${window.location.origin}/upload/${token}`,
