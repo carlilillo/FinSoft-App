@@ -8,8 +8,8 @@ const history = [
         issueDate: "2026-10-01",
         currency: "EUR",
         quantity: 1,
-        unitPriceNetCents: 1000,
-        unitPriceGrossCents: null,
+        unitPriceNet: "10.00",
+        unitPriceGross: null,
         vatRate: 21,
     },
     {
@@ -18,8 +18,8 @@ const history = [
         issueDate: "2026-10-15",
         currency: "USD",
         quantity: 1,
-        unitPriceNetCents: 900,
-        unitPriceGrossCents: null,
+        unitPriceNet: "9.00",
+        unitPriceGross: null,
         vatRate: null,
     },
     {
@@ -28,18 +28,29 @@ const history = [
         issueDate: "2026-11-01",
         currency: "EUR",
         quantity: 2,
-        unitPriceNetCents: 1100,
-        unitPriceGrossCents: 1331,
+        unitPriceNet: "11.00",
+        unitPriceGross: "13.31",
         vatRate: 21,
     },
 ];
 
 describe("price history", () => {
     it("keeps one currency and derives gross prices from the VAT rate when missing", () => {
-        expect(toPriceChartPoints(history, "EUR")).toEqual([
-            { date: "2026-10-01", net: 1000, gross: 1210, invoiceNumber: "1" },
-            { date: "2026-11-01", net: 1100, gross: 1331, invoiceNumber: "3" },
-        ]);
+        const [first, second] = toPriceChartPoints(history, "EUR");
+        expect(first).toMatchObject({
+            date: "2026-10-01",
+            net: 10,
+            netAmount: "10.00",
+            invoiceNumber: "1",
+        });
+        expect(first?.gross).toBeCloseTo(12.1);
+        expect(second).toEqual({
+            date: "2026-11-01",
+            net: 11,
+            netAmount: "11.00",
+            gross: 13.31,
+            invoiceNumber: "3",
+        });
     });
 
     it("summarizes the change since the first purchase", () => {
@@ -48,12 +59,27 @@ describe("price history", () => {
             "EUR",
         );
         expect(stats).toMatchObject({
-            firstCents: 1000,
-            lastCents: 1100,
-            minCents: 1000,
-            maxCents: 1100,
+            first: "10.00",
+            last: "11.00",
+            min: "10.00",
+            max: "11.00",
         });
         expect(stats?.changePercent).toBeCloseTo(10);
         expect(computePriceStats([], "EUR")).toBeNull();
+    });
+
+    it("keeps sub-cent usage rates exact for display", () => {
+        const usage = [
+            {
+                ...history[0]!,
+                unitPriceNet: "0.00000023148148",
+                vatRate: null,
+            },
+        ];
+        const stats = computePriceStats(
+            toPriceChartPoints(usage, "EUR"),
+            "EUR",
+        );
+        expect(stats?.last).toBe("0.00000023148148");
     });
 });

@@ -21,15 +21,15 @@ describe("toSpendOverview", () => {
             currencies: [
                 {
                     currency: "EUR",
-                    totalCents: 30000,
-                    previousTotalCents: 20000,
+                    total: "300.00",
+                    previousTotal: "200.00",
                     invoiceCount: 3,
                     days: [],
                 },
                 {
                     currency: "GBP",
-                    totalCents: 1200,
-                    previousTotalCents: 0,
+                    total: "12.00",
+                    previousTotal: "0",
                     invoiceCount: 1,
                     days: [],
                 },
@@ -38,9 +38,9 @@ describe("toSpendOverview", () => {
         expect(overview).toMatchObject({
             status: "ready",
             currency: "EUR",
-            totalCents: 30000,
+            total: "300.00",
             changePercent: 50,
-            averageCents: 10000,
+            average: 100,
             otherCurrencies: ["GBP"],
         });
     });

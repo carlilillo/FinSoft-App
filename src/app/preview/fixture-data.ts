@@ -139,13 +139,13 @@ export const INVOICES: FixtureInvoice[] = [
             {
                 productKey: "paper",
                 quantity: 4,
-                unitNetCents: 1500,
+                unitNet: "15.00",
                 vatRate: 21,
             },
             {
                 productKey: "pens",
                 quantity: 2,
-                unitNetCents: 2000,
+                unitNet: "20.00",
                 vatRate: 21,
             },
         ],
@@ -162,13 +162,13 @@ export const INVOICES: FixtureInvoice[] = [
             {
                 productKey: "flatwhite",
                 quantity: 2,
-                unitNetCents: 300,
+                unitNet: "3.00",
                 vatRate: 20,
             },
             {
                 productKey: "bread",
                 quantity: 1,
-                unitNetCents: 400,
+                unitNet: "4.00",
                 vatRate: 20,
             },
         ],
@@ -182,11 +182,11 @@ export const INVOICES: FixtureInvoice[] = [
         language: "es",
         paymentMethod: "Card",
         lines: [
-            { productKey: "milk", quantity: 6, unitNetCents: 92, vatRate: 4 },
+            { productKey: "milk", quantity: 6, unitNet: "0.92", vatRate: 4 },
             {
                 productKey: "coffee",
                 quantity: 2,
-                unitNetCents: 289,
+                unitNet: "2.89",
                 vatRate: 10,
             },
         ],
@@ -203,7 +203,7 @@ export const INVOICES: FixtureInvoice[] = [
             {
                 productKey: "power",
                 quantity: 312,
-                unitNetCents: 19,
+                unitNet: "0.19",
                 vatRate: 21,
             },
         ],
@@ -220,7 +220,7 @@ export const INVOICES: FixtureInvoice[] = [
             {
                 productKey: "figma",
                 quantity: 2,
-                unitNetCents: 1500,
+                unitNet: "15.00",
                 vatRate: 21,
             },
         ],
@@ -234,11 +234,11 @@ export const INVOICES: FixtureInvoice[] = [
         language: "es",
         paymentMethod: "Card",
         lines: [
-            { productKey: "milk", quantity: 6, unitNetCents: 89, vatRate: 4 },
+            { productKey: "milk", quantity: 6, unitNet: "0.89", vatRate: 4 },
             {
                 productKey: "coffee",
                 quantity: 1,
-                unitNetCents: 279,
+                unitNet: "2.79",
                 vatRate: 10,
             },
         ],
@@ -256,7 +256,7 @@ export const INVOICES: FixtureInvoice[] = [
             {
                 productKey: "paper",
                 quantity: 6,
-                unitNetCents: 1450,
+                unitNet: "14.50",
                 vatRate: 21,
             },
         ],
@@ -270,11 +270,11 @@ export const INVOICES: FixtureInvoice[] = [
         language: "es",
         paymentMethod: "Card",
         lines: [
-            { productKey: "milk", quantity: 12, unitNetCents: 85, vatRate: 4 },
+            { productKey: "milk", quantity: 12, unitNet: "0.85", vatRate: 4 },
             {
                 productKey: "coffee",
                 quantity: 2,
-                unitNetCents: 269,
+                unitNet: "2.69",
                 vatRate: 10,
             },
         ],
@@ -291,7 +291,7 @@ export const INVOICES: FixtureInvoice[] = [
             {
                 productKey: "power",
                 quantity: 280,
-                unitNetCents: 17,
+                unitNet: "0.17",
                 vatRate: 21,
             },
         ],
@@ -308,7 +308,7 @@ export const INVOICES: FixtureInvoice[] = [
             {
                 productKey: "figma",
                 quantity: 2,
-                unitNetCents: 1500,
+                unitNet: "15.00",
                 vatRate: 21,
             },
         ],
@@ -322,11 +322,11 @@ export const INVOICES: FixtureInvoice[] = [
         language: "es",
         paymentMethod: "Card",
         lines: [
-            { productKey: "milk", quantity: 6, unitNetCents: 82, vatRate: 4 },
+            { productKey: "milk", quantity: 6, unitNet: "0.82", vatRate: 4 },
             {
                 productKey: "coffee",
                 quantity: 1,
-                unitNetCents: 259,
+                unitNet: "2.59",
                 vatRate: 10,
             },
         ],
@@ -343,13 +343,13 @@ export const INVOICES: FixtureInvoice[] = [
             {
                 productKey: "paper",
                 quantity: 5,
-                unitNetCents: 1400,
+                unitNet: "14.00",
                 vatRate: 21,
             },
             {
                 productKey: "pens",
                 quantity: 1,
-                unitNetCents: 1900,
+                unitNet: "19.00",
                 vatRate: 21,
             },
         ],

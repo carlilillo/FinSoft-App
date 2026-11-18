@@ -1,4 +1,4 @@
-import { percentChange } from "@/shared/lib/money";
+import { percentChange, toNumber } from "@/shared/lib/money";
 import type {
     PriceChartPoint,
     PricePoint,
@@ -15,8 +15,12 @@ export function toPriceChartPoints(
         .filter((point) => point.currency === currency)
         .map((point) => ({
             date: point.issueDate,
-            net: point.unitPriceNetCents,
-            gross: point.unitPriceGrossCents ?? grossFromRate(point),
+            net: toNumber(point.unitPriceNet),
+            netAmount: point.unitPriceNet,
+            gross:
+                point.unitPriceGross === null
+                    ? grossFromRate(point)
+                    : toNumber(point.unitPriceGross),
             invoiceNumber: point.invoiceNumber,
         }));
 }
@@ -28,20 +32,21 @@ export function computePriceStats(
     const first = points[0];
     const last = points.at(-1);
     if (!first || !last) return null;
-    const nets = points.map((point) => point.net);
+    const byPrice = points.toSorted((a, b) => a.net - b.net);
     return {
         currency,
-        firstCents: first.net,
-        lastCents: last.net,
-        minCents: Math.min(...nets),
-        maxCents: Math.max(...nets),
+        first: first.netAmount,
+        last: last.netAmount,
+        min: byPrice[0]?.netAmount ?? first.netAmount,
+        max: byPrice.at(-1)?.netAmount ?? last.netAmount,
         changePercent: percentChange(last.net, first.net),
     };
 }
 
+/** Gross unit price for the chart when only the VAT rate is printed (display math, not rounded). */
 function grossFromRate(point: PricePoint): number | null {
     if (point.vatRate === null) return null;
-    return Math.round(point.unitPriceNetCents * (1 + point.vatRate / 100));
+    return toNumber(point.unitPriceNet) * (1 + point.vatRate / 100);
 }
 
 export function mainCurrency(product: ProductDetail): string {

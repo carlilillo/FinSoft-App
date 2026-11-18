@@ -9,10 +9,10 @@ import type { InvoiceDetail } from "./types";
 
 const invoice = {
     invoiceNumber: null,
-    subtotalCents: 10000,
-    vatCents: 2100,
-    withholdingCents: 1500,
-    totalCents: 10600,
+    subtotal: "100.00",
+    vat: "21.00",
+    withholding: "15.00",
+    total: "106.00",
     vendor: {
         id: "V",
         name: "Papelería Martínez",
@@ -32,12 +32,12 @@ describe("invoice model", () => {
 
     it("shows withholding as a deduction before the total", () => {
         expect(
-            invoiceTotals(invoice).map((row) => [row.label, row.cents]),
+            invoiceTotals(invoice).map((row) => [row.label, row.amount]),
         ).toEqual([
-            ["Subtotal (excl. VAT)", 10000],
-            ["VAT", 2100],
-            ["Withholding", -1500],
-            ["Total", 10600],
+            ["Subtotal (excl. VAT)", "100.00"],
+            ["VAT", "21.00"],
+            ["Withholding", "-15.00"],
+            ["Total", "106.00"],
         ]);
     });
 

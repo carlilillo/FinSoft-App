@@ -28,7 +28,7 @@ export function PurchaseTable({ points }: PurchaseTableProps) {
             </thead>
             <tbody>
                 {points.toReversed().map((point) => (
-                    <tr key={`${point.invoiceId}-${point.unitPriceNetCents}`}>
+                    <tr key={`${point.invoiceId}-${point.unitPriceNet}`}>
                         <td>
                             <time dateTime={point.issueDate}>
                                 {formatDate(point.issueDate)}
@@ -43,16 +43,13 @@ export function PurchaseTable({ points }: PurchaseTableProps) {
                             {point.quantity}
                         </td>
                         <td className={`numeric ${styles.numeric}`}>
-                            {formatMoney(
-                                point.unitPriceNetCents,
-                                point.currency,
-                            )}
+                            {formatMoney(point.unitPriceNet, point.currency)}
                         </td>
                         <td className={`numeric ${styles.numeric}`}>
-                            {point.unitPriceGrossCents === null
+                            {point.unitPriceGross === null
                                 ? "—"
                                 : formatMoney(
-                                      point.unitPriceGrossCents,
+                                      point.unitPriceGross,
                                       point.currency,
                                   )}
                         </td>

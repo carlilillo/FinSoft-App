@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { Amount } from "@/shared/lib/money";
 
 export type SiftVerdict = "invoice" | "skipped";
 
@@ -15,8 +16,8 @@ export type SampleEmail = {
 export type SampleLine = {
     description: string;
     quantity: number;
-    unitCents: number;
-    totalCents: number;
+    unit: Amount;
+    total: Amount;
 };
 
 export type SampleInvoice = {
@@ -29,12 +30,12 @@ export type SampleInvoice = {
     /** Locale the amounts are printed in on the original document. */
     locale: string;
     lines: SampleLine[];
-    subtotalCents: number;
+    subtotal: Amount;
     vatRate: number;
-    vatCents: number;
+    vat: Amount;
     withholdingRate: number | null;
-    withholdingCents: number | null;
-    totalCents: number;
+    withholding: Amount | null;
+    total: Amount;
 };
 
 /** Where the hero's inbox review stands: an email is "scanning" while FinSift reads it. */
@@ -50,12 +51,12 @@ export type SiftProgress = {
 
 export type StackPose = { y: number; scale: number };
 
-export type PricePoint = { month: string; monthName: string; netCents: number };
+export type PricePoint = { month: string; monthName: string; net: Amount };
 
 export type ChartPoint = PricePoint & {
     x: number;
     y: number;
-    grossCents: number;
+    gross: Amount;
 };
 
 export type PriceChart = {
@@ -66,7 +67,8 @@ export type PriceChart = {
     path: string;
     /** Edges of the plotting area inside the SVG box. */
     plot: { left: number; right: number; top: number; bottom: number };
-    ticks: Array<{ y: number; cents: number }>;
+    /** `value` is display math (an axis label), not an exact amount. */
+    ticks: Array<{ y: number; value: number }>;
 };
 
 export type GlossaryTerm = { spanish: string; english: string };

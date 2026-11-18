@@ -1,14 +1,18 @@
 import type { ReactNode } from "react";
 import type { InvoiceSummary } from "@/features/invoices";
+import type { Amount } from "@/shared/lib/money";
 
 export type SpendRange = "7d" | "14d" | "30d";
 
-export type SpendDay = { date: string; totalCents: number };
+export type SpendDay = { date: string; total: Amount };
+
+/** A day as the chart plots it: a number for the y position only. */
+export type SpendChartPoint = { date: string; total: number };
 
 export type CurrencySpend = {
     currency: string;
-    totalCents: number;
-    previousTotalCents: number;
+    total: Amount;
+    previousTotal: Amount;
     invoiceCount: number;
     days: SpendDay[];
 };
@@ -31,10 +35,11 @@ export type SpendOverview =
           status: "ready";
           range: SpendRange;
           currency: string;
-          totalCents: number;
+          total: Amount;
           changePercent: number | null;
           invoiceCount: number;
-          averageCents: number;
+          /** Display math, not an exact amount. */
+          average: number;
           days: SpendDay[];
           otherCurrencies: string[];
       };

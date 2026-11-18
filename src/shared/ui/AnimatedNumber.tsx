@@ -21,7 +21,7 @@ function TweenNumber({ value, format }: AnimatedNumberProps) {
             duration: 0.7,
             ease: [0.22, 1, 0.36, 1],
             onUpdate: (latest) => {
-                node.textContent = format(Math.round(latest));
+                node.textContent = format(latest);
             },
         });
         previous.current = value;

@@ -1,13 +1,13 @@
 import { m } from "motion/react";
 import { type KeyboardEvent, type PointerEvent, useState } from "react";
-import { formatMoney } from "@/shared/lib/money";
+import { type Amount, formatMoney } from "@/shared/lib/money";
 import { PAPER_PRICES, PAPER_VAT_RATE } from "./landing.content";
 import { nearestPointIndex, priceChart } from "./landing.model";
 import styles from "./PriceChartFigure.module.css";
 
 const chart = priceChart(PAPER_PRICES, PAPER_VAT_RATE);
 const xs = chart.points.map((point) => point.x);
-const euros = (cents: number) => formatMoney(cents, "EUR", "es-ES");
+const euros = (amount: Amount | number) => formatMoney(amount, "EUR", "es-ES");
 
 export function PriceChartFigure() {
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -16,7 +16,7 @@ export function PriceChartFigure() {
     const last = chart.points.at(-1);
     const summary =
         first && last
-            ? `Price per box went from ${euros(first.netCents)} in ${first.monthName} to ${euros(last.netCents)} in ${last.monthName}. Use the arrow keys to read each month.`
+            ? `Price per box went from ${euros(first.net)} in ${first.monthName} to ${euros(last.net)} in ${last.monthName}. Use the arrow keys to read each month.`
             : "Price per box by month.";
 
     const handlePointerMove = (event: PointerEvent<SVGSVGElement>) => {
@@ -56,7 +56,7 @@ export function PriceChartFigure() {
                     onKeyDown={handleKeyDown}
                 >
                     {chart.ticks.map((tick) => (
-                        <g key={tick.cents}>
+                        <g key={tick.value}>
                             <line
                                 className={styles.grid}
                                 x1={chart.plot.left}
@@ -71,7 +71,7 @@ export function PriceChartFigure() {
                                 textAnchor="end"
                                 dominantBaseline="middle"
                             >
-                                {euros(tick.cents)}
+                                {euros(tick.value)}
                             </text>
                         </g>
                     ))}
@@ -120,7 +120,7 @@ export function PriceChartFigure() {
                             y={first.y - 14}
                             textAnchor="start"
                         >
-                            {euros(first.netCents)}
+                            {euros(first.net)}
                         </text>
                     )}
                     {last && (
@@ -130,7 +130,7 @@ export function PriceChartFigure() {
                             y={last.y}
                             dominantBaseline="middle"
                         >
-                            {euros(last.netCents)}
+                            {euros(last.net)}
                         </text>
                     )}
                 </svg>
@@ -146,14 +146,12 @@ export function PriceChartFigure() {
                         <strong>{active.monthName} 2026</strong>
                         <span>
                             Before VAT{" "}
-                            <span className="numeric">
-                                {euros(active.netCents)}
-                            </span>
+                            <span className="numeric">{euros(active.net)}</span>
                         </span>
                         <span>
                             With VAT{" "}
                             <span className="numeric">
-                                {euros(active.grossCents)}
+                                {euros(active.gross)}
                             </span>
                         </span>
                     </div>
@@ -172,8 +170,8 @@ export function PriceChartFigure() {
                     {chart.points.map((point) => (
                         <tr key={point.month}>
                             <th scope="row">{point.month}</th>
-                            <td>{euros(point.netCents)}</td>
-                            <td>{euros(point.grossCents)}</td>
+                            <td>{euros(point.net)}</td>
+                            <td>{euros(point.gross)}</td>
                         </tr>
                     ))}
                 </tbody>

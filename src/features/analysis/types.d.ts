@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { InvoiceSummary } from "@/features/invoices";
 import type { ProductSummary } from "@/features/products";
+import type { Amount } from "@/shared/lib/money";
 
 export type RunStatus =
     "pending" | "ingesting" | "extracting" | "awaiting_review" | "failed";
@@ -30,10 +31,10 @@ export type RunProgress = {
 export type CurrencyTotals = {
     currency: string;
     invoiceCount: number;
-    netCents: number;
-    vatCents: number;
-    withholdingCents: number;
-    grossCents: number;
+    net: Amount;
+    vat: Amount;
+    withholding: Amount;
+    gross: Amount;
 };
 
 export type EvaluatedEmail = {

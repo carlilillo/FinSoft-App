@@ -9,6 +9,7 @@ import {
 } from "recharts";
 import { formatShortDate } from "@/shared/lib/dates";
 import { formatMoney, formatMoneyCompact } from "@/shared/lib/money";
+import { toSpendChartPoints } from "./insights.model";
 import type { ChartTooltipProps, SpendChartProps } from "./types";
 import styles from "./SpendChart.module.css";
 
@@ -20,7 +21,7 @@ export function SpendChart({ days, currency, range }: SpendChartProps) {
         <figure className={styles.figure}>
             <ResponsiveContainer width="100%" height={260}>
                 <AreaChart
-                    data={days}
+                    data={toSpendChartPoints(days)}
                     margin={{ top: 12, right: 8, bottom: 0, left: 0 }}
                 >
                     <CartesianGrid
@@ -37,8 +38,8 @@ export function SpendChart({ days, currency, range }: SpendChartProps) {
                         minTickGap={24}
                     />
                     <YAxis
-                        tickFormatter={(cents: number) =>
-                            formatMoneyCompact(cents, currency)
+                        tickFormatter={(amount: number) =>
+                            formatMoneyCompact(amount, currency)
                         }
                         tickLine={false}
                         axisLine={false}
@@ -55,7 +56,7 @@ export function SpendChart({ days, currency, range }: SpendChartProps) {
                     <Area
                         key={range}
                         type="monotone"
-                        dataKey="totalCents"
+                        dataKey="total"
                         stroke="var(--chart-1)"
                         strokeWidth={2}
                         fill="var(--color-accent-fill)"

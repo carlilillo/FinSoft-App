@@ -50,10 +50,10 @@ function InvoiceRow({ invoice }: InvoiceRowProps) {
                 </time>
             </td>
             <td className={`numeric ${styles.numeric} ${styles.secondary}`}>
-                {formatMoney(invoice.vatCents, invoice.currency)}
+                {formatMoney(invoice.vat, invoice.currency)}
             </td>
             <td className={`numeric ${styles.numeric} ${styles.total}`}>
-                {formatMoney(invoice.totalCents, invoice.currency)}
+                {formatMoney(invoice.total, invoice.currency)}
             </td>
         </tr>
     );

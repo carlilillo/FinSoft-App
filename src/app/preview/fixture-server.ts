@@ -151,23 +151,55 @@ function isoDaysAgo(days: number): string {
     return date.toISOString().slice(0, 10);
 }
 
+/**
+ * The mock computes in whole cents (its fixtures are all two-decimal EUR prices) so its sums stay exact,
+ * and answers with decimal strings exactly like the API does.
+ */
+function toMinor(amount: string): number {
+    return Math.round(Number(amount) * 100);
+}
+
+function fromMinor(minor: number): string {
+    return (minor / 100).toFixed(2);
+}
+
+function sumOf(amounts: Array<string | null>): string {
+    return fromMinor(
+        amounts.reduce(
+            (sum, amount) => sum + (amount ? toMinor(amount) : 0),
+            0,
+        ),
+    );
+}
+
 function totalsOf(invoice: FixtureInvoice) {
     const net = invoice.lines.reduce(
-        (sum, line) => sum + line.quantity * line.unitNetCents,
+        (sum, line) => sum + line.quantity * toMinor(line.unitNet),
         0,
     );
     const vat = invoice.lines.reduce(
         (sum, line) =>
             sum +
             Math.round(
-                (line.quantity * line.unitNetCents * line.vatRate) / 100,
+                (line.quantity * toMinor(line.unitNet) * line.vatRate) / 100,
             ),
         0,
     );
     const withholding = invoice.withholdingRate
         ? Math.round((net * invoice.withholdingRate) / 100)
         : null;
-    return { net, vat, withholding, total: net + vat - (withholding ?? 0) };
+    return {
+        net: fromMinor(net),
+        vat: fromMinor(vat),
+        withholding: withholding === null ? null : fromMinor(withholding),
+        total: fromMinor(net + vat - (withholding ?? 0)),
+    };
+}
+
+function grossUnitPrice(line: FixtureInvoice["lines"][number]): string {
+    return fromMinor(
+        Math.round(toMinor(line.unitNet) * (1 + line.vatRate / 100)),
+    );
 }
 
 function toSummary(invoice: FixtureInvoice): InvoiceSummary {
@@ -181,10 +213,10 @@ function toSummary(invoice: FixtureInvoice): InvoiceSummary {
         issueDate: isoDaysAgo(invoice.daysAgo),
         dueDate: null,
         currency: invoice.currency,
-        subtotalCents: totals.net,
-        vatCents: totals.vat,
-        withholdingCents: totals.withholding,
-        totalCents: totals.total,
+        subtotal: totals.net,
+        vat: totals.vat,
+        withholding: totals.withholding,
+        total: totals.total,
         language: invoice.language,
         runId: invoice.daysAgo < 8 ? PREVIEW_RUN_ID : null,
         vendor: vendor ? { id: vendor.id, name: vendor.name } : null,
@@ -250,7 +282,7 @@ function toLine(
         (candidate) => candidate.key === line.productKey,
     );
     const name = product ? product.name : line.productKey;
-    const lineNet = line.quantity * line.unitNetCents;
+    const lineNet = line.quantity * toMinor(line.unitNet);
     const lineVat = Math.round((lineNet * line.vatRate) / 100);
     return {
         id: `${invoiceId}-${index}`,
@@ -260,15 +292,13 @@ function toLine(
         unit: product ? product.unit : null,
         description: name,
         quantity: line.quantity,
-        unitPriceNetCents: line.unitNetCents,
-        unitPriceGrossCents: Math.round(
-            line.unitNetCents * (1 + line.vatRate / 100),
-        ),
+        unitPriceNet: line.unitNet,
+        unitPriceGross: grossUnitPrice(line),
         vatRate: line.vatRate,
-        discountCents: null,
-        lineNetCents: lineNet,
-        lineVatCents: lineVat,
-        lineGrossCents: lineNet + lineVat,
+        discount: null,
+        lineNet: fromMinor(lineNet),
+        lineVat: fromMinor(lineVat),
+        lineGross: fromMinor(lineNet + lineVat),
     };
 }
 
@@ -286,10 +316,8 @@ function purchasesOf(productId: string) {
                     issueDate: isoDaysAgo(invoice.daysAgo),
                     currency: invoice.currency,
                     quantity: line.quantity,
-                    unitPriceNetCents: line.unitNetCents,
-                    unitPriceGrossCents: Math.round(
-                        line.unitNetCents * (1 + line.vatRate / 100),
-                    ),
+                    unitPriceNet: line.unitNet,
+                    unitPriceGross: grossUnitPrice(line),
                     vatRate: line.vatRate,
                 })),
         );
@@ -312,16 +340,16 @@ function toProductSummary(product: (typeof PRODUCTS)[number]): ProductSummary {
     if (!last) {
         return {
             ...base,
-            lastUnitPriceNetCents: null,
-            lastUnitPriceGrossCents: null,
+            lastUnitPriceNet: null,
+            lastUnitPriceGross: null,
             lastCurrency: null,
             lastPurchasedAt: null,
         };
     }
     return {
         ...base,
-        lastUnitPriceNetCents: last.unitPriceNetCents,
-        lastUnitPriceGrossCents: last.unitPriceGrossCents,
+        lastUnitPriceNet: last.unitPriceNet,
+        lastUnitPriceGross: last.unitPriceGross,
         lastCurrency: last.currency,
         lastPurchasedAt: last.issueDate,
     };
@@ -355,21 +383,21 @@ function spend(range: SpendSeries["range"]): SpendSeries {
     for (const invoice of INVOICES.map(toSummary)) {
         const entry = byCurrency.get(invoice.currency) ?? {
             currency: invoice.currency,
-            totalCents: 0,
-            previousTotalCents: 0,
+            total: "0.00",
+            previousTotal: "0.00",
             invoiceCount: 0,
-            days: dates.map((date) => ({ date, totalCents: 0 })),
+            days: dates.map((date) => ({ date, total: "0.00" })),
         };
         byCurrency.set(invoice.currency, entry);
         const day = entry.days.find(
             (bucket) => bucket.date === invoice.issueDate,
         );
         if (day) {
-            day.totalCents += invoice.totalCents;
-            entry.totalCents += invoice.totalCents;
+            day.total = sumOf([day.total, invoice.total]);
+            entry.total = sumOf([entry.total, invoice.total]);
             entry.invoiceCount += 1;
         } else if (invoice.issueDate >= isoDaysAgo(2 * days - 1)) {
-            entry.previousTotalCents += invoice.totalCents;
+            entry.previousTotal = sumOf([entry.previousTotal, invoice.total]);
         }
     }
     return {
@@ -377,7 +405,7 @@ function spend(range: SpendSeries["range"]): SpendSeries {
         from: dates[0] ?? "",
         to: dates.at(-1) ?? "",
         currencies: [...byCurrency.values()].sort(
-            (a, b) => b.totalCents - a.totalCents,
+            (a, b) => toMinor(b.total) - toMinor(a.total),
         ),
     };
 }
@@ -598,16 +626,16 @@ function previewSession(
         const entry = totals.get(invoice.currency) ?? {
             currency: invoice.currency,
             invoiceCount: 0,
-            netCents: 0,
-            vatCents: 0,
-            withholdingCents: 0,
-            grossCents: 0,
+            net: "0.00",
+            vat: "0.00",
+            withholding: "0.00",
+            gross: "0.00",
         };
         entry.invoiceCount += 1;
-        entry.netCents += invoice.subtotalCents;
-        entry.vatCents += invoice.vatCents;
-        entry.withholdingCents += invoice.withholdingCents ?? 0;
-        entry.grossCents += invoice.totalCents;
+        entry.net = sumOf([entry.net, invoice.subtotal]);
+        entry.vat = sumOf([entry.vat, invoice.vat]);
+        entry.withholding = sumOf([entry.withholding, invoice.withholding]);
+        entry.gross = sumOf([entry.gross, invoice.total]);
         totals.set(invoice.currency, entry);
     }
     const subjects = [

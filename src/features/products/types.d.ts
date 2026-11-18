@@ -1,4 +1,5 @@
 import type { UseQueryResult } from "@tanstack/react-query";
+import type { Amount } from "@/shared/lib/money";
 import type { Page } from "@/shared/types";
 
 export type ProductSummary = {
@@ -9,8 +10,8 @@ export type ProductSummary = {
     vendorId: string;
     vendorName: string;
     purchaseCount: number;
-    lastUnitPriceNetCents: number | null;
-    lastUnitPriceGrossCents: number | null;
+    lastUnitPriceNet: Amount | null;
+    lastUnitPriceGross: Amount | null;
     lastCurrency: string | null;
     lastPurchasedAt: string | null;
 };
@@ -21,8 +22,8 @@ export type PricePoint = {
     issueDate: string;
     currency: string;
     quantity: number;
-    unitPriceNetCents: number;
-    unitPriceGrossCents: number | null;
+    unitPriceNet: Amount;
+    unitPriceGross: Amount | null;
     vatRate: number | null;
 };
 
@@ -32,23 +33,27 @@ export type ProductPage = Page<ProductSummary>;
 
 export type PriceSeries = "net" | "gross";
 
+/** Chart values are numbers (positions only); `netAmount` keeps the exact price for display. */
 export type PriceChartPoint = {
     date: string;
     net: number;
+    netAmount: Amount;
     gross: number | null;
     invoiceNumber: string | null;
 };
 
 export type PriceStats = {
     currency: string;
-    firstCents: number;
-    lastCents: number;
-    minCents: number;
-    maxCents: number;
+    first: Amount;
+    last: Amount;
+    min: Amount;
+    max: Amount;
     changePercent: number | null;
 };
 
 export type ProductListProps = { products: ProductSummary[] };
+export type ProductTableProps = { products: ProductSummary[] };
+export type ProductRowProps = { product: ProductSummary };
 export type PriceHistoryChartProps = {
     points: PriceChartPoint[];
     currency: string;

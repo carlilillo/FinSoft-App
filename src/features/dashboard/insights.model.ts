@@ -1,5 +1,11 @@
-import { percentChange } from "@/shared/lib/money";
-import type { SpendOverview, SpendRange, SpendSeries } from "./types";
+import { percentChange, toNumber } from "@/shared/lib/money";
+import type {
+    SpendChartPoint,
+    SpendDay,
+    SpendOverview,
+    SpendRange,
+    SpendSeries,
+} from "./types";
 
 export const SPEND_RANGES: ReadonlyArray<{ value: SpendRange; label: string }> =
     [
@@ -17,18 +23,22 @@ export function toSpendOverview(series: SpendSeries): SpendOverview {
         status: "ready",
         range: series.range,
         currency: primary.currency,
-        totalCents: primary.totalCents,
+        total: primary.total,
         changePercent: percentChange(
-            primary.totalCents,
-            primary.previousTotalCents,
+            toNumber(primary.total),
+            toNumber(primary.previousTotal),
         ),
         invoiceCount: primary.invoiceCount,
-        averageCents: Math.round(primary.totalCents / primary.invoiceCount),
+        average: toNumber(primary.total) / primary.invoiceCount,
         days: primary.days,
         otherCurrencies: others
             .filter((entry) => entry.invoiceCount > 0)
             .map((entry) => entry.currency),
     };
+}
+
+export function toSpendChartPoints(days: SpendDay[]): SpendChartPoint[] {
+    return days.map((day) => ({ date: day.date, total: toNumber(day.total) }));
 }
 
 export function previousPeriodLabel(range: SpendRange): string {

@@ -1,5 +1,5 @@
 import { m } from "motion/react";
-import { formatMoney } from "@/shared/lib/money";
+import { type Amount, formatMoney, negate } from "@/shared/lib/money";
 import { stackPose } from "@/features/landing/landing.model";
 import type { InvoiceCardProps } from "./types";
 import styles from "./InvoiceStack.module.css";
@@ -12,8 +12,8 @@ const ARRIVAL = {
 
 export function InvoiceCard({ invoice, depth }: InvoiceCardProps) {
     const pose = stackPose(depth);
-    const money = (cents: number) =>
-        formatMoney(cents, invoice.currency, invoice.locale);
+    const money = (amount: Amount) =>
+        formatMoney(amount, invoice.currency, invoice.locale);
     const isSpanish = invoice.locale.startsWith("es");
 
     return (
@@ -34,7 +34,7 @@ export function InvoiceCard({ invoice, depth }: InvoiceCardProps) {
                     </p>
                 </div>
                 <p className={`numeric ${styles.total}`}>
-                    {money(invoice.totalCents)}
+                    {money(invoice.total)}
                 </p>
             </header>
             <table className={styles.lines}>
@@ -44,11 +44,9 @@ export function InvoiceCard({ invoice, depth }: InvoiceCardProps) {
                         <tr key={line.description}>
                             <th scope="row">{line.description}</th>
                             <td className="numeric">
-                                {line.quantity} × {money(line.unitCents)}
+                                {line.quantity} × {money(line.unit)}
                             </td>
-                            <td className="numeric">
-                                {money(line.totalCents)}
-                            </td>
+                            <td className="numeric">{money(line.total)}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -59,23 +57,23 @@ export function InvoiceCard({ invoice, depth }: InvoiceCardProps) {
                         Subtotal
                         {isSpanish && <span lang="es">Base imponible</span>}
                     </dt>
-                    <dd className="numeric">{money(invoice.subtotalCents)}</dd>
+                    <dd className="numeric">{money(invoice.subtotal)}</dd>
                 </div>
                 <div>
                     <dt>
                         VAT {invoice.vatRate}%
                         {isSpanish && <span lang="es">IVA</span>}
                     </dt>
-                    <dd className="numeric">{money(invoice.vatCents)}</dd>
+                    <dd className="numeric">{money(invoice.vat)}</dd>
                 </div>
-                {invoice.withholdingCents !== null && (
+                {invoice.withholding !== null && (
                     <div>
                         <dt>
                             Withheld {invoice.withholdingRate}%
                             {isSpanish && <span lang="es">IRPF</span>}
                         </dt>
                         <dd className="numeric">
-                            {money(-invoice.withholdingCents)}
+                            {money(negate(invoice.withholding))}
                         </dd>
                     </div>
                 )}

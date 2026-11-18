@@ -1,3 +1,4 @@
+import { type Amount, toNumber } from "@/shared/lib/money";
 import type {
     EmailRowState,
     PriceChart,
@@ -56,15 +57,19 @@ export function stackPose(depth: number): StackPose {
     };
 }
 
-export function grossCents(netCents: number, vatRate: number): number {
-    return Math.round((netCents * (100 + vatRate)) / 100);
+/** Net price plus VAT, rounded to the cent (the sample prices are all two-decimal EUR amounts). */
+export function grossPrice(net: Amount, vatRate: number): Amount {
+    const netCents = Math.round(toNumber(net) * 100);
+    return (Math.round((netCents * (100 + vatRate)) / 100) / 100).toFixed(2);
 }
 
 export function percentChangeBetween(points: readonly PricePoint[]): number {
     const first = points[0];
     const last = points.at(-1);
-    if (!first || !last || first.netCents === 0) return 0;
-    return ((last.netCents - first.netCents) / first.netCents) * 100;
+    if (!first || !last || toNumber(first.net) === 0) return 0;
+    return (
+        ((toNumber(last.net) - toNumber(first.net)) / toNumber(first.net)) * 100
+    );
 }
 
 const CHART_PADDING = { top: 28, right: 96, bottom: 34, left: 78 };
@@ -79,7 +84,7 @@ export function priceChart(
     width = 560,
     height = 240,
 ): PriceChart {
-    const values = prices.map((price) => price.netCents);
+    const values = prices.map((price) => toNumber(price.net));
     const min = Math.min(...values);
     const max = Math.max(...values);
     const step = niceStep(max - min || max * 0.1);
@@ -87,18 +92,18 @@ export function priceChart(
     const high = Math.ceil(max / step) * step + step;
     const plotWidth = width - CHART_PADDING.left - CHART_PADDING.right;
     const plotHeight = height - CHART_PADDING.top - CHART_PADDING.bottom;
-    const toY = (cents: number) =>
-        CHART_PADDING.top + (1 - (cents - low) / (high - low)) * plotHeight;
+    const toY = (value: number) =>
+        CHART_PADDING.top + (1 - (value - low) / (high - low)) * plotHeight;
 
     const points = prices.map((price, index) => ({
         ...price,
-        grossCents: grossCents(price.netCents, vatRate),
+        gross: grossPrice(price.net, vatRate),
         x:
             CHART_PADDING.left +
             (prices.length === 1
                 ? plotWidth / 2
                 : (index / (prices.length - 1)) * plotWidth),
-        y: toY(price.netCents),
+        y: toY(toNumber(price.net)),
     }));
 
     const path = points
@@ -109,8 +114,12 @@ export function priceChart(
         .join(" ");
 
     const ticks = [];
-    for (let cents = low; cents <= high; cents += step)
-        ticks.push({ y: toY(cents), cents });
+    // Ticks are counted, not accumulated, so a 0.2 step never drifts to 13.600000000000001.
+    const tickCount = Math.round((high - low) / step);
+    for (let index = 0; index <= tickCount; index += 1) {
+        const value = Number((low + index * step).toFixed(6));
+        ticks.push({ y: toY(value), value });
+    }
 
     const plot = {
         left: CHART_PADDING.left,

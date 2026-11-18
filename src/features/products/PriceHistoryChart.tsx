@@ -44,8 +44,8 @@ export function PriceHistoryChart({
                         minTickGap={24}
                     />
                     <YAxis
-                        tickFormatter={(cents: number) =>
-                            formatMoneyCompact(cents, currency)
+                        tickFormatter={(amount: number) =>
+                            formatMoneyCompact(amount, currency)
                         }
                         tickLine={false}
                         axisLine={false}
@@ -102,7 +102,13 @@ function PriceTooltip({ active, payload, currency }: PriceTooltipProps) {
                     : ""}
             </span>
             <strong className="numeric">
-                {formatMoney(Number(point.value ?? 0), currency)}
+                {formatMoney(
+                    // The net series shows the exact printed price; gross may be computed from the VAT rate.
+                    point.value === point.payload.net
+                        ? point.payload.netAmount
+                        : Number(point.value ?? 0),
+                    currency,
+                )}
             </strong>
         </div>
     );

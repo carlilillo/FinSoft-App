@@ -1,5 +1,5 @@
 import { formatDateTime } from "@/shared/lib/dates";
-import { formatMoney } from "@/shared/lib/money";
+import { formatMoney, toNumber } from "@/shared/lib/money";
 import type { SessionTotalsProps } from "./types";
 import styles from "./SessionTotals.module.css";
 
@@ -31,29 +31,26 @@ export function SessionTotals({ totals, run }: SessionTotalsProps) {
                             )
                         </dt>
                         <dd className="numeric">
-                            {formatMoney(total.grossCents, total.currency)}
+                            {formatMoney(total.gross, total.currency)}
                         </dd>
                     </div>
                     <div>
                         <dt>Excl. VAT</dt>
                         <dd className="numeric">
-                            {formatMoney(total.netCents, total.currency)}
+                            {formatMoney(total.net, total.currency)}
                         </dd>
                     </div>
                     <div>
                         <dt>VAT</dt>
                         <dd className="numeric">
-                            {formatMoney(total.vatCents, total.currency)}
+                            {formatMoney(total.vat, total.currency)}
                         </dd>
                     </div>
-                    {total.withholdingCents > 0 && (
+                    {toNumber(total.withholding) > 0 && (
                         <div>
                             <dt>Withheld</dt>
                             <dd className="numeric">
-                                {formatMoney(
-                                    total.withholdingCents,
-                                    total.currency,
-                                )}
+                                {formatMoney(total.withholding, total.currency)}
                             </dd>
                         </div>
                     )}

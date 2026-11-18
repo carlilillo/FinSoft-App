@@ -6,7 +6,7 @@ import {
     PageHeader,
     Skeleton,
 } from "@/shared/ui";
-import { ProductList } from "./ProductList";
+import { ProductTable } from "./ProductTable";
 import type { ProductResultsProps } from "./types";
 import { useProducts } from "./useProducts";
 import styles from "./ProductsPage.module.css";
@@ -38,7 +38,7 @@ export function ProductsPage() {
 }
 
 function ProductResults({ query, search }: ProductResultsProps) {
-    if (query.isPending) return <Skeleton lines={8} height="2.5rem" />;
+    if (query.isPending) return <Skeleton lines={8} height="2.25rem" />;
     if (query.isError)
         return (
             <ErrorState
@@ -55,5 +55,5 @@ function ProductResults({ query, search }: ProductResultsProps) {
             </EmptyState>
         );
     }
-    return <ProductList products={query.data.items} />;
+    return <ProductTable products={query.data.items} />;
 }

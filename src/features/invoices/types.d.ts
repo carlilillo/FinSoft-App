@@ -1,4 +1,5 @@
 import type { UseQueryResult } from "@tanstack/react-query";
+import type { Amount } from "@/shared/lib/money";
 import type { Page } from "@/shared/types";
 
 export type InvoiceLanguage = "en" | "es" | "other";
@@ -20,10 +21,10 @@ export type InvoiceSummary = {
     issueDate: string;
     dueDate: string | null;
     currency: string;
-    subtotalCents: number;
-    vatCents: number;
-    withholdingCents: number | null;
-    totalCents: number;
+    subtotal: Amount;
+    vat: Amount;
+    withholding: Amount | null;
+    total: Amount;
     language: InvoiceLanguage;
     runId: string | null;
     vendor: VendorRef | null;
@@ -38,13 +39,14 @@ export type InvoiceLine = {
     unit: string | null;
     description: string;
     quantity: number;
-    unitPriceNetCents: number;
-    unitPriceGrossCents: number | null;
+    /** Exactly as printed, e.g. "0.00000023148148" for a per-MB-minute rate. */
+    unitPriceNet: Amount;
+    unitPriceGross: Amount | null;
     vatRate: number | null;
-    discountCents: number | null;
-    lineNetCents: number;
-    lineVatCents: number | null;
-    lineGrossCents: number;
+    discount: Amount | null;
+    lineNet: Amount;
+    lineVat: Amount | null;
+    lineGross: Amount;
 };
 
 export type InvoiceDocument = {
@@ -78,7 +80,7 @@ export type DetailField = { label: string; value: string };
 
 export type InvoiceTotalsRow = {
     label: string;
-    cents: number;
+    amount: Amount;
     isTotal: boolean;
 };
 

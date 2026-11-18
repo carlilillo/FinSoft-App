@@ -1,4 +1,5 @@
 import { formatDate } from "@/shared/lib/dates";
+import { negate, toNumber } from "@/shared/lib/money";
 import type {
     DetailField,
     InvoiceDetail,
@@ -60,18 +61,18 @@ export function invoiceTotals(invoice: InvoiceDetail): InvoiceTotalsRow[] {
     const rows: InvoiceTotalsRow[] = [
         {
             label: "Subtotal (excl. VAT)",
-            cents: invoice.subtotalCents,
+            amount: invoice.subtotal,
             isTotal: false,
         },
-        { label: "VAT", cents: invoice.vatCents, isTotal: false },
+        { label: "VAT", amount: invoice.vat, isTotal: false },
     ];
-    if (invoice.withholdingCents)
+    if (invoice.withholding !== null && toNumber(invoice.withholding) !== 0)
         rows.push({
             label: "Withholding",
-            cents: -invoice.withholdingCents,
+            amount: negate(invoice.withholding),
             isTotal: false,
         });
-    rows.push({ label: "Total", cents: invoice.totalCents, isTotal: true });
+    rows.push({ label: "Total", amount: invoice.total, isTotal: true });
     return rows;
 }
 

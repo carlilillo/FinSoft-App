@@ -48,7 +48,7 @@ export function LineItemsTable({ lines, currency }: LineItemsTableProps) {
                                 {formatQuantity(line)}
                             </td>
                             <td className={`numeric ${styles.numeric}`}>
-                                {formatMoney(line.unitPriceNetCents, currency)}
+                                {formatMoney(line.unitPriceNet, currency)}
                             </td>
                             <td className={`numeric ${styles.numeric}`}>
                                 {formatVatRate(line.vatRate)}
@@ -56,7 +56,7 @@ export function LineItemsTable({ lines, currency }: LineItemsTableProps) {
                             <td
                                 className={`numeric ${styles.numeric} ${styles.amount}`}
                             >
-                                {formatMoney(line.lineGrossCents, currency)}
+                                {formatMoney(line.lineGross, currency)}
                             </td>
                         </tr>
                     ))}

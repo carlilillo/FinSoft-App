@@ -6,7 +6,7 @@ import {
 } from "./landing.content";
 import {
     emailRowState,
-    grossCents,
+    grossPrice,
     nearestPointIndex,
     percentChangeBetween,
     priceChart,
@@ -17,17 +17,19 @@ import {
 
 describe("sample content", () => {
     it("keeps every sample invoice arithmetically consistent", () => {
+        const cents = (amount: string | null) =>
+            Math.round(Number(amount ?? 0) * 100);
         for (const invoice of SAMPLE_INVOICES) {
             const lines = invoice.lines.reduce(
-                (sum, line) => sum + line.totalCents,
+                (sum, line) => sum + cents(line.total),
                 0,
             );
-            expect(lines).toBe(invoice.subtotalCents);
+            expect(lines).toBe(cents(invoice.subtotal));
             expect(
-                invoice.subtotalCents +
-                    invoice.vatCents -
-                    (invoice.withholdingCents ?? 0),
-            ).toBe(invoice.totalCents);
+                cents(invoice.subtotal) +
+                    cents(invoice.vat) -
+                    cents(invoice.withholding),
+            ).toBe(cents(invoice.total));
         }
     });
 });
@@ -67,8 +69,8 @@ describe("stackPose", () => {
 
 describe("price chart", () => {
     it("adds VAT to the net price, rounding to the cent", () => {
-        expect(grossCents(1500, 21)).toBe(1815);
-        expect(grossCents(1420, 21)).toBe(1718);
+        expect(grossPrice("15.00", 21)).toBe("18.15");
+        expect(grossPrice("14.20", 21)).toBe("17.18");
     });
 
     it("reports the change between the first and last price", () => {
@@ -85,6 +87,14 @@ describe("price chart", () => {
             expect(point.y).toBeGreaterThan(0);
             expect(point.y).toBeLessThan(chart.height);
         }
+    });
+
+    it("labels the axis with whole steps, without float drift", () => {
+        const values = priceChart(PAPER_PRICES, 21).ticks.map(
+            (tick) => tick.value,
+        );
+        for (const value of values)
+            expect(Number(value.toFixed(2))).toBe(value);
     });
 
     it("finds the point nearest the pointer", () => {

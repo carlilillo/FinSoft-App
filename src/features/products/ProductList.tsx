@@ -27,11 +27,11 @@ export function ProductList({ products }: ProductListProps) {
                             {product.sku ? ` · ${product.sku}` : ""}
                         </span>
                         <span className={styles.price}>
-                            {product.lastUnitPriceNetCents !== null &&
+                            {product.lastUnitPriceNet !== null &&
                             product.lastCurrency ? (
                                 <span className="numeric">
                                     {formatMoney(
-                                        product.lastUnitPriceNetCents,
+                                        product.lastUnitPriceNet,
                                         product.lastCurrency,
                                     )}
                                     {product.unit ? (

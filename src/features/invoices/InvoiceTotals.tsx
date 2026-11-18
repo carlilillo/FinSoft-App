@@ -13,7 +13,7 @@ export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
                 >
                     <dt>{row.label}</dt>
                     <dd className="numeric">
-                        {formatMoney(row.cents, invoice.currency)}
+                        {formatMoney(row.amount, invoice.currency)}
                     </dd>
                 </div>
             ))}

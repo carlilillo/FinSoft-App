@@ -1,23 +1,24 @@
-import { formatMoney, formatPercent } from "@/shared/lib/money";
+import { formatMoney, formatPercent, toNumber } from "@/shared/lib/money";
 import { AnimatedNumber } from "@/shared/ui";
 import { previousPeriodLabel } from "./insights.model";
 import type { KpiProps, SpendHeadlineProps } from "./types";
 import styles from "./SpendHeadline.module.css";
 
 export function SpendHeadline({ overview }: SpendHeadlineProps) {
-    const format = (cents: number) => formatMoney(cents, overview.currency);
+    const format = (amount: number) => formatMoney(amount, overview.currency);
     const change = overview.changePercent;
 
     return (
         <div className={styles.headline}>
             <p className={styles.total}>
-                <AnimatedNumber value={overview.totalCents} format={format} />
+                <AnimatedNumber
+                    value={toNumber(overview.total)}
+                    format={format}
+                />
             </p>
             <dl className={styles.kpis}>
                 <Kpi label="Invoices">{overview.invoiceCount}</Kpi>
-                <Kpi label="Average invoice">
-                    {format(overview.averageCents)}
-                </Kpi>
+                <Kpi label="Average invoice">{format(overview.average)}</Kpi>
                 <Kpi
                     label={`Compared with ${previousPeriodLabel(overview.range)}`}
                 >

@@ -20,7 +20,7 @@ export function RecentInvoices({ invoices }: RecentInvoicesProps) {
                             {formatShortDate(invoice.issueDate)}
                         </time>
                         <span className={`numeric ${styles.amount}`}>
-                            {formatMoney(invoice.totalCents, invoice.currency)}
+                            {formatMoney(invoice.total, invoice.currency)}
                         </span>
                     </Link>
                 </li>

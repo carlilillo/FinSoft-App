@@ -28,7 +28,7 @@ export function InvoiceHeader({ invoice }: InvoiceHeaderProps) {
             <p className={styles.total}>
                 <span className={styles.totalLabel}>Total</span>
                 <span className="numeric">
-                    {formatMoney(invoice.totalCents, invoice.currency)}
+                    {formatMoney(invoice.total, invoice.currency)}
                 </span>
             </p>
         </header>

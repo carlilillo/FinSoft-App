@@ -13,7 +13,8 @@ export type FixtureInvoice = {
     lines: Array<{
         productKey: string;
         quantity: number;
-        unitNetCents: number;
+        /** Decimal string, like every amount the API returns. */
+        unitNet: string;
         vatRate: number;
     }>;
     withholdingRate?: number;

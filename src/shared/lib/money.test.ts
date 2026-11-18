@@ -1,16 +1,42 @@
 import { describe, expect, it } from "vitest";
 import {
-    centsToAmount,
     formatMoney,
     formatMoneyCompact,
+    negate,
     percentChange,
+    toNumber,
 } from "./money";
 
-describe("money", () => {
-    it("turns cents into amounts only at the edge", () => {
-        expect(centsToAmount(10600)).toBe(106);
-        expect(formatMoney(10600, "EUR", "es-ES")).toBe("106,00\u00a0€");
-        expect(formatMoney(1200, "GBP", "en-GB")).toBe("£12.00");
+describe("formatMoney", () => {
+    it("shows exact amounts with the currency's decimals", () => {
+        expect(formatMoney("106.00", "EUR", "es-ES")).toBe("106,00 €");
+        expect(formatMoney("12", "GBP", "en-GB")).toBe("£12.00");
+        expect(formatMoney("1234", "JPY", "en")).toBe("¥1,234");
+        expect(formatMoney("1.250", "KWD", "en")).toBe("KWD 1.250");
+    });
+
+    it("keeps every decimal of sub-cent unit prices", () => {
+        expect(formatMoney("0.00000023148148", "USD", "en")).toBe(
+            "$0.00000023148148",
+        );
+        expect(formatMoney("0.00005", "USD", "en")).toBe("$0.00005");
+    });
+
+    it("rounds computed numbers to the currency, without hiding sub-cent values", () => {
+        expect(formatMoney(12.3456, "EUR", "en")).toBe("€12.35");
+        expect(formatMoney(0.000000280092591, "USD", "en")).toBe("$0.00000028");
+    });
+});
+
+describe("amount helpers", () => {
+    it("negates exactly", () => {
+        expect(negate("150.00")).toBe("-150.00");
+        expect(negate("-0.5")).toBe("0.5");
+        expect(negate("0.00")).toBe("0.00");
+    });
+
+    it("converts to a number only for display math", () => {
+        expect(toNumber("10.73")).toBe(10.73);
     });
 
     it("computes relative change, or null without a baseline", () => {
@@ -21,8 +47,15 @@ describe("money", () => {
 
 describe("formatMoneyCompact", () => {
     it("keeps cents on small axis values and compacts large ones", () => {
-        expect(formatMoneyCompact(89, "EUR", "en")).toBe("€0.89");
-        expect(formatMoneyCompact(12000, "EUR", "en")).toBe("€120");
-        expect(formatMoneyCompact(250000, "EUR", "en")).toBe("€2.5K");
+        expect(formatMoneyCompact("0.89", "EUR", "en")).toBe("€0.89");
+        expect(formatMoneyCompact(120, "EUR", "en")).toBe("€120");
+        expect(formatMoneyCompact(2500, "EUR", "en")).toBe("€2.5K");
+    });
+
+    it("does not round sub-cent axis values to zero", () => {
+        expect(formatMoneyCompact(0.00000023148148, "USD", "en")).toBe(
+            "$0.00000023",
+        );
+        expect(formatMoneyCompact(0, "USD", "en")).toBe("$0");
     });
 });
