@@ -4,6 +4,12 @@ import type { Page } from "@/shared/types";
 
 export type InvoiceLanguage = "en" | "es" | "other";
 
+/** Issued by the person to one of their customers (income), or received from a provider (spend). */
+export type InvoiceDirection = "issued" | "received";
+
+/** What a list shows: every invoice, or only one direction. */
+export type DirectionFilter = "all" | InvoiceDirection;
+
 export type VendorRef = { id: string; name: string };
 
 export type Vendor = VendorRef & {
@@ -17,6 +23,7 @@ export type Vendor = VendorRef & {
 
 export type InvoiceSummary = {
     id: string;
+    direction: InvoiceDirection;
     invoiceNumber: string | null;
     issueDate: string;
     dueDate: string | null;
@@ -72,7 +79,11 @@ export type InvoiceDetail = Omit<InvoiceSummary, "vendor"> & {
 
 export type InvoicePage = Page<InvoiceSummary>;
 
-export type InvoiceFilters = { search: string; page: number };
+export type InvoiceFilters = {
+    search: string;
+    page: number;
+    direction: DirectionFilter;
+};
 
 export type DownloadUrlResponse = { url: string; expiresInSeconds: number };
 
@@ -85,9 +96,16 @@ export type InvoiceTotalsRow = {
 };
 
 export type InvoiceTableProps = { invoices: InvoiceSummary[] };
+/** The other company on an invoice or product; "To …" when the person billed it. */
+export type CounterpartyProps = { direction: InvoiceDirection; name: string };
+export type DirectionMarkProps = { direction: InvoiceDirection };
+export type DirectionFilterControlProps = {
+    value: DirectionFilter;
+    onChange: (value: DirectionFilter) => void;
+};
 export type InvoiceRowProps = { invoice: InvoiceSummary };
 export type InvoiceHeaderProps = { invoice: InvoiceDetail };
-export type VendorPanelProps = { vendor: Vendor };
+export type VendorPanelProps = { vendor: Vendor; direction: InvoiceDirection };
 export type LineItemsTableProps = { lines: InvoiceLine[]; currency: string };
 export type InvoiceTotalsProps = { invoice: InvoiceDetail };
 export type DocumentListProps = { documents: InvoiceDocument[] };
@@ -100,5 +118,6 @@ export type PaginationProps = {
 export type InvoiceResultsProps = {
     query: UseQueryResult<InvoicePage>;
     search: string;
+    filter: DirectionFilter;
     onPageChange: (page: number) => void;
 };

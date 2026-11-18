@@ -56,6 +56,27 @@ export const VENDORS: FixtureVendor[] = [
         website: "figma.com",
         country: "US",
     },
+    // Customers: the person (a small design studio) invoices them.
+    {
+        id: "01JV0000000000000000000006",
+        name: "Hostal Rural El Olivo S.L.",
+        taxId: "B87654321",
+        address: "Camino del Molino 3, 41370 Cazalla de la Sierra",
+        email: "administracion@elolivo.es",
+        phone: null,
+        website: null,
+        country: "ES",
+    },
+    {
+        id: "01JV0000000000000000000007",
+        name: "Northwind Studio Ltd",
+        taxId: "GB987654321",
+        address: "4 Canal Walk, Manchester M1 3LA",
+        email: "accounts@northwind.studio",
+        phone: null,
+        website: "northwind.studio",
+        country: "GB",
+    },
 ];
 
 export const PRODUCTS: FixtureProduct[] = [
@@ -123,9 +144,82 @@ export const PRODUCTS: FixtureProduct[] = [
         sku: "FIG-PRO",
         unit: "seat",
     },
+    {
+        key: "brand",
+        direction: "issued",
+        id: "01JP0000000000000000000009",
+        vendorId: VENDORS[5]!.id,
+        name: "Diseño de identidad visual",
+        sku: null,
+        unit: "proyecto",
+    },
+    {
+        key: "design-hours",
+        direction: "issued",
+        id: "01JP0000000000000000000010",
+        vendorId: VENDORS[6]!.id,
+        name: "Product design (hours)",
+        sku: null,
+        unit: "h",
+    },
 ];
 
 export const INVOICES: FixtureInvoice[] = [
+    {
+        id: "01JI0000000000000000000101",
+        direction: "issued",
+        vendorId: VENDORS[5]!.id,
+        invoiceNumber: "LM-2026/014",
+        daysAgo: 2,
+        currency: "EUR",
+        language: "es",
+        paymentMethod: "Bank transfer",
+        withholdingRate: 15,
+        lines: [
+            {
+                productKey: "brand",
+                quantity: 1,
+                unitNet: "1200.00",
+                vatRate: 21,
+            },
+        ],
+    },
+    {
+        id: "01JI0000000000000000000102",
+        direction: "issued",
+        vendorId: VENDORS[6]!.id,
+        invoiceNumber: "LM-2026/013",
+        daysAgo: 5,
+        currency: "EUR",
+        language: "en",
+        paymentMethod: "Bank transfer",
+        lines: [
+            {
+                productKey: "design-hours",
+                quantity: 12,
+                unitNet: "45.00",
+                vatRate: 0,
+            },
+        ],
+    },
+    {
+        id: "01JI0000000000000000000103",
+        direction: "issued",
+        vendorId: VENDORS[6]!.id,
+        invoiceNumber: "LM-2026/011",
+        daysAgo: 19,
+        currency: "EUR",
+        language: "en",
+        paymentMethod: "Bank transfer",
+        lines: [
+            {
+                productKey: "design-hours",
+                quantity: 20,
+                unitNet: "45.00",
+                vatRate: 0,
+            },
+        ],
+    },
     {
         id: "01JI0000000000000000000001",
         vendorId: VENDORS[0]!.id,

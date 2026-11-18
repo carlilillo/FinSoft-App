@@ -1,5 +1,9 @@
 import { formatMoney } from "@/shared/lib/money";
-import { invoiceFields, invoiceTitle } from "./invoices.model";
+import {
+    directionSummary,
+    invoiceFields,
+    invoiceTitle,
+} from "./invoices.model";
 import type { InvoiceHeaderProps } from "./types";
 import styles from "./InvoiceHeader.module.css";
 
@@ -11,7 +15,7 @@ export function InvoiceHeader({ invoice }: InvoiceHeaderProps) {
                     className={styles.vendor}
                     style={{ viewTransitionName: `invoice-${invoice.id}` }}
                 >
-                    {invoice.vendor.name}
+                    {directionSummary(invoice.direction, invoice.vendor.name)}
                 </p>
                 <h2 id="invoice-title" className={styles.title}>
                     {invoiceTitle(invoice)}

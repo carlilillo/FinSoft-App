@@ -1,5 +1,7 @@
+import type { DirectionFilter, InvoiceDirection } from "@/features/invoices";
 import { percentChange, toNumber } from "@/shared/lib/money";
 import type {
+    ProductColumnLabels,
     PriceChartPoint,
     PricePoint,
     PriceStats,
@@ -55,10 +57,35 @@ export function mainCurrency(product: ProductDetail): string {
     );
 }
 
+/** Products the person sells name their customer ("Sold to …"); products they buy, their provider. */
 export function productSubtitle(
-    product: Pick<ProductDetail, "vendorName" | "sku">,
+    product: Pick<ProductDetail, "direction" | "vendorName" | "sku">,
 ): string {
-    return product.sku
-        ? `${product.vendorName} · ${product.sku}`
-        : product.vendorName;
+    const company =
+        product.direction === "issued"
+            ? `Sold to ${product.vendorName}`
+            : product.vendorName;
+    return product.sku ? `${company} · ${product.sku}` : company;
+}
+
+/** The invoice lines of a product: what the person bought, or what they sold. */
+export function productHistoryTitle(direction: InvoiceDirection): string {
+    return direction === "issued" ? "Sales" : "Purchases";
+}
+
+export const PRODUCT_PAGE_DESCRIPTIONS: Record<DirectionFilter, string> = {
+    all: "Everything you buy and sell, with the price on its latest invoice.",
+    issued: "Everything you've sold to your customers, with the price you charged last time.",
+    received: "Everything you've bought, with the price you paid last time.",
+};
+
+export function productColumnLabels(
+    filter: DirectionFilter,
+): ProductColumnLabels {
+    const labels: Record<DirectionFilter, ProductColumnLabels> = {
+        all: { count: "Invoices", last: "Last invoiced" },
+        issued: { count: "Sales", last: "Last sold" },
+        received: { count: "Purchases", last: "Last bought" },
+    };
+    return labels[filter];
 }

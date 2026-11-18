@@ -4,6 +4,8 @@ export type ProvidersProps = { children: ReactNode };
 
 export type FixtureInvoice = {
     id: string;
+    /** Invoices the person issued to a customer; omitted, a provider's invoice. */
+    direction?: "issued";
     vendorId: string;
     invoiceNumber: string | null;
     daysAgo: number;
@@ -33,6 +35,8 @@ export type FixtureVendor = {
 
 export type FixtureProduct = {
     key: string;
+    /** Something the person sells; omitted, something they buy. */
+    direction?: "issued";
     id: string;
     vendorId: string;
     name: string;

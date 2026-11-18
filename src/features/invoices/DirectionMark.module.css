@@ -1,0 +1,25 @@
+/* A chart key: the colour of the direction's bars, next to its name in the legend and tooltip. */
+.mark {
+    flex: none;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 2px;
+    background: var(--chart-spend);
+    /* Sits on the text's x-height rather than its baseline. */
+    transform: translateY(-0.05em);
+}
+
+.mark[data-direction="issued"] {
+    background: var(--chart-income);
+}
+
+@media (forced-colors: active) {
+    .mark {
+        background: CanvasText;
+    }
+
+    .mark[data-direction="issued"] {
+        background: transparent;
+        border: 1px solid CanvasText;
+    }
+}

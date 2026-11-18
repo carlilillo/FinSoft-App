@@ -1,3 +1,5 @@
+import type { InvoiceDirection } from "@/features/invoices";
+
 /** The two pickers on the phone: PDF documents from the files app, or photos from the gallery. */
 export type PickKind = "document" | "photo";
 
@@ -9,8 +11,8 @@ export type PickResult =
     | { kind: "added"; picked: PickedFile[] }
     | { kind: "rejected"; message: string };
 
-/** What the server says about an open link. */
-export type UploadLinkInfo = { expiresAt: string };
+/** What the server says about an open link, and which kind of invoices it imports. */
+export type UploadLinkInfo = { expiresAt: string; direction: InvoiceDirection };
 
 /** Why the page can't take invoices. */
 export type LinkProblem = "expired" | "used" | "invalid" | "unreachable";
@@ -19,6 +21,7 @@ export type NoticeCopy = { title: string; detail: string };
 
 export type UploadFormProps = {
     expiresAt: string;
+    direction: InvoiceDirection;
     isSending: boolean;
     /** The last send was refused (unsupported file, too many analyses running…); the files stay attached. */
     sendError: string | null;

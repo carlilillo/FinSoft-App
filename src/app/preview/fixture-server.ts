@@ -8,9 +8,10 @@ import type {
     RunListItem,
     ScheduleUpdate,
 } from "@/features/analysis";
-import type { DashboardSummary, SpendSeries } from "@/features/dashboard";
+import type { CashFlowSeries, DashboardSummary } from "@/features/dashboard";
 import type {
     InvoiceDetail,
+    InvoiceDirection,
     InvoicePage,
     InvoiceSummary,
 } from "@/features/invoices";
@@ -33,14 +34,22 @@ const RUN_DURATION_MS = 20_000;
 const runStarts = new Map<string, number>([
     [PREVIEW_RUN_ID, Date.now() - 3_600_000],
 ]);
-/** Preview imports: run id → names of the files (PDFs or images) the person picked. */
-const importedRuns = new Map<string, string[]>();
+/** Preview imports: run id → names of the files (PDFs or images) the person picked, and which kind of invoices. */
+const importedRuns = new Map<
+    string,
+    { files: string[]; direction: InvoiceDirection }
+>();
 const PHONE_LINK_TTL_MS = 30 * 60_000;
 const PHONE_LINK_MIN_REUSE_MS = 5 * 60_000;
 /** Preview phone upload links, by token. Open the link in another tab of this browser to try the phone page. */
 const phoneLinks = new Map<
     string,
-    { id: string; expiresAt: number; runId: string | null }
+    {
+        id: string;
+        expiresAt: number;
+        runId: string | null;
+        direction: InvoiceDirection;
+    }
 >();
 const DEFAULT_GMAIL_ACCOUNTS: GmailAccount[] = [
     {
@@ -81,13 +90,14 @@ type Handler = (url: URL, id: string, body: unknown) => unknown;
 const ROUTES: ReadonlyArray<[string, RegExp, Handler]> = [
     [
         "GET",
-        /^\/insights\/spend$/,
+        /^\/insights\/cash-flow$/,
         (url) =>
-            spend(
-                (url.searchParams.get("range") ?? "7d") as SpendSeries["range"],
+            cashFlow(
+                (url.searchParams.get("range") ??
+                    "7d") as CashFlowSeries["range"],
             ),
     ],
-    ["GET", /^\/insights\/summary$/, () => summary()],
+    ["GET", /^\/insights\/summary$/, (url) => summary(url)],
     ["GET", /^\/invoices$/, (url) => invoicePage(url)],
     ["GET", /^\/invoices\/[^/]+$/, (_url, id) => invoiceDetail(id)],
     ["GET", /^\/products$/, (url) => productPage(url)],
@@ -109,7 +119,7 @@ const ROUTES: ReadonlyArray<[string, RegExp, Handler]> = [
         /^\/analyses\/imports$/,
         (_url, _id, body) => ({ runId: startImport(body) }),
     ],
-    ["POST", /^\/phone-uploads$/, () => createPhoneLink()],
+    ["POST", /^\/phone-uploads$/, (_url, _id, body) => createPhoneLink(body)],
     ["GET", /^\/phone-uploads\/[^/]+$/, (_url, id) => phoneLinkState(id)],
     [
         "GET",
@@ -209,6 +219,7 @@ function toSummary(invoice: FixtureInvoice): InvoiceSummary {
     const totals = totalsOf(invoice);
     return {
         id: invoice.id,
+        direction: directionOf(invoice),
         invoiceNumber: invoice.invoiceNumber,
         issueDate: isoDaysAgo(invoice.daysAgo),
         dueDate: null,
@@ -224,14 +235,26 @@ function toSummary(invoice: FixtureInvoice): InvoiceSummary {
     };
 }
 
+function directionOf(item: { direction?: "issued" }): InvoiceDirection {
+    return item.direction ?? "received";
+}
+
+/** `?direction=` as the server reads it: absent (or anything else) means both. */
+function directionFilterOf(url: URL): InvoiceDirection | null {
+    const value = url.searchParams.get("direction");
+    return value === "issued" || value === "received" ? value : null;
+}
+
 function sortedInvoices(): FixtureInvoice[] {
     return INVOICES.toSorted((a, b) => a.daysAgo - b.daysAgo);
 }
 
 function invoicePage(url: URL): InvoicePage {
     const search = (url.searchParams.get("search") ?? "").toLowerCase();
+    const direction = directionFilterOf(url);
     const items = sortedInvoices()
         .map(toSummary)
+        .filter((invoice) => !direction || invoice.direction === direction)
         .filter(
             (invoice) =>
                 !search ||
@@ -328,6 +351,7 @@ function toProductSummary(product: (typeof PRODUCTS)[number]): ProductSummary {
     const last = purchases.at(-1);
     const base = {
         id: product.id,
+        direction: directionOf(product),
         displayName: product.name,
         sku: product.sku,
         unit: product.unit,
@@ -357,12 +381,14 @@ function toProductSummary(product: (typeof PRODUCTS)[number]): ProductSummary {
 
 function productPage(url: URL): ProductPage {
     const search = (url.searchParams.get("search") ?? "").toLowerCase();
+    const direction = directionFilterOf(url);
     const items = PRODUCTS.map(toProductSummary).filter(
         (product) =>
-            !search ||
-            `${product.displayName} ${product.vendorName}`
-                .toLowerCase()
-                .includes(search),
+            (!direction || product.direction === direction) &&
+            (!search ||
+                `${product.displayName} ${product.vendorName}`
+                    .toLowerCase()
+                    .includes(search)),
     );
     return { items, page: 1, pageSize: 30, total: items.length };
 }
@@ -374,46 +400,56 @@ function productDetail(id: string): ProductDetail | undefined {
         : undefined;
 }
 
-function spend(range: SpendSeries["range"]): SpendSeries {
+function cashFlow(range: CashFlowSeries["range"]): CashFlowSeries {
     const days = { "7d": 7, "14d": 14, "30d": 30 }[range];
     const dates = Array.from({ length: days }, (_, index) =>
         isoDaysAgo(days - 1 - index),
     );
-    const byCurrency = new Map<string, SpendSeries["currencies"][number]>();
+    const empty = () => ({ total: "0", previousTotal: "0", invoiceCount: 0 });
+    const byCurrency = new Map<string, CashFlowSeries["currencies"][number]>();
     for (const invoice of INVOICES.map(toSummary)) {
         const entry = byCurrency.get(invoice.currency) ?? {
             currency: invoice.currency,
-            total: "0.00",
-            previousTotal: "0.00",
-            invoiceCount: 0,
-            days: dates.map((date) => ({ date, total: "0.00" })),
+            issued: empty(),
+            received: empty(),
+            days: dates.map((date) => ({ date, issued: "0", received: "0" })),
         };
         byCurrency.set(invoice.currency, entry);
+        const totals = entry[invoice.direction];
         const day = entry.days.find(
             (bucket) => bucket.date === invoice.issueDate,
         );
         if (day) {
-            day.total = sumOf([day.total, invoice.total]);
-            entry.total = sumOf([entry.total, invoice.total]);
-            entry.invoiceCount += 1;
+            day[invoice.direction] = sumOf([
+                day[invoice.direction],
+                invoice.total,
+            ]);
+            totals.total = sumOf([totals.total, invoice.total]);
+            totals.invoiceCount += 1;
         } else if (invoice.issueDate >= isoDaysAgo(2 * days - 1)) {
-            entry.previousTotal = sumOf([entry.previousTotal, invoice.total]);
+            totals.previousTotal = sumOf([totals.previousTotal, invoice.total]);
         }
     }
+    const activity = (entry: CashFlowSeries["currencies"][number]) =>
+        toMinor(entry.issued.total) + toMinor(entry.received.total);
     return {
         range,
         from: dates[0] ?? "",
         to: dates.at(-1) ?? "",
         currencies: [...byCurrency.values()].sort(
-            (a, b) => toMinor(b.total) - toMinor(a.total),
+            (a, b) => activity(b) - activity(a),
         ),
     };
 }
 
-function summary(): DashboardSummary {
+function summary(url: URL): DashboardSummary {
+    const direction = directionFilterOf(url);
+    const invoices = sortedInvoices().filter(
+        (invoice) => !direction || directionOf(invoice) === direction,
+    );
     return {
-        invoiceCount: INVOICES.length,
-        recentInvoices: sortedInvoices().slice(0, 5).map(toSummary),
+        invoiceCount: invoices.length,
+        recentInvoices: invoices.slice(0, 5).map(toSummary),
     };
 }
 
@@ -443,23 +479,33 @@ function startRun(): string {
     return id;
 }
 
-function startImport(body: unknown): string {
+function startImport(body: unknown, linkDirection?: InvoiceDirection): string {
     const files =
         body instanceof FormData
             ? body
                   .getAll("files")
                   .flatMap((file) => (file instanceof File ? [file.name] : []))
             : [];
+    const direction =
+        linkDirection ??
+        (body instanceof FormData && body.get("direction") === "issued"
+            ? "issued"
+            : "received");
     const id = startRun();
-    importedRuns.set(id, files);
+    importedRuns.set(id, { files, direction });
     return id;
 }
 
-/** Like the server: shows the open link again while 5+ minutes are left, else creates one. */
-function createPhoneLink(): PhoneUploadLink {
+/** Like the server: shows the open link for the same kind of invoices again while 5+ minutes are left, else creates one. */
+function createPhoneLink(body: unknown): PhoneUploadLink {
+    const direction: InvoiceDirection =
+        (body as { direction?: string } | undefined)?.direction === "issued"
+            ? "issued"
+            : "received";
     const reusable = [...phoneLinks.entries()]
         .filter(
             ([, link]) =>
+                link.direction === direction &&
                 phoneLinkStatus(link) === "open" &&
                 link.expiresAt - Date.now() >= PHONE_LINK_MIN_REUSE_MS,
         )
@@ -474,6 +520,7 @@ function createPhoneLink(): PhoneUploadLink {
         id: `01JP${String(Date.now()).padStart(22, "0")}`.slice(0, 26),
         expiresAt: Date.now() + PHONE_LINK_TTL_MS,
         runId: null,
+        direction,
     };
     phoneLinks.set(token, link);
     return toPhoneLink(token, link);
@@ -526,14 +573,16 @@ function openPhoneLink(token: string) {
 }
 
 function describePhoneLink(token: string) {
+    const link = openPhoneLink(token);
     return {
-        expiresAt: new Date(openPhoneLink(token).expiresAt).toISOString(),
+        expiresAt: new Date(link.expiresAt).toISOString(),
+        direction: link.direction,
     };
 }
 
 function submitPhoneLink(token: string, body: unknown) {
     const link = openPhoneLink(token);
-    link.runId = startImport(body);
+    link.runId = startImport(body, link.direction);
     return { runId: link.runId };
 }
 
@@ -549,17 +598,33 @@ function runStatus(elapsed: number, isImport: boolean): RunDetail["status"] {
     return "awaiting_review";
 }
 
+/** The files and kind of invoices of a preview import; a Gmail run has no files and reads received invoices. */
+function importOf(id: string): {
+    files: string[] | undefined;
+    direction: InvoiceDirection;
+} {
+    const imported = importedRuns.get(id);
+    return {
+        files: imported?.files,
+        direction: imported?.direction ?? "received",
+    };
+}
+
 function runDetail(id: string): RunDetail {
     const startedAt = runStarts.get(id) ?? Date.now() - 3_600_000;
     const elapsed = Date.now() - startedAt;
-    const importedFiles = importedRuns.get(id);
+    const { files: importedFiles, direction: invoiceDirection } = importOf(id);
     const status = runStatus(elapsed, importedFiles !== undefined);
     const share = Math.min(
         1,
         Math.max(0, (elapsed - 8_000) / (RUN_DURATION_MS - 8_000)),
     );
     const sessionInvoices = sortedInvoices()
-        .filter((invoice) => invoice.daysAgo < 8)
+        .filter(
+            (invoice) =>
+                invoice.daysAgo < 8 &&
+                directionOf(invoice) === invoiceDirection,
+        )
         .map(toSummary)
         .slice(0, importedFiles?.length);
     const emailsTotal = importedFiles ? 0 : 34;
@@ -567,6 +632,7 @@ function runDetail(id: string): RunDetail {
     const base = {
         id,
         source: importedFiles ? ("upload" as const) : ("gmail" as const),
+        invoiceDirection,
         status,
         stageDetail: null,
         error: null,
@@ -719,6 +785,7 @@ function runList(): RunListItem[] {
         .map((run) => ({
             id: run.id,
             source: run.source,
+            invoiceDirection: run.invoiceDirection,
             status: run.status,
             emailsTotal: run.progress.emailsTotal,
             documentsTotal: run.progress.documentsTotal,

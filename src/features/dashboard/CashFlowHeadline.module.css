@@ -4,11 +4,23 @@
 }
 
 .total {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-3);
     font-family: var(--font-numeric);
     font-weight: var(--weight-display);
     font-size: var(--text-hero);
     letter-spacing: var(--tracking-display);
     line-height: 1;
+}
+
+.totalLabel {
+    font-family: var(--font-body);
+    font-size: var(--text-md);
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--color-ink-3);
 }
 
 .total :global(.numeric),

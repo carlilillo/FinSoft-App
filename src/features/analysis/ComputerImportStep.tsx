@@ -8,6 +8,7 @@ import {
 import { Button, Icon } from "@/shared/ui";
 import {
     IMPORT_ACCEPT,
+    IMPORT_COPY,
     importButtonLabel,
     MAX_IMPORT_FILE_BYTES,
     MAX_IMPORT_FILES,
@@ -25,6 +26,7 @@ import styles from "./ComputerImportStep.module.css";
  * everything outside a modal dialog is inert.
  */
 export function ComputerImportStep({
+    direction,
     onFilesChosen,
     onBack,
 }: ComputerImportStepProps) {
@@ -109,7 +111,12 @@ export function ComputerImportStep({
                 </div>
                 <div className={styles.copy}>
                     <p className={styles.prompt}>
-                        {trayPrompt(isDraggingOver, hasFiles, isFull)}
+                        {trayPrompt(
+                            IMPORT_COPY[direction].trayPrompt,
+                            isDraggingOver,
+                            hasFiles,
+                            isFull,
+                        )}
                     </p>
                     <p id={hintId} className={styles.hint}>
                         Up to {MAX_IMPORT_FILE_BYTES / 1024 / 1024} MB per file
@@ -161,11 +168,12 @@ export function ComputerImportStep({
 }
 
 function trayPrompt(
+    emptyPrompt: string,
     isDraggingOver: boolean,
     hasFiles: boolean,
     isFull: boolean,
 ): string {
     if (isDraggingOver) return "Drop to attach";
     if (isFull) return `${MAX_IMPORT_FILES} attached, the most for one import`;
-    return hasFiles ? "Drag more invoices here" : "Drag your invoices here";
+    return hasFiles ? "Drag more invoices here" : emptyPrompt;
 }

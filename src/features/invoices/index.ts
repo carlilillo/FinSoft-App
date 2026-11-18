@@ -1,6 +1,21 @@
+export { Counterparty } from "./Counterparty";
+export { DirectionFilterControl } from "./DirectionFilterControl";
+export { DirectionMark } from "./DirectionMark";
 export { InvoiceTable } from "./InvoiceTable";
-export { formatFileSize, invoiceTitle } from "./invoices.model";
-export type { InvoiceDetail, InvoicePage, InvoiceSummary } from "./types";
+export {
+    directionParam,
+    formatFileSize,
+    invoiceTitle,
+    signedTotal,
+} from "./invoices.model";
+export { useDirectionFilter } from "./useDirectionFilter";
+export type {
+    DirectionFilter,
+    InvoiceDetail,
+    InvoiceDirection,
+    InvoicePage,
+    InvoiceSummary,
+} from "./types";
 
 export const loadInvoicesPage = () =>
     import("./InvoicesPage").then((module) => module.InvoicesPage);

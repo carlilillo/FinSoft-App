@@ -1,33 +1,20 @@
 import { useState } from "react";
 import { Dialog } from "@/shared/ui";
-import { MAX_IMPORT_FILES } from "./analysis.model";
+import { IMPORT_COPY } from "./analysis.model";
 import { ComputerImportStep } from "./ComputerImportStep";
 import { ImportSourceOptions } from "./ImportSourceOptions";
 import { PhoneLinkStep } from "./PhoneImportPanel";
 import type { ImportSourceDialogProps, ImportStep } from "./types";
 import { useCreatePhoneUploadLink } from "./usePhoneImport";
 
-const HEADINGS: Record<ImportStep, { title: string; description: string }> = {
-    choose: {
-        title: "Import invoices",
-        description: `PDFs or photos, up to ${MAX_IMPORT_FILES} at once.`,
-    },
-    computer: {
-        title: "Import from this computer",
-        description: `PDFs or photos, up to ${MAX_IMPORT_FILES} at once.`,
-    },
-    phone: {
-        title: "Import from your phone",
-        description: "No app or sign-in needed on your phone.",
-    },
-};
-
 /**
  * Asks where the invoices come from: this computer shows a tray to drop or pick files; the phone
- * gets a single-use link shown as a QR code.
+ * gets a single-use link shown as a QR code. The steps are the same for the person's own invoices
+ * and for provider invoices; only the words change.
  */
 export function ImportSourceDialog({
     isOpen,
+    direction,
     onClose,
     onFilesChosen,
 }: ImportSourceDialogProps) {
@@ -36,7 +23,7 @@ export function ImportSourceDialog({
 
     const handleChoosePhone = () => {
         setStep("phone");
-        phoneLink.mutate();
+        phoneLink.mutate(direction);
     };
 
     const handleBack = () => {
@@ -55,7 +42,11 @@ export function ImportSourceDialog({
     };
 
     return (
-        <Dialog isOpen={isOpen} onClose={handleClose} {...HEADINGS[step]}>
+        <Dialog
+            isOpen={isOpen}
+            onClose={handleClose}
+            {...IMPORT_COPY[direction].headings[step]}
+        >
             {step === "choose" && (
                 <ImportSourceOptions
                     onChooseComputer={() => setStep("computer")}
@@ -64,15 +55,17 @@ export function ImportSourceDialog({
             )}
             {step === "computer" && (
                 <ComputerImportStep
+                    direction={direction}
                     onFilesChosen={handleFilesChosen}
                     onBack={handleBack}
                 />
             )}
             {step === "phone" && (
                 <PhoneLinkStep
+                    direction={direction}
                     link={phoneLink.data}
                     error={phoneLink.error}
-                    onRenew={() => phoneLink.mutate()}
+                    onRenew={() => phoneLink.mutate(direction)}
                     onBack={handleBack}
                 />
             )}

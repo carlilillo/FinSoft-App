@@ -5,6 +5,7 @@ import { PriceStatsList } from "./PriceStatsList";
 import {
     computePriceStats,
     mainCurrency,
+    productHistoryTitle,
     productSubtitle,
     toPriceChartPoints,
 } from "./products.model";
@@ -68,7 +69,7 @@ function ProductBody({ product }: ProductBodyProps) {
             <PriceSection points={points} currency={currency} />
             <section aria-labelledby="purchases-title">
                 <h2 id="purchases-title" className={styles.sectionTitle}>
-                    Purchases
+                    {productHistoryTitle(product.direction)}
                 </h2>
                 <PurchaseTable points={product.priceHistory} />
             </section>

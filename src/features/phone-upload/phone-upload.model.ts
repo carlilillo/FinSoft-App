@@ -1,4 +1,5 @@
 import { MAX_IMPORT_FILE_BYTES, MAX_IMPORT_FILES } from "@/features/analysis";
+import type { InvoiceDirection } from "@/features/invoices";
 import { ApiError } from "@/shared/lib/http";
 import type {
     LinkProblem,
@@ -155,6 +156,18 @@ export const LINK_PROBLEM_COPY: Record<LinkProblem, NoticeCopy> = {
     unreachable: {
         title: "FinSift can't be reached",
         detail: "Check your connection and try again.",
+    },
+};
+
+/** The form's heading and lead for each kind of invoices the link imports. */
+export const UPLOAD_FORM_COPY: Record<InvoiceDirection, NoticeCopy> = {
+    received: {
+        title: "Send invoices",
+        detail: "Attach PDFs or photos of the invoices your providers sent you, up to 10 in total. They’ll be read on your computer.",
+    },
+    issued: {
+        title: "Send your invoices",
+        detail: "Attach PDFs or photos of the invoices you issued to your customers, up to 10 in total. They’ll be read on your computer.",
     },
 };
 

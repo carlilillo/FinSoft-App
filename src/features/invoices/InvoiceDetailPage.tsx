@@ -64,7 +64,10 @@ export function InvoiceDetailPage() {
                             <InvoiceTotals invoice={invoice} />
                         </section>
                         <aside className={styles.side}>
-                            <VendorPanel vendor={invoice.vendor} />
+                            <VendorPanel
+                                vendor={invoice.vendor}
+                                direction={invoice.direction}
+                            />
                             <DocumentList documents={invoice.documents} />
                             {invoice.notes && (
                                 <section aria-labelledby="notes-title">

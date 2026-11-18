@@ -1,7 +1,9 @@
+import type { InvoiceDirection } from "@/features/invoices";
 import type {
     EmailVerdict,
     EvaluatedEmail,
     GmailAccount,
+    ImportCopy,
     ImportedDocumentStatus,
     RunCapacity,
     RunDetail,
@@ -175,6 +177,53 @@ export function stagedFileKind(item: StagedImportFile): string {
     const upper = extension.toUpperCase();
     return upper === "JPG" ? "JPEG" : upper === "TIF" ? "TIFF" : upper;
 }
+
+/**
+ * The import flow is the same for both kinds of invoices; only the words change. "Import invoices" brings in bills
+ * from providers, "Import your invoices" the invoices the person sent to their own customers.
+ */
+export const IMPORT_COPY: Record<InvoiceDirection, ImportCopy> = {
+    received: {
+        button: "Import invoices",
+        buttonHint: `Invoices your providers sent you, up to ${MAX_IMPORT_FILES} at once, from this computer or your phone`,
+        headings: {
+            choose: {
+                title: "Import invoices",
+                description: `Invoices from your providers: PDFs or photos, up to ${MAX_IMPORT_FILES} at once.`,
+            },
+            computer: {
+                title: "Import from this computer",
+                description: `Invoices from your providers: PDFs or photos, up to ${MAX_IMPORT_FILES} at once.`,
+            },
+            phone: {
+                title: "Import from your phone",
+                description: "No app or sign-in needed on your phone.",
+            },
+        },
+        trayPrompt: "Drag your invoices here",
+        phoneAttachStep: `Attach up to ${MAX_IMPORT_FILES} PDFs or photos`,
+    },
+    issued: {
+        button: "Import your invoices",
+        buttonHint: `Invoices you issued to your customers, up to ${MAX_IMPORT_FILES} at once, from this computer or your phone`,
+        headings: {
+            choose: {
+                title: "Import your invoices",
+                description: `Invoices you issued to your customers: PDFs or photos, up to ${MAX_IMPORT_FILES} at once.`,
+            },
+            computer: {
+                title: "Import your invoices from this computer",
+                description: `Invoices you issued to your customers: PDFs or photos, up to ${MAX_IMPORT_FILES} at once.`,
+            },
+            phone: {
+                title: "Import your invoices from your phone",
+                description: "No app or sign-in needed on your phone.",
+            },
+        },
+        trayPrompt: "Drag the invoices you issued here",
+        phoneAttachStep: `Attach up to ${MAX_IMPORT_FILES} of your invoices, PDFs or photos`,
+    },
+};
 
 /** "Import 3 invoices": the button names exactly what it will start. */
 export function importButtonLabel(count: number): string {

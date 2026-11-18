@@ -1,5 +1,5 @@
 import { Button, ErrorState, Icon } from "@/shared/ui";
-import { MAX_IMPORT_FILES } from "./analysis.model";
+import { IMPORT_COPY } from "./analysis.model";
 import { BackButton } from "./BackButton";
 import { CopyableLink } from "./CopyableLink";
 import { LinkCountdown } from "./LinkCountdown";
@@ -19,6 +19,7 @@ import styles from "./PhoneImportPanel.module.css";
 
 /** A new link (after "New code") gets a fresh panel, with its own polling and countdown. */
 export function PhoneLinkStep({
+    direction,
     link,
     error,
     onRenew,
@@ -34,6 +35,7 @@ export function PhoneLinkStep({
     if (!link)
         return (
             <PhoneImportFrame
+                direction={direction}
                 code={
                     <span
                         className={styles.placeholder}
@@ -52,6 +54,7 @@ export function PhoneLinkStep({
     return (
         <PhoneImportPanel
             key={link.id}
+            direction={direction}
             link={link}
             onRenew={onRenew}
             onBack={onBack}
@@ -60,13 +63,19 @@ export function PhoneLinkStep({
 }
 
 /** Shows the QR code and waits: once the phone sends its invoices, the computer opens their session. */
-function PhoneImportPanel({ link, onRenew, onBack }: PhoneImportPanelProps) {
+function PhoneImportPanel({
+    direction,
+    link,
+    onRenew,
+    onBack,
+}: PhoneImportPanelProps) {
     const { data: state } = usePhoneUploadLinkState(link.id);
     useFollowPhoneUpload(state);
     const status = state?.status ?? "open";
 
     return (
         <PhoneImportFrame
+            direction={direction}
             code={
                 <>
                     <QrCode
@@ -96,6 +105,7 @@ function PhoneImportPanel({ link, onRenew, onBack }: PhoneImportPanelProps) {
 }
 
 function PhoneImportFrame({
+    direction,
     code,
     status,
     link,
@@ -109,7 +119,7 @@ function PhoneImportFrame({
                 <div className={styles.side}>
                     <ol className={styles.steps}>
                         <li>Scan the code with your phone&apos;s camera</li>
-                        <li>Attach up to {MAX_IMPORT_FILES} PDFs or photos</li>
+                        <li>{IMPORT_COPY[direction].phoneAttachStep}</li>
                         <li>Send them; this window opens the extraction</li>
                     </ol>
                     {status}

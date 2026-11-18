@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+    directionParam,
+    directionSummary,
     formatVatRate,
     invoiceTitle,
     invoiceTotals,
+    parseDirectionFilter,
+    signedTotal,
     vendorFields,
 } from "./invoices.model";
 import type { InvoiceDetail } from "./types";
@@ -50,5 +54,36 @@ describe("invoice model", () => {
     it("formats VAT rates and unknown rates", () => {
         expect(formatVatRate(21)).toBe("21%");
         expect(formatVatRate(null)).toBe("—");
+    });
+});
+
+describe("invoice direction", () => {
+    it("adds what you issued and subtracts what providers billed you", () => {
+        expect(signedTotal({ direction: "issued", total: "1210.00" })).toBe(
+            "1210.00",
+        );
+        expect(signedTotal({ direction: "received", total: "80.50" })).toBe(
+            "-80.50",
+        );
+    });
+
+    it("reads the filter from the URL, falling back to the page's default", () => {
+        expect(parseDirectionFilter("issued", "all")).toBe("issued");
+        expect(parseDirectionFilter(null, "received")).toBe("received");
+        expect(parseDirectionFilter("everything", "all")).toBe("all");
+    });
+
+    it("sends no direction for all invoices", () => {
+        expect(directionParam("all")).toBeNull();
+        expect(directionParam("received")).toBe("received");
+    });
+
+    it("says who billed whom", () => {
+        expect(directionSummary("issued", "Acme S.L.")).toBe(
+            "Issued by you to Acme S.L.",
+        );
+        expect(directionSummary("received", "Iberdrola")).toBe(
+            "Received from Iberdrola",
+        );
     });
 });

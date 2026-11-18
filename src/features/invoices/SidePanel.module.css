@@ -7,6 +7,12 @@
     font-size: var(--text-md);
 }
 
+.heading {
+    display: grid;
+    gap: 2px;
+    margin: 0;
+}
+
 .fields {
     display: grid;
     gap: var(--space-2);

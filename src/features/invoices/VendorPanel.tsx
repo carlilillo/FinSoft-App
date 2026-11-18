@@ -1,14 +1,17 @@
-import { vendorFields } from "./invoices.model";
+import { counterpartyRole, vendorFields } from "./invoices.model";
 import type { VendorPanelProps } from "./types";
 import styles from "./SidePanel.module.css";
 
-export function VendorPanel({ vendor }: VendorPanelProps) {
+export function VendorPanel({ vendor, direction }: VendorPanelProps) {
     const fields = vendorFields(vendor);
     return (
         <section aria-labelledby="vendor-title" className={styles.panel}>
-            <h2 id="vendor-title" className={styles.title}>
-                {vendor.name}
-            </h2>
+            <hgroup className={styles.heading}>
+                <h2 id="vendor-title" className={styles.title}>
+                    {vendor.name}
+                </h2>
+                <p className={styles.muted}>{counterpartyRole(direction)}</p>
+            </hgroup>
             {fields.length === 0 ? (
                 <p className={styles.muted}>
                     No contact details are printed on this invoice.

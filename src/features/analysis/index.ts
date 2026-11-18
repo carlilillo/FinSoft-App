@@ -1,4 +1,4 @@
-export { ImportInvoicesButton } from "./ImportInvoicesButton";
+export { ImportActions } from "./ImportActions";
 export {
     connectionErrorMessage,
     MAX_IMPORT_FILE_BYTES,

@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { computePriceStats, toPriceChartPoints } from "./products.model";
+import {
+    computePriceStats,
+    productColumnLabels,
+    productSubtitle,
+    toPriceChartPoints,
+} from "./products.model";
 
 const history = [
     {
@@ -81,5 +86,30 @@ describe("price history", () => {
             "EUR",
         );
         expect(stats?.last).toBe("0.00000023148148");
+    });
+});
+
+describe("products you sell and products you buy", () => {
+    it("names the customer of a product you sell", () => {
+        expect(
+            productSubtitle({
+                direction: "issued",
+                vendorName: "Acme S.L.",
+                sku: null,
+            }),
+        ).toBe("Sold to Acme S.L.");
+        expect(
+            productSubtitle({
+                direction: "received",
+                vendorName: "Makro",
+                sku: "A-1",
+            }),
+        ).toBe("Makro · A-1");
+    });
+
+    it("names the columns after what the table lists", () => {
+        expect(productColumnLabels("received").count).toBe("Purchases");
+        expect(productColumnLabels("issued").last).toBe("Last sold");
+        expect(productColumnLabels("all").count).toBe("Invoices");
     });
 });

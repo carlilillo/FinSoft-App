@@ -26,12 +26,34 @@ export function formatMoney(
     currency: string,
     locale?: string,
 ): string {
+    return formatCurrency(amount, currency, locale, "auto");
+}
+
+/**
+ * Like `formatMoney`, but always shows the sign, where the locale puts it: "+€1,210.00" for money coming in,
+ * "-€80.50" for money going out. Zero has no sign.
+ */
+export function formatSignedMoney(
+    amount: Amount | number,
+    currency: string,
+    locale?: string,
+): string {
+    return formatCurrency(amount, currency, locale, "exceptZero");
+}
+
+function formatCurrency(
+    amount: Amount | number,
+    currency: string,
+    locale: string | undefined,
+    signDisplay: "auto" | "exceptZero",
+): string {
     const digits = currencyDigits(currency, locale);
     const options: Intl.NumberFormatOptions = {
         style: "currency",
         currency,
         currencyDisplay: "narrowSymbol",
         minimumFractionDigits: digits,
+        signDisplay,
     };
     if (typeof amount === "string")
         return new Intl.NumberFormat(locale, {

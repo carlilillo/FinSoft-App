@@ -35,3 +35,14 @@
 .text {
     position: relative;
 }
+
+/* Three-option controls (Overview, Invoices, Products) fit a phone screen without wrapping. */
+@media (max-width: 26rem) {
+    .control {
+        max-width: 100%;
+    }
+
+    .option {
+        padding-inline: 0.6rem;
+    }
+}

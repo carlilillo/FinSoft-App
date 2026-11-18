@@ -1,4 +1,5 @@
 import { apiGet } from "@/shared/lib/http";
+import { directionParam } from "./invoices.model";
 import type {
     DownloadUrlResponse,
     InvoiceDetail,
@@ -14,6 +15,8 @@ export function fetchInvoices(filters: InvoiceFilters): Promise<InvoicePage> {
         pageSize: String(PAGE_SIZE),
     });
     if (filters.search.trim()) params.set("search", filters.search.trim());
+    const direction = directionParam(filters.direction);
+    if (direction) params.set("direction", direction);
     return apiGet<InvoicePage>(`/invoices?${params.toString()}`);
 }
 

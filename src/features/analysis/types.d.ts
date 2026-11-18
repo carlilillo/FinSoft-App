@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { InvoiceSummary } from "@/features/invoices";
+import type { InvoiceDirection, InvoiceSummary } from "@/features/invoices";
 import type { ProductSummary } from "@/features/products";
 import type { Amount } from "@/shared/lib/money";
 
@@ -71,6 +71,7 @@ export type RunSession = {
 export type RunDetail = {
     id: string;
     source: RunSource;
+    invoiceDirection: InvoiceDirection;
     status: RunStatus;
     stageDetail: string | null;
     error: string | null;
@@ -84,6 +85,7 @@ export type RunDetail = {
 export type RunListItem = {
     id: string;
     source: RunSource;
+    invoiceDirection: InvoiceDirection;
     status: RunStatus;
     emailsTotal: number;
     documentsTotal: number;
@@ -196,8 +198,23 @@ export type PhoneUploadLinkState = {
     expiresAt: string;
 };
 
+/** The words of the import flow for one kind of invoices; the steps themselves are shared. */
+export type ImportCopy = {
+    button: string;
+    /** Tooltip of the button that opens the dialog. */
+    buttonHint: string;
+    headings: Record<ImportStep, { title: string; description: string }>;
+    trayPrompt: string;
+    phoneAttachStep: string;
+};
+
+/** Files picked in the dialog, and which kind of invoices they are. */
+export type ImportRequest = { files: File[]; direction: InvoiceDirection };
+
 export type ImportSourceDialogProps = {
     isOpen: boolean;
+    /** Which kind of invoices the dialog imports. */
+    direction: InvoiceDirection;
     onClose: () => void;
     /** Files dropped or picked on this computer, already checked: the dialog closes and they import. */
     onFilesChosen: (files: File[]) => void;
@@ -207,6 +224,7 @@ export type ImportSourceOptionsProps = {
     onChoosePhone: () => void;
 };
 export type ComputerImportStepProps = {
+    direction: InvoiceDirection;
     onFilesChosen: (files: File[]) => void;
     onBack: () => void;
 };
@@ -226,18 +244,21 @@ export type StagedFileRowProps = {
 };
 export type StagedThumbProps = { item: StagedImportFile };
 export type PhoneLinkStepProps = {
+    direction: InvoiceDirection;
     link: PhoneUploadLink | undefined;
     error: Error | null;
     onRenew: () => void;
     onBack: () => void;
 };
 export type PhoneImportPanelProps = {
+    direction: InvoiceDirection;
     link: PhoneUploadLink;
     onRenew: () => void;
     onBack: () => void;
 };
 /** The phone step's layout, shared by the real panel and its loading placeholder. */
 export type PhoneImportFrameProps = {
+    direction: InvoiceDirection;
     code: ReactNode;
     status: ReactNode;
     link: ReactNode;

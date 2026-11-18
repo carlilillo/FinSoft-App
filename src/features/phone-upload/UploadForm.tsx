@@ -3,13 +3,19 @@ import { formatDateTime } from "@/shared/lib/dates";
 import { Button, Icon } from "@/shared/ui";
 import { AttachButton } from "./AttachButton";
 import { PickedFileList } from "./PickedFileList";
-import { attachedLabel, remainingSlots, sendLabel } from "./phone-upload.model";
+import {
+    attachedLabel,
+    remainingSlots,
+    sendLabel,
+    UPLOAD_FORM_COPY,
+} from "./phone-upload.model";
 import type { UploadFormProps } from "./types";
 import { usePickedFiles } from "./usePhoneUpload";
 import styles from "./PhoneUploadPage.module.css";
 
 export function UploadForm({
     expiresAt,
+    direction,
     isSending,
     sendError,
     onSend,
@@ -17,6 +23,7 @@ export function UploadForm({
     const { picked, pickError, add, remove } = usePickedFiles();
     const remaining = remainingSlots(picked);
     const error = pickError ?? sendError;
+    const copy = UPLOAD_FORM_COPY[direction];
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -26,11 +33,8 @@ export function UploadForm({
     return (
         <form className={styles.form} onSubmit={handleSubmit}>
             <div className={styles.intro}>
-                <h1 className={styles.title}>Send invoices</h1>
-                <p className={styles.lead}>
-                    Attach PDFs or photos of your invoices, up to 10 in total.
-                    They&apos;ll be read on your computer.
-                </p>
+                <h1 className={styles.title}>{copy.title}</h1>
+                <p className={styles.lead}>{copy.detail}</p>
             </div>
 
             <fieldset className={styles.attach} disabled={isSending}>

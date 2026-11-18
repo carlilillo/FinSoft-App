@@ -1,7 +1,8 @@
 import { Link } from "react-router";
 import { formatDate } from "@/shared/lib/dates";
-import { formatMoney } from "@/shared/lib/money";
-import { invoiceTitle } from "./invoices.model";
+import { formatMoney, formatSignedMoney } from "@/shared/lib/money";
+import { Counterparty } from "./Counterparty";
+import { invoiceTitle, signedTotal } from "./invoices.model";
 import type { InvoiceRowProps, InvoiceTableProps } from "./types";
 import styles from "./InvoiceTable.module.css";
 
@@ -10,7 +11,7 @@ export function InvoiceTable({ invoices }: InvoiceTableProps) {
         <table className={styles.table}>
             <thead>
                 <tr>
-                    <th scope="col">Vendor</th>
+                    <th scope="col">Company</th>
                     <th scope="col">Invoice</th>
                     <th scope="col">Issued</th>
                     <th scope="col" className={styles.numeric}>
@@ -40,7 +41,10 @@ function InvoiceRow({ invoice }: InvoiceRowProps) {
                     className={styles.link}
                     style={{ viewTransitionName: `invoice-${invoice.id}` }}
                 >
-                    {invoice.vendor?.name ?? "Unknown vendor"}
+                    <Counterparty
+                        direction={invoice.direction}
+                        name={invoice.vendor?.name ?? "Unknown company"}
+                    />
                 </Link>
             </th>
             <td className={styles.secondary}>{invoiceTitle(invoice)}</td>
@@ -53,7 +57,7 @@ function InvoiceRow({ invoice }: InvoiceRowProps) {
                 {formatMoney(invoice.vat, invoice.currency)}
             </td>
             <td className={`numeric ${styles.numeric} ${styles.total}`}>
-                {formatMoney(invoice.total, invoice.currency)}
+                {formatSignedMoney(signedTotal(invoice), invoice.currency)}
             </td>
         </tr>
     );

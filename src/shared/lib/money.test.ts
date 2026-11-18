@@ -2,10 +2,27 @@ import { describe, expect, it } from "vitest";
 import {
     formatMoney,
     formatMoneyCompact,
+    formatSignedMoney,
     negate,
     percentChange,
     toNumber,
 } from "./money";
+
+describe("formatSignedMoney", () => {
+    it("signs money in and money out where the locale puts the sign", () => {
+        expect(formatSignedMoney("1210.00", "EUR", "en")).toBe("+€1,210.00");
+        expect(formatSignedMoney("-80.50", "EUR", "en")).toBe("-€80.50");
+        expect(formatSignedMoney("1210.00", "EUR", "es-ES")).toBe(
+            "+1210,00\u00a0€",
+        );
+    });
+
+    it("never signs zero, negative zero included", () => {
+        expect(formatSignedMoney(0, "EUR", "en")).toBe("€0");
+        expect(formatSignedMoney(-0, "EUR", "en")).toBe("€0");
+        expect(formatSignedMoney("0", "EUR", "en")).toBe("€0.00");
+    });
+});
 
 describe("formatMoney", () => {
     it("shows exact amounts with the currency's decimals", () => {

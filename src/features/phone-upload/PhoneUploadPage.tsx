@@ -60,6 +60,7 @@ function PhoneUploadContent({ token }: PhoneUploadContentProps) {
     return (
         <UploadForm
             expiresAt={link.data.expiresAt}
+            direction={link.data.direction}
             isSending={sending.isPending}
             sendError={sendErrorMessage(sending.error)}
             onSend={(files) => sending.mutate(files)}

@@ -26,6 +26,7 @@ import type { EvaluatedEmail, RunDetail, RunListItem } from "./types";
 const run = (overrides: Partial<RunDetail>): RunDetail => ({
     id: "R",
     source: "gmail",
+    invoiceDirection: "received",
     status: "extracting",
     stageDetail: null,
     error: null,
@@ -155,6 +156,7 @@ describe("email review", () => {
 const listItem = (overrides: Partial<RunListItem>): RunListItem => ({
     id: "R",
     source: "gmail",
+    invoiceDirection: "received",
     status: "awaiting_review",
     emailsTotal: 12,
     documentsTotal: 0,

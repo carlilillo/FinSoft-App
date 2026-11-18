@@ -5,11 +5,13 @@ import {
     apiPostForm,
     apiPut,
 } from "@/shared/lib/http";
+import type { InvoiceDirection } from "@/features/invoices";
 import type {
     AnalysisSchedule,
     ContinueRequest,
     GmailAccount,
     GmailConsentIntent,
+    ImportRequest,
     PhoneUploadLink,
     PhoneUploadLinkState,
     RunDetail,
@@ -39,16 +41,25 @@ export function startAnalysis(): Promise<{ runId: string }> {
     return apiPost<{ runId: string }>("/analyses");
 }
 
-/** Starts an extraction session from invoice files (PDFs or images) the person picked, instead of their inbox. */
-export function importInvoices(files: File[]): Promise<{ runId: string }> {
+/**
+ * Starts an extraction session from invoice files (PDFs or images) the person picked, instead of their inbox: invoices
+ * they issued to their customers, or invoices their providers sent them.
+ */
+export function importInvoices({
+    files,
+    direction,
+}: ImportRequest): Promise<{ runId: string }> {
     const form = new FormData();
+    form.append("direction", direction);
     for (const file of files) form.append("files", file, file.name);
     return apiPostForm<{ runId: string }>("/analyses/imports", form);
 }
 
-/** A fresh single-use link (shown as a QR code) through which the person's phone imports invoices. */
-export function createPhoneUploadLink(): Promise<PhoneUploadLink> {
-    return apiPost<PhoneUploadLink>("/phone-uploads");
+/** A single-use link (shown as a QR code) through which the person's phone imports one kind of invoices. */
+export function createPhoneUploadLink(
+    direction: InvoiceDirection,
+): Promise<PhoneUploadLink> {
+    return apiPost<PhoneUploadLink>("/phone-uploads", { direction });
 }
 
 export function fetchPhoneUploadLink(
