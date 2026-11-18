@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
     computePriceStats,
+    grossUnitPrice,
     productColumnLabels,
     productSubtitle,
     toPriceChartPoints,
@@ -56,6 +57,13 @@ describe("price history", () => {
             gross: 13.31,
             invoiceNumber: "3",
         });
+    });
+
+    it("prefers the printed gross price and derives it from the VAT rate otherwise", () => {
+        const [fromRate, noVat, printed] = history;
+        expect(grossUnitPrice(fromRate!)).toBeCloseTo(12.1);
+        expect(grossUnitPrice(noVat!)).toBeNull();
+        expect(grossUnitPrice(printed!)).toBe("13.31");
     });
 
     it("summarizes the change since the first purchase", () => {

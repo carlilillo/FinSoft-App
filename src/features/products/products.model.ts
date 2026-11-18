@@ -1,5 +1,5 @@
 import type { DirectionFilter, InvoiceDirection } from "@/features/invoices";
-import { percentChange, toNumber } from "@/shared/lib/money";
+import { type Amount, percentChange, toNumber } from "@/shared/lib/money";
 import type {
     ProductColumnLabels,
     PriceChartPoint,
@@ -19,10 +19,7 @@ export function toPriceChartPoints(
             date: point.issueDate,
             net: toNumber(point.unitPriceNet),
             netAmount: point.unitPriceNet,
-            gross:
-                point.unitPriceGross === null
-                    ? grossFromRate(point)
-                    : toNumber(point.unitPriceGross),
+            gross: toNumberOrNull(grossUnitPrice(point)),
             invoiceNumber: point.invoiceNumber,
         }));
 }
@@ -45,10 +42,18 @@ export function computePriceStats(
     };
 }
 
-/** Gross unit price for the chart when only the VAT rate is printed (display math, not rounded). */
-function grossFromRate(point: PricePoint): number | null {
+/**
+ * Gross unit price: the exact printed amount, or net plus VAT as a number when only the rate is printed
+ * (display math, rounded only when formatted). Null when the invoice gives neither.
+ */
+export function grossUnitPrice(point: PricePoint): Amount | number | null {
+    if (point.unitPriceGross !== null) return point.unitPriceGross;
     if (point.vatRate === null) return null;
     return toNumber(point.unitPriceNet) * (1 + point.vatRate / 100);
+}
+
+function toNumberOrNull(value: Amount | number | null): number | null {
+    return typeof value === "string" ? toNumber(value) : value;
 }
 
 export function mainCurrency(product: ProductDetail): string {

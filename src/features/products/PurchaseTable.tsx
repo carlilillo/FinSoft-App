@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { formatDate } from "@/shared/lib/dates";
 import { formatMoney } from "@/shared/lib/money";
+import { grossUnitPrice } from "./products.model";
 import type { PurchaseTableProps } from "./types";
 import styles from "./PurchaseTable.module.css";
 
@@ -27,34 +28,37 @@ export function PurchaseTable({ points }: PurchaseTableProps) {
                 </tr>
             </thead>
             <tbody>
-                {points.toReversed().map((point) => (
-                    <tr key={`${point.invoiceId}-${point.unitPriceNet}`}>
-                        <td>
-                            <time dateTime={point.issueDate}>
-                                {formatDate(point.issueDate)}
-                            </time>
-                        </td>
-                        <td>
-                            <Link to={`/invoices/${point.invoiceId}`}>
-                                {point.invoiceNumber ?? "Receipt"}
-                            </Link>
-                        </td>
-                        <td className={`numeric ${styles.numeric}`}>
-                            {point.quantity}
-                        </td>
-                        <td className={`numeric ${styles.numeric}`}>
-                            {formatMoney(point.unitPriceNet, point.currency)}
-                        </td>
-                        <td className={`numeric ${styles.numeric}`}>
-                            {point.unitPriceGross === null
-                                ? "—"
-                                : formatMoney(
-                                      point.unitPriceGross,
-                                      point.currency,
-                                  )}
-                        </td>
-                    </tr>
-                ))}
+                {points.toReversed().map((point) => {
+                    const gross = grossUnitPrice(point);
+                    return (
+                        <tr key={`${point.invoiceId}-${point.unitPriceNet}`}>
+                            <td>
+                                <time dateTime={point.issueDate}>
+                                    {formatDate(point.issueDate)}
+                                </time>
+                            </td>
+                            <td>
+                                <Link to={`/invoices/${point.invoiceId}`}>
+                                    {point.invoiceNumber ?? "Receipt"}
+                                </Link>
+                            </td>
+                            <td className={`numeric ${styles.numeric}`}>
+                                {point.quantity}
+                            </td>
+                            <td className={`numeric ${styles.numeric}`}>
+                                {formatMoney(
+                                    point.unitPriceNet,
+                                    point.currency,
+                                )}
+                            </td>
+                            <td className={`numeric ${styles.numeric}`}>
+                                {gross === null
+                                    ? "—"
+                                    : formatMoney(gross, point.currency)}
+                            </td>
+                        </tr>
+                    );
+                })}
             </tbody>
         </table>
     );
